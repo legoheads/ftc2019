@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.subsystems.team_marker.claiming;
 
 import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
 
-@Disabled
 @TeleOp(name="TeleOp") //Name the class
 public class teleMaster extends LinearOpMode {
     //Define drive motors

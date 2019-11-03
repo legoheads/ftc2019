@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="test bot") //Name the class
 public class testBotTele extends LinearOpMode
@@ -20,14 +21,28 @@ public class testBotTele extends LinearOpMode
     DcMotor intakeRight;
     DcMotor dumper;
 
+    DcMotor spool;
+
+
+
     //Define floats to be used as joystick inputs and trigger inputs
     float drivePower;
     float shiftPower;
     float leftTurnPower;
     float rightTurnPower;
+    float spoolPower;
 
-    float flipPower = (float) 0.3;
-    float maxPower = (float) 1.0;
+    float flipUpPower = (float) 0.5;
+    float flipDownPower = (float) 0.3;
+    float maxPower = (float) 0.8;
+
+    int xPress = 0;
+    int aPress= 0;
+    int yPress = 0;
+
+    Servo sideLift;
+    Servo gripper;
+    Servo sideGrab;
 
     //Define a function to use to set motor powers
     public void setDriveMotorPowers(float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower)
@@ -54,11 +69,16 @@ public class testBotTele extends LinearOpMode
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
         dumper = hardwareMap.dcMotor.get("dumper");
+        sideLift = hardwareMap.servo.get("sideLift");
+        gripper = hardwareMap.servo.get("gripper");
+        sideGrab = hardwareMap.servo.get("sideGrab");
+        
+        spool = hardwareMap.dcMotor.get("spool");
 
-        leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
         //rightMotorFront goes in wrong direction. Gearbox is messed up
-        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
         intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -85,14 +105,18 @@ public class testBotTele extends LinearOpMode
             shiftPower = (float) -((gamepad1.left_stick_x + gamepad2.left_stick_x) * 0.85);
             leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.75);
             rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger) * 0.75);
+            spoolPower = (float) ((gamepad1.right_stick_y)*0.5);
 
-            intakeLeft.setPower(maxPower);
-            intakeRight.setPower(maxPower);
 
             //Drive if the joystick is pushed more Y than X
             if (Math.abs(drivePower) > Math.abs(shiftPower))
             {
                 setDriveMotorPowers(drivePower, drivePower, drivePower, drivePower);
+            }
+
+            spool.setPower(spoolPower);
+            if (Math.abs(spoolPower)<0.1){
+                spool.setPower(0.0);
             }
 
             //Shift if the joystick is pushed more on X than Y
@@ -119,21 +143,81 @@ public class testBotTele extends LinearOpMode
                 setDriveMotorPowers((float) 0.0, (float) 0.0, (float) 0.0, (float) 0.0);
             }
 
-            //If the dpad is pushed down, flip the glyphs into the cryptobox
-            //Then reset the flipper
-            if (gamepad1.dpad_up)
-            {
-                dumper.setPower(flipPower);
-                Thread.sleep(300);
-                dumper.setPower(0.0);
+
+            if (gamepad1.a){
+                aPress++;
+                if (aPress%2==1){
+                    intakeLeft.setPower(maxPower);
+                    intakeRight.setPower(maxPower);
+                }
+                else if (aPress%2==0){
+                    intakeLeft.setPower(-maxPower);
+                    intakeRight.setPower(-maxPower);
+                }
+//                telemetry.addData("BPress = ", bPress);
+            }
+            if (gamepad1.b){
+                intakeLeft.setPower(0);
+                intakeRight.setPower(0);
             }
 
-            if (gamepad1.dpad_down)
-            {
-                dumper.setPower(-flipPower);
-                Thread.sleep(300);
+
+            if (gamepad1.dpad_up){
+                gripper.setPosition(0.7);
+                Thread.sleep((150));
+                dumper.setPower(-flipUpPower);
+                Thread.sleep(1000);
                 dumper.setPower(0.0);
+                intakeLeft.setPower(0.0);
+                intakeRight.setPower(0.0);
             }
+            if (gamepad1.dpad_down){
+                gripper.setPosition(0.9);
+                dumper.setPower(flipDownPower);
+                Thread.sleep(1000);
+                dumper.setPower(0.0);
+                intakeLeft.setPower(maxPower);
+                intakeRight.setPower(maxPower);
+            }
+
+            if (gamepad1.x){
+                xPress++;
+                if (xPress%2==1){
+                    sideLift.setPosition(0.65);
+                }
+                else if (xPress%2==0){
+                    sideLift.setPosition(0.91);
+                }
+                Thread.sleep(300);
+                telemetry.addData("BPress = ", xPress);
+            }
+
+            if (gamepad1.y){
+                yPress++;
+                if (yPress%2== 1){
+                    sideGrab.setPosition(0.3);
+                }
+                else if (yPress%2==0){
+                    sideGrab.setPosition(0.7);
+                }
+                Thread.sleep(300);
+            }
+
+//            if (gamepad1.dpad_aup)
+//            {
+//                dumper.setPower(-flipUpPower);
+//                Thread.sleep(1000);
+//                dumper.setPower(0.0);
+//            }
+//
+//            if (gamepad1.dpad_down)
+//            {
+//                dumper.setPower(flipDownPower);
+//                Thread.sleep(1000);
+//                dumper.setPower(0.0);
+//            }
+
+
 
             //Count time
             //Update the data
