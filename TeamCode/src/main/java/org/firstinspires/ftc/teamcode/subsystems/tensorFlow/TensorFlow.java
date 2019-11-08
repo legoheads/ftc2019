@@ -3,8 +3,9 @@ package org.firstinspires.ftc.teamcode.subsystems.tensorFlow;
 public interface TensorFlow {
 
 
-    enum goldMineral { LEFT, CENTER, RIGHT, UNKNOWN }
-    public goldMineral location = goldMineral.UNKNOWN;
+    enum skyStone {ONE, TWO, THREE, FOUR, FIVE, SIX, UNKNOWN}
+    public skyStone location1 = skyStone.UNKNOWN;
+    public skyStone location2 = skyStone.UNKNOWN;
 
     /**
      * Initialize the Vuforia localization engine.
@@ -23,23 +24,9 @@ public interface TensorFlow {
      */
     public void tFodActivate();
 
-    /**
-     * Checks the position of the two silver minerals and the gold mineral and determines
-     * where the gold mineral is relative to the silvers
-     */
-    public void lookForMinerals();
+    public void findSkystones();
 
-    /**
-     * goldMineral runs the lookForMinerals() function for a specified time and returns the
-     * position of the gold mineral
-     * @return position of gold mineral (LEFT, RIGHT, CENTER, or UNKNOWN)
-     * @throws InterruptedException
-     */
-    public goldMineral getMineralTime() throws InterruptedException;
-
-    public goldMineral getMineral() throws InterruptedException;
-
-
+    public skyStone getSkystones() throws InterruptedException;
 }
 
 

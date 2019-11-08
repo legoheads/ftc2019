@@ -28,9 +28,6 @@ import org.firstinspires.ftc.teamcode.subsystems.mineral_flip.mineralFlip;
 import org.firstinspires.ftc.teamcode.subsystems.team_marker.TeamMarker;
 import org.firstinspires.ftc.teamcode.subsystems.team_marker.claiming;
 import org.firstinspires.ftc.teamcode.subsystems.tensorFlow.TensorFlow;
-import org.firstinspires.ftc.teamcode.subsystems.tensorFlow.twoSampling;
-
-import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
 
 @Disabled
 @Autonomous(name="Injured Auto") //Name the program
@@ -69,7 +66,7 @@ public class autoInjured extends LinearOpMode
     TensorFlow tensor;
     private ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-    TensorFlow.goldMineral goldMineral;
+//    TensorFlow.goldMineral goldMineral;
 
     //Subsystems
     Flip flip;
@@ -107,7 +104,7 @@ public class autoInjured extends LinearOpMode
 
         //Construct Subsystems
         teamMarker = new claiming(markerDropper);
-        tensor = new twoSampling(telemetry, hardwareMap, vuforia, tfod);
+//        tensor = new twoSampling(telemetry, hardwareMap, vuforia, tfod);
 
         //Intialize Subsystems
         flip = new mineralFlip(mineralFlipper);
@@ -121,7 +118,7 @@ public class autoInjured extends LinearOpMode
         while (!isStarted())
         {
             //Set goldMineral to gold position found from getMineralTime()
-            goldMineral = tensor.getMineral();
+//            goldMineral = tensor.getMineral();
         }
 
         waitForStart();
@@ -129,134 +126,134 @@ public class autoInjured extends LinearOpMode
         //Code to run once play is pressed
         while(opModeIsActive())
         {
-            runTime.reset();
-            while (runTime.time() < 5500)
-            {
-                hanger.setPower(1.0);
-                goldMineral = tensor.getMineral();
-            }
-            hanger.setPower(0.0);
-
-            //Shift off lander
-            chassis.rightShiftAutonomous(shiftPower, 200);
-
-            //Move forward
-            chassis.driveAutonomous(drivePower, 400);
-
-            //Center robot
-            chassis.leftShiftAutonomous(shiftPower, 200);
-
-            //Default to right
-            if (goldMineral == TensorFlow.goldMineral.UNKNOWN)
-            {
-                goldMineral = TensorFlow.goldMineral.RIGHT;
-            }
-
-            if (goldMineral == TensorFlow.goldMineral.LEFT)
-            {
-                //Turn to right mineral
-                chassis.leftTurnIMU(turnPower, 42);
-
-                oneMotorEncoder(mineralSpool, 1.0, 1000);
-
-                flip.down();
-
-                oneMotorEncoder(lifter, 1.0, 500);
-
-                dunk.dunkDown();
-
-                runTime.reset();
-                while (!touch.isPressed() && runTime.time() < 750)
-                {
-                    lifter.setPower(-1.0);
-                }
-
-                if (touch.isPressed())
-                {
-                    lifter.setPower(0.0);
-                }
-
-//              Stop the motor
-                lifter.setPower(0.0);
-
-                intake.start();
-                //Move to mineral and intake
-                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
-
-            }
-            if (goldMineral == TensorFlow.goldMineral.CENTER)
-            {
-                oneMotorEncoder(mineralSpool, 1.0, 1000);
-
-                flip.down();
-
-                oneMotorEncoder(lifter, 1.0, 500);
-
-                dunk.dunkDown();
-
-                runTime.reset();
-                while (!touch.isPressed() && runTime.time() < 750)
-                {
-                    lifter.setPower(-1.0);
-                }
-
-                if (touch.isPressed())
-                {
-                    lifter.setPower(0.0);
-                }
-
-//              Stop the motor
-                lifter.setPower(0.0);
-
-                intake.start();
-                oneMotorEncoder(mineralSpool, (float) 1.0, 900);
-            }
-            if (goldMineral == TensorFlow.goldMineral.RIGHT)
-            {
-                //Turn to right mineral
-                chassis.rightTurnIMU(turnPower, -45);
-                oneMotorEncoder(mineralSpool, 1.0, 1000);
-
-                flip.down();
-
-                oneMotorEncoder(lifter, 1.0, 500);
-
-                dunk.dunkDown();
-
-                runTime.reset();
-                while (!touch.isPressed() && runTime.time() < 750)
-                {
-                    lifter.setPower(-1.0);
-                }
-
-                if (touch.isPressed())
-                {
-                    lifter.setPower(0.0);
-                }
-
-//              Stop the motor
-                lifter.setPower(0.0);
-
-                intake.start();
-                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
-            }
-
-            flip.up();
-            while (!chassis.iSeeAColor(colorSensor))
-            {
-                mineralSpool.setPower(-1.0);
-            }
-            while (!chassis.isYellow(colorSensor))
-            {
-                mineralSpool.setPower(-1.0);
-            }
-            mineralSpool.setPower(0.0);
-            flip.flip();
-
-            intake.stop();
-
-            idle();
-            break;
+//            runTime.reset();
+//            while (runTime.time() < 5500)
+//            {
+//                hanger.setPower(1.0);
+//                goldMineral = tensor.getMineral();
+//            }
+//            hanger.setPower(0.0);
+//
+//            //Shift off lander
+//            chassis.rightShiftAutonomous(shiftPower, 200);
+//
+//            //Move forward
+//            chassis.driveAutonomous(drivePower, 400);
+//
+//            //Center robot
+//            chassis.leftShiftAutonomous(shiftPower, 200);
+//
+//            //Default to right
+//            if (goldMineral == TensorFlow.goldMineral.UNKNOWN)
+//            {
+//                goldMineral = TensorFlow.goldMineral.RIGHT;
+//            }
+//
+//            if (goldMineral == TensorFlow.goldMineral.LEFT)
+//            {
+//                //Turn to right mineral
+//                chassis.leftTurnIMU(turnPower, 42);
+//
+//                oneMotorEncoder(mineralSpool, 1.0, 1000);
+//
+//                flip.down();
+//
+//                oneMotorEncoder(lifter, 1.0, 500);
+//
+//                dunk.dunkDown();
+//
+//                runTime.reset();
+//                while (!touch.isPressed() && runTime.time() < 750)
+//                {
+//                    lifter.setPower(-1.0);
+//                }
+//
+//                if (touch.isPressed())
+//                {
+//                    lifter.setPower(0.0);
+//                }
+//
+////              Stop the motor
+//                lifter.setPower(0.0);
+//
+//                intake.start();
+//                //Move to mineral and intake
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
+//
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.CENTER)
+//            {
+//                oneMotorEncoder(mineralSpool, 1.0, 1000);
+//
+//                flip.down();
+//
+//                oneMotorEncoder(lifter, 1.0, 500);
+//
+//                dunk.dunkDown();
+//
+//                runTime.reset();
+//                while (!touch.isPressed() && runTime.time() < 750)
+//                {
+//                    lifter.setPower(-1.0);
+//                }
+//
+//                if (touch.isPressed())
+//                {
+//                    lifter.setPower(0.0);
+//                }
+//
+////              Stop the motor
+//                lifter.setPower(0.0);
+//
+//                intake.start();
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 900);
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.RIGHT)
+//            {
+//                //Turn to right mineral
+//                chassis.rightTurnIMU(turnPower, -45);
+//                oneMotorEncoder(mineralSpool, 1.0, 1000);
+//
+//                flip.down();
+//
+//                oneMotorEncoder(lifter, 1.0, 500);
+//
+//                dunk.dunkDown();
+//
+//                runTime.reset();
+//                while (!touch.isPressed() && runTime.time() < 750)
+//                {
+//                    lifter.setPower(-1.0);
+//                }
+//
+//                if (touch.isPressed())
+//                {
+//                    lifter.setPower(0.0);
+//                }
+//
+////              Stop the motor
+//                lifter.setPower(0.0);
+//
+//                intake.start();
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
+//            }
+//
+//            flip.up();
+//            while (!chassis.iSeeAColor(colorSensor))
+//            {
+//                mineralSpool.setPower(-1.0);
+//            }
+//            while (!chassis.isYellow(colorSensor))
+//            {
+//                mineralSpool.setPower(-1.0);
+//            }
+//            mineralSpool.setPower(0.0);
+//            flip.flip();
+//
+//            intake.stop();
+//
+//            idle();
+//            break;
         }
     }
 }

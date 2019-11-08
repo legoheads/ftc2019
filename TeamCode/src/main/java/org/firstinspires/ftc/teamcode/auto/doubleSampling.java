@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.subsystems.mineral_flip.mineralFlip;
 import org.firstinspires.ftc.teamcode.subsystems.team_marker.TeamMarker;
 import org.firstinspires.ftc.teamcode.subsystems.team_marker.claiming;
 import org.firstinspires.ftc.teamcode.subsystems.tensorFlow.TensorFlow;
-import org.firstinspires.ftc.teamcode.subsystems.tensorFlow.twoSampling;
 
 import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
 @Disabled
@@ -68,7 +67,7 @@ public class doubleSampling extends LinearOpMode
     TensorFlow tensor;
     private ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-    TensorFlow.goldMineral goldMineral;
+//    TensorFlow.goldMineral goldMineral;
 
     //Subsystems
     Flip flip;
@@ -106,7 +105,7 @@ public class doubleSampling extends LinearOpMode
 
         //Construct Subsystems
         teamMarker = new claiming(markerDropper);
-        tensor = new twoSampling(telemetry, hardwareMap, vuforia, tfod);
+//        tensor = new twoSampling(telemetry, hardwareMap, vuforia, tfod);
 
         //Intialize Subsystems
         flip = new mineralFlip(mineralFlipper);
@@ -121,7 +120,7 @@ public class doubleSampling extends LinearOpMode
         while (!isStarted())
         {
             //Set goldMineral to gold position found from getMineralTime()
-            goldMineral = tensor.getMineral();
+//            goldMineral = tensor.getMineral();
         }
 
         waitForStart();
@@ -133,7 +132,7 @@ public class doubleSampling extends LinearOpMode
             while (runTime.time() < 5500)
             {
                 hanger.setPower(1.0);
-                goldMineral = tensor.getMineral();
+//                goldMineral = tensor.getMineral();
             }
             hanger.setPower(0.0);
 
@@ -169,30 +168,30 @@ public class doubleSampling extends LinearOpMode
             intake.start();
 
 
-            //Default to right
-            if (goldMineral == TensorFlow.goldMineral.UNKNOWN)
-            {
-                goldMineral = TensorFlow.goldMineral.RIGHT;
-            }
-
-            if (goldMineral == TensorFlow.goldMineral.LEFT)
-            {
-                //Turn to right mineral
-                chassis.leftTurnIMU(turnPower, 42);
-                //Move to mineral and intake
-                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
-
-            }
-            if (goldMineral == TensorFlow.goldMineral.CENTER)
-            {
-                oneMotorEncoder(mineralSpool, (float) 1.0, 900);
-            }
-            if (goldMineral == TensorFlow.goldMineral.RIGHT)
-            {
-                //Turn to right mineral
-                chassis.rightTurnIMU(turnPower, -45);
-                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
-            }
+//            //Default to right
+//            if (goldMineral == TensorFlow.goldMineral.UNKNOWN)
+//            {
+//                goldMineral = TensorFlow.goldMineral.RIGHT;
+//            }
+//
+//            if (goldMineral == TensorFlow.goldMineral.LEFT)
+//            {
+//                //Turn to right mineral
+//                chassis.leftTurnIMU(turnPower, 42);
+//                //Move to mineral and intake
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
+//
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.CENTER)
+//            {
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 900);
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.RIGHT)
+//            {
+//                //Turn to right mineral
+//                chassis.rightTurnIMU(turnPower, -45);
+//                oneMotorEncoder(mineralSpool, (float) 1.0, 2600);
+//            }
 
             flip.up();
             while (!chassis.iSeeAColor(colorSensor))
@@ -223,30 +222,30 @@ public class doubleSampling extends LinearOpMode
             //Back into depot
             chassis.driveAutonomous(-drivePower, -1500);
 
-            if (goldMineral == TensorFlow.goldMineral.RIGHT)
-            {
-                teamMarker.drop();
-            }
-
-            chassis.driveAutonomous(-drivePower/ 2, -200);
-
-            chassis.rightShiftAutonomous(shiftPower/2, 600);
-
-            if (goldMineral == TensorFlow.goldMineral.LEFT)
-            {
-                chassis.rightTurnIMU(turnPower, -135);
-                teamMarker.drop();
-
-            }
-            if (goldMineral == TensorFlow.goldMineral.CENTER)
-            {
-                chassis.rightTurnIMU(turnPower, -90);
-                teamMarker.drop();
-            }
-            if (goldMineral == TensorFlow.goldMineral.RIGHT)
-            {
-
-            }
+//            if (goldMineral == TensorFlow.goldMineral.RIGHT)
+//            {
+//                teamMarker.drop();
+//            }
+//
+//            chassis.driveAutonomous(-drivePower/ 2, -200);
+//
+//            chassis.rightShiftAutonomous(shiftPower/2, 600);
+//
+//            if (goldMineral == TensorFlow.goldMineral.LEFT)
+//            {
+//                chassis.rightTurnIMU(turnPower, -135);
+//                teamMarker.drop();
+//
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.CENTER)
+//            {
+//                chassis.rightTurnIMU(turnPower, -90);
+//                teamMarker.drop();
+//            }
+//            if (goldMineral == TensorFlow.goldMineral.RIGHT)
+//            {
+//
+//            }
             flip.down();
 
             intake.start();
