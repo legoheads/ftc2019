@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.test_programs;
+package org.firstinspires.ftc.teamcode.tele;
 
 //Import necessary items
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,22 +8,28 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="test bot") //Name the class
-public class testBotTele extends LinearOpMode
+@TeleOp(name="teleOp REAL") //Name the class
+public class teleOp extends LinearOpMode
 {
-    //Define drive motors
+    //4 Drive motors
     DcMotor leftMotorFront;
     DcMotor rightMotorFront;
     DcMotor leftMotorBack;
     DcMotor rightMotorBack;
 
+    //Intake wheels
     DcMotor intakeLeft;
     DcMotor intakeRight;
+
+    //Arm for dumping stones
     DcMotor dumper;
 
+    //Spool for raising stones
     DcMotor spool;
 
-
+    //Platform Servos
+    Servo platformLeft;
+    Servo platformRight;
 
     //Define floats to be used as joystick inputs and trigger inputs
     float drivePower;
@@ -41,8 +47,10 @@ public class testBotTele extends LinearOpMode
     int yPress = 0;
 
     Servo sideLift;
-    Servo gripper;
+    Servo twister;
     Servo sideGrab;
+
+    String intakeState = "Stop";
 
     //Define a function to use to set motor powers
     public void setDriveMotorPowers(float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower)
@@ -70,10 +78,13 @@ public class testBotTele extends LinearOpMode
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
         dumper = hardwareMap.dcMotor.get("dumper");
         sideLift = hardwareMap.servo.get("sideLift");
-        gripper = hardwareMap.servo.get("gripper");
+        twister = hardwareMap.servo.get("twister");
         sideGrab = hardwareMap.servo.get("sideGrab");
         
         spool = hardwareMap.dcMotor.get("spool");
+
+        platformLeft = hardwareMap.servo.get("platformLeft");
+        platformRight = hardwareMap.servo.get("platformRight");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -83,11 +94,16 @@ public class testBotTele extends LinearOpMode
 
         intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        spool.setDirection(DcMotorSimple.Direction.REVERSE);
+
         //Set the drive motors to brake mode to prevent rolling due to chain
         leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        sideLift.setPosition(0.4);
+        sideGrab.setPosition(1.0);
 
         //Wait for start button to be clicked
         waitForStart();
@@ -146,24 +162,29 @@ public class testBotTele extends LinearOpMode
 
             if (gamepad1.a){
                 aPress++;
-                if (aPress%2==1){
+                if (aPress%2==0){
                     intakeLeft.setPower(maxPower);
                     intakeRight.setPower(maxPower);
+                    intakeState = "In";
                 }
-                else if (aPress%2==0){
+                else if (aPress%2==1){
                     intakeLeft.setPower(-maxPower);
                     intakeRight.setPower(-maxPower);
+                    intakeState = "Out";
                 }
 //                telemetry.addData("BPress = ", bPress);
             }
             if (gamepad1.b){
                 intakeLeft.setPower(0);
                 intakeRight.setPower(0);
+                intakeState = "Stop";
             }
+
+            telemetry.addData("Intake: ", intakeState);
 
 
             if (gamepad1.dpad_up){
-                gripper.setPosition(0.7);
+                twister.setPosition(0.7);
                 Thread.sleep((150));
                 dumper.setPower(-flipUpPower);
                 Thread.sleep(1000);
@@ -172,7 +193,7 @@ public class testBotTele extends LinearOpMode
                 intakeRight.setPower(0.0);
             }
             if (gamepad1.dpad_down){
-                gripper.setPosition(0.9);
+                twister.setPosition(0.9);
                 dumper.setPower(flipDownPower);
                 Thread.sleep(1000);
                 dumper.setPower(0.0);
@@ -203,23 +224,15 @@ public class testBotTele extends LinearOpMode
                 Thread.sleep(300);
             }
 
-//            if (gamepad1.dpad_aup)
-//            {
-//                dumper.setPower(-flipUpPower);
-//                Thread.sleep(1000);
-//                dumper.setPower(0.0);
-//            }
-//
-//            if (gamepad1.dpad_down)
-//            {
-//                dumper.setPower(flipDownPower);
-//                Thread.sleep(1000);
-//                dumper.setPower(0.0);
-//            }
+            if (gamepad1.left_bumper){
+                platformLeft.setPosition(0.4);
+                platformRight.setPosition((0.6));
+            }
+            if (gamepad1.right_bumper){
+                platformLeft.setPosition(0.0);
+                platformRight.setPosition((1.0));
+            }
 
-
-
-            //Count time
             //Update the data
             telemetry.update();
 
