@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.subsystems.imu.*;
@@ -62,9 +63,9 @@ public class DriveFunctions extends LinearOpMode
 
         this.boschIMU = boschIMU;
 
-        //Reverse some motors and keep others forward
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -80,51 +81,15 @@ public class DriveFunctions extends LinearOpMode
     }
 
     /**
-     * Set sensor addresses, modes and DC motor directions, modes
-     */
-    public void initializeRobotFloat()
-    {
-//        //Set the sensor to the mode that we want
-//        colorSensorCenter.enableLed(true);
-//        colorSensorRight.enableLed(true);
-
-        //Reverse some motors and keep others forward
-        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        //Set the drive motors to float so it coasts. Puts less strain on motors.
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-    }
-
-    public void initializeRobotBrake()
-    {
-//        //Set the sensor to the mode that we want
-//        colorSensorCenter.enableLed(true);
-//        colorSensorRight.enableLed(true);
-
-        //Set the drive motors to brake mode to prevent rolling due to chain
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    /**
      * Takes in motor powers for 4 drive motors
      */
     public void setDriveMotorPowers(double leftFrontPower, double leftBackPower, double rightFrontPower, double rightBackPower)
     {
         //Use the entered powers and feed them to the motors
         leftMotorFront.setPower((float)leftFrontPower);
-        leftMotorBack.setPower((float)leftBackPower);
         rightMotorFront.setPower((float)rightFrontPower);
-        rightMotorBack.setPower((float)rightBackPower);
+        leftMotorBack.setPower((float) leftBackPower);
+        rightMotorBack.setPower((float) rightBackPower);
     }
 
     /**
@@ -380,47 +345,49 @@ public class DriveFunctions extends LinearOpMode
         stopDriving();
     }
 
-    /**
-     * @param colorSensor take in the correct color sensor
-     * @return returns true if the supplied ColorSensor either red or blue.  False otherwise
-     */
-    public boolean iSeeAColor(ColorSensor colorSensor)
+    public void odometryMotion(DcMotor motor, float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower, int degrees, Telemetry telemetry)
     {
-        //This is an array that stores the hue[0], saturation[1], and value[2], values
-        float[] hsvValues = {0F, 0F, 0F};
-
-        //Convert from RGB to HSV (red-green-blue to hue-saturation-value)
-        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
-
-        //If no value, return false
-        if (hsvValues[2] == 0)
+        //Empty while loop while the motors are moving
+        while (Math.abs(motor.getCurrentPosition() - degrees) > 20)
         {
-            return false;
+            telemetry.addData("enc", motor.getCurrentPosition());
+            setDriveMotorPowers(leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
+            telemetry.update();
         }
 
-        //Otherwise return true
-        return true;
+        //Stop driving
+        stopDriving();
+
+//        motor.setTargetPosition(degrees);
+//
+//        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        motor.setTargetPosition(degrees);
+//
+//        //Turn on the motors at the corresponding powers
+//        setDriveMotorPowers(leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
+//
+//        //Empty while loop while the motors are moving
+//        while ((leftMotorFront.isBusy()) && (rightMotorFront.isBusy()) && (leftMotorBack.isBusy()) && (rightMotorBack.isBusy()))
+//        { }
+//
+//        //Stop driving
+//        stopDriving();
     }
 
-    /**
-     * Determines what color the color sensor is seeing
-     * @param colorSensor take in the correct color sensor
-     * @return The string "Blue" if we see the color blue, "Red" if we see the color red
-     */
-    public Boolean isYellow(ColorSensor colorSensor)
+    public void odometryDrive(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        //Define float for hue
-        float alpha = colorSensor.alpha();
+        odometryMotion(motor, power, power, power, power, -degrees, telemetry);
+    }
 
+    public void odometryLeftShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
+    {
+        odometryMotion(motor, -power, power, power, -power, -degrees, telemetry);
+    }
 
-        //If hue is greater than 120, we are looking at yellow so return yellow
-        if (alpha > 100) //SOMETHING
-        {
-            return true;
-        }
-
-        //Otherwise return not yellow
-        return false;
+    public void odometryRightShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
+    {
+        odometryMotion(motor, power, -power, -power, power, -degrees, telemetry);
     }
 
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2)
@@ -459,23 +426,6 @@ public class DriveFunctions extends LinearOpMode
         {
             stopDriving();
         }
-    }
-
-    public void spoolInFully(DcMotor mineralSpool, ColorSensor colorSensor, Gamepad gamepad1, Gamepad gamepad2)
-    {
-        while (!iSeeAColor(colorSensor))
-        {
-            chassisTeleOp(gamepad1, gamepad2);
-            mineralSpool.setPower(-1.0);
-        }
-        stopDriving();
-        while (!isYellow(colorSensor))
-        {
-            chassisTeleOp(gamepad1, gamepad2);
-            mineralSpool.setPower(-1.0);
-        }
-        stopDriving();
-        mineralSpool.setPower(0.0);
     }
 
     /**
@@ -546,16 +496,6 @@ public class DriveFunctions extends LinearOpMode
 
         //Use the encoder in the future
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void driveTimedWait(Gamepad gamepad1, Gamepad gamepad2, ElapsedTime timer, int waitTime)
-    {
-        timer.reset();
-        while (timer.time() < waitTime)
-        {
-            chassisTeleOp(gamepad1, gamepad2);
-        }
-        stopDriving();
     }
 
     //Empty main

@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.imu;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.util.ReadWriteFile;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
@@ -13,7 +11,7 @@ import java.io.File;
 /**
  * Created by Rohan on 8/1/2018.
  */
-public class BoschIMU implements IIMU{
+public class BoschIMU implements IIMU {
 
     //Create imu hardware
     BNO055IMU imu;

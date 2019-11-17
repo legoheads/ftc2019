@@ -7,29 +7,36 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.armSkystone;
 
-@TeleOp(name="teleOp REAL") //Name the class
+@TeleOp(name="teleOp") //Name the class
 public class teleOp extends LinearOpMode
 {
-    //4 Drive motors
+    //Drivetrain
     DcMotor leftMotorFront;
     DcMotor rightMotorFront;
     DcMotor leftMotorBack;
     DcMotor rightMotorBack;
 
-    //Intake wheels
+    //Intake
     DcMotor intakeLeft;
     DcMotor intakeRight;
 
-    //Arm for dumping stones
+    //Outtake
     DcMotor dumper;
-
-    //Spool for raising stones
+    Servo gripper;
     DcMotor spool;
 
-    //Platform Servos
+    //Platform mover
     Servo platformLeft;
     Servo platformRight;
+
+    //Sidearm
+    Servo sideLift;
+    Servo twister;
+    Servo sideGrab;
+
 
     //Define floats to be used as joystick inputs and trigger inputs
     float drivePower;
@@ -46,9 +53,7 @@ public class teleOp extends LinearOpMode
     int aPress= 0;
     int yPress = 0;
 
-    Servo sideLift;
-    Servo twister;
-    Servo sideGrab;
+    Arm arm;
 
     String intakeState = "Stop";
 
@@ -77,6 +82,8 @@ public class teleOp extends LinearOpMode
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
         dumper = hardwareMap.dcMotor.get("dumper");
+        gripper = hardwareMap.servo.get("twister");
+
         sideLift = hardwareMap.servo.get("sideLift");
         twister = hardwareMap.servo.get("twister");
         sideGrab = hardwareMap.servo.get("sideGrab");
@@ -102,8 +109,9 @@ public class teleOp extends LinearOpMode
         rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        sideLift.setPosition(0.4);
-        sideGrab.setPosition(1.0);
+        arm = new armSkystone(sideLift, twister, sideGrab);
+
+        arm.initTele();
 
         //Wait for start button to be clicked
         waitForStart();
@@ -184,7 +192,7 @@ public class teleOp extends LinearOpMode
 
 
             if (gamepad1.dpad_up){
-                twister.setPosition(0.7);
+                gripper.setPosition(0.8);
                 Thread.sleep((150));
                 dumper.setPower(-flipUpPower);
                 Thread.sleep(1000);
@@ -193,7 +201,7 @@ public class teleOp extends LinearOpMode
                 intakeRight.setPower(0.0);
             }
             if (gamepad1.dpad_down){
-                twister.setPosition(0.9);
+                gripper.setPosition(0.9);
                 dumper.setPower(flipDownPower);
                 Thread.sleep(1000);
                 dumper.setPower(0.0);

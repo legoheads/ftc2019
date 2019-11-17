@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
-import org.firstinspires.ftc.teamcode.subsystems.imu.*;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
 @TeleOp(name="Track position") //Name the class
 public class positionTest extends LinearOpMode
@@ -16,6 +16,11 @@ public class positionTest extends LinearOpMode
     DcMotor rightMotorFront;
     DcMotor leftMotorBack;
     DcMotor rightMotorBack;
+
+    DcMotor spool;
+
+    DcMotor intakeLeft;
+    DcMotor intakeRight;
 
     BNO055IMU boschIMU;
 
@@ -35,6 +40,10 @@ public class positionTest extends LinearOpMode
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
 
+        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
+        spool = hardwareMap.dcMotor.get("spool");
+
+
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
         imu = new BoschIMU(boschIMU);
@@ -46,8 +55,8 @@ public class positionTest extends LinearOpMode
 //***************************************************************************************************************************
         while (opModeIsActive())
         {
-            telemetry.addData("x displacement (port 0): ", leftMotorFront.getCurrentPosition());
-            telemetry.addData("y displacement (port 3): ", rightMotorBack.getCurrentPosition());
+            telemetry.addData("x displacement (port 0): ", intakeLeft.getCurrentPosition());
+            telemetry.addData("y displacement (port 3): ", spool.getCurrentPosition());
             telemetry.addData("x angle (use this one):", boschIMU.getAngularOrientation().firstAngle);
             telemetry.addData("y angle: ", boschIMU.getAngularOrientation().secondAngle);
             telemetry.addData("z angle: ", boschIMU.getAngularOrientation().thirdAngle);
