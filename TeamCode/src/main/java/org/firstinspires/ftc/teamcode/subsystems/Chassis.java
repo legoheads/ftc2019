@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //import org.opencv.core.Point;
 
 @Disabled
-public class DriveFunctions extends LinearOpMode
+public class Chassis extends LinearOpMode
 {
     //Define drive motors
     DcMotor leftMotorFront;
@@ -50,7 +50,7 @@ public class DriveFunctions extends LinearOpMode
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
      */
-    public DriveFunctions(DcMotor.ZeroPowerBehavior type, DcMotor leftMotorFront, DcMotor rightMotorFront, DcMotor leftMotorBack, DcMotor rightMotorBack, BNO055IMU boschIMU)
+    public Chassis(DcMotor.ZeroPowerBehavior type, DcMotor leftMotorFront, DcMotor rightMotorFront, DcMotor leftMotorBack, DcMotor rightMotorBack, BNO055IMU boschIMU)
     {
 
 
@@ -64,7 +64,7 @@ public class DriveFunctions extends LinearOpMode
         this.boschIMU = boschIMU;
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -347,6 +347,7 @@ public class DriveFunctions extends LinearOpMode
 
     public void odometryMotion(DcMotor motor, float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower, int degrees, Telemetry telemetry)
     {
+        degrees*=-1;
         //Empty while loop while the motors are moving
         while (Math.abs(motor.getCurrentPosition() - degrees) > 20)
         {
@@ -377,17 +378,17 @@ public class DriveFunctions extends LinearOpMode
 
     public void odometryDrive(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, power, power, power, power, -degrees, telemetry);
+        odometryMotion(motor, power, power, power*(float)0.92, power*(float)0.92, degrees, telemetry);
     }
 
     public void odometryLeftShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, -power, power, power, -power, -degrees, telemetry);
+        odometryMotion(motor, -power, power*(float)0.95, power, -power*(float)0.95, degrees, telemetry);
     }
 
     public void odometryRightShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, power, -power, -power, power, -degrees, telemetry);
+        odometryMotion(motor, power, -power*(float)0.95, -power, power*(float)0.95, degrees, telemetry);
     }
 
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2)

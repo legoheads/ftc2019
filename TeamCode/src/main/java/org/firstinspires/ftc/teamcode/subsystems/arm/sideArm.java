@@ -1,30 +1,31 @@
 package org.firstinspires.ftc.teamcode.subsystems.arm;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
 
-
-public class armSkystone implements Arm
+public class sideArm implements Arm
 {
     private Servo sideLift;
     private Servo twister;
     private Servo sideGrab;
 
-    private final double UP_POSITION = 0.15;
+    //Positions for Lifter
+    private final double AUTO_START = 0.0;
+    private final double TELE_START = 0.15;
     private final double LIFT_POSITION = 0.4;
     private final double DOWN_POSITION = 0.8;
 
+    //Positions for Twister
     private final double PERPENDICULAR_POSITION = 0.9;
     private final double PARALLEL_POSITION = 0.5;
 
+    //Positions for Grabber
     private final double OPEN_POSITION = 0.3;
     private final double GRAB_POSITION = 0.7;
     private final double CLOSED_POSITION = 1.0;
 
 
-    public armSkystone (Servo sideLift, Servo twister, Servo sideGrab)
+    public sideArm(Servo sideLift, Servo twister, Servo sideGrab)
     {
         this.sideLift = sideLift;
         this.twister = twister;
@@ -34,7 +35,7 @@ public class armSkystone implements Arm
     @Override
     public void initTele() throws InterruptedException
     {
-        sideLift.setPosition(UP_POSITION);
+        sideLift.setPosition(TELE_START);
         twister.setPosition(PARALLEL_POSITION);
         sideGrab.setPosition(CLOSED_POSITION);
     }
@@ -42,16 +43,41 @@ public class armSkystone implements Arm
     @Override
     public void initAuto() throws InterruptedException
     {
-        sideLift.setPosition(UP_POSITION);
-        twister.setPosition(PARALLEL_POSITION);
-        sideGrab.setPosition(CLOSED_POSITION);
+        sideLift.setPosition(AUTO_START);
+        twister.setPosition(PERPENDICULAR_POSITION);
+        sideGrab.setPosition(OPEN_POSITION);
 
     }
 
     @Override
-    public void grabSkystone() throws InterruptedException
-    {
+    public void down() throws InterruptedException{
+        sideLift.setPosition(DOWN_POSITION);
+        Thread.sleep(500);
+    }
 
+    @Override
+    public void up() throws InterruptedException{
+        sideLift.setPosition(AUTO_START);
+        Thread.sleep(500);
+    }
+
+    @Override
+    public void grab() throws InterruptedException{
+        sideGrab.setPosition(CLOSED_POSITION);
+        Thread.sleep(500);
+    }
+
+    @Override
+    public void open() throws InterruptedException{
+        sideGrab.setPosition(OPEN_POSITION);
+        Thread.sleep(500);
+    }
+
+
+
+
+    @Override
+    public void grabSkystone() throws InterruptedException {
         sideGrab.setPosition(OPEN_POSITION);
         Thread.sleep(500);
         twister.setPosition(PERPENDICULAR_POSITION);
@@ -64,12 +90,10 @@ public class armSkystone implements Arm
         Thread.sleep(500);
 
         sideLift.setPosition(LIFT_POSITION);
-
     }
 
     @Override
-    public void dropSkystone() throws InterruptedException
-    {
+    public void dropSkystone() throws InterruptedException {
         sideGrab.setPosition(OPEN_POSITION);
     }
 }

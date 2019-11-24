@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.armSkystone;
+import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 
 @TeleOp(name="teleOp") //Name the class
 public class teleOp extends LinearOpMode
@@ -82,7 +82,7 @@ public class teleOp extends LinearOpMode
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
         dumper = hardwareMap.dcMotor.get("dumper");
-        gripper = hardwareMap.servo.get("twister");
+        gripper = hardwareMap.servo.get("gripper");
 
         sideLift = hardwareMap.servo.get("sideLift");
         twister = hardwareMap.servo.get("twister");
@@ -94,7 +94,7 @@ public class teleOp extends LinearOpMode
         platformRight = hardwareMap.servo.get("platformRight");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -109,7 +109,7 @@ public class teleOp extends LinearOpMode
         rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        arm = new armSkystone(sideLift, twister, sideGrab);
+        arm = new sideArm(sideLift, twister, sideGrab);
 
         arm.initTele();
 
@@ -135,7 +135,7 @@ public class teleOp extends LinearOpMode
             //Drive if the joystick is pushed more Y than X
             if (Math.abs(drivePower) > Math.abs(shiftPower))
             {
-                setDriveMotorPowers(drivePower, drivePower, drivePower, drivePower);
+                setDriveMotorPowers(drivePower, drivePower, drivePower* (float)0.92, drivePower* (float)0.92);
             }
 
             spool.setPower(spoolPower);
@@ -146,7 +146,7 @@ public class teleOp extends LinearOpMode
             //Shift if the joystick is pushed more on X than Y
             if (Math.abs(shiftPower) > Math.abs(drivePower))
             {
-                setDriveMotorPowers(-shiftPower, shiftPower, shiftPower, -shiftPower);
+                setDriveMotorPowers(-shiftPower*(float)0.95, shiftPower, shiftPower*(float)0.95, -shiftPower);
             }
 
             //If the left trigger is pushed, turn left at that power
@@ -171,8 +171,8 @@ public class teleOp extends LinearOpMode
             if (gamepad1.a){
                 aPress++;
                 if (aPress%2==0){
-                    intakeLeft.setPower(maxPower);
-                    intakeRight.setPower(maxPower);
+                    intakeLeft.setPower(maxPower*0.8);
+                    intakeRight.setPower(maxPower*0.8);
                     intakeState = "In";
                 }
                 else if (aPress%2==1){
@@ -191,17 +191,27 @@ public class teleOp extends LinearOpMode
             telemetry.addData("Intake: ", intakeState);
 
 
-            if (gamepad1.dpad_up){
+            if (gamepad1.dpad_up){//Joris and Andrew: We added dynamic power (see the for loop), and now the dpad up also brings spool up slightly
+                double dynamicPower;
                 gripper.setPosition(0.8);
                 Thread.sleep((150));
+                spool.setPower(-1);
                 dumper.setPower(-flipUpPower);
-                Thread.sleep(1000);
+                Thread.sleep(300);
+                spool.setPower(0.0);
+                Thread.sleep(200);
+                spool.setPower(0);
+                for(int i = 5; i > 0; i--) {
+                    dynamicPower = -flipUpPower*i*0.2;
+                    dumper.setPower(dynamicPower);
+                    Thread.sleep(100);
+                }
                 dumper.setPower(0.0);
                 intakeLeft.setPower(0.0);
                 intakeRight.setPower(0.0);
             }
             if (gamepad1.dpad_down){
-                gripper.setPosition(0.9);
+                gripper.setPosition(0.95);
                 dumper.setPower(flipDownPower);
                 Thread.sleep(1000);
                 dumper.setPower(0.0);

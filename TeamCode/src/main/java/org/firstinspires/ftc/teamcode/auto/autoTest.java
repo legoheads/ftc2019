@@ -8,11 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.subsystems.DriveFunctions;
+import org.firstinspires.ftc.teamcode.subsystems.Chassis;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.armSkystone;
-
-import java.sql.ResultSet;
+import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 
 @Autonomous(name="auto") //Name the class
 public class autoTest extends LinearOpMode
@@ -41,9 +39,9 @@ public class autoTest extends LinearOpMode
     Servo twister;
     Servo sideGrab;
 
-    float drivePower = (float) 0.3;
-    float turnPower = (float) 0.3;
-    float shiftPower = (float) 0.3;
+    float drivePower = (float) 0.6;
+    float turnPower = (float) 0.4;
+    float shiftPower = (float) 0.;
 
     BNO055IMU boschIMU;
 
@@ -70,7 +68,7 @@ public class autoTest extends LinearOpMode
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
         dumper = hardwareMap.dcMotor.get("dumper");
-        gripper = hardwareMap.servo.get("twister");
+        gripper = hardwareMap.servo.get("gripper");
 
         sideLift = hardwareMap.servo.get("sideLift");
         twister = hardwareMap.servo.get("twister");
@@ -87,13 +85,13 @@ public class autoTest extends LinearOpMode
 
         spool.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        DriveFunctions chassis = new DriveFunctions(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
+        Chassis chassis = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
 
 
-        arm = new armSkystone(sideLift, twister, sideGrab);
+        arm = new sideArm(sideLift, twister, sideGrab);
 
 
-        arm.initAuto();
+//        arm.initAuto();
 
         //Wait for start button to be clicked
         waitForStart();
@@ -104,21 +102,51 @@ public class autoTest extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
+
+//            leftMotorFront.setPower(0.5);
+//            rightMotorFront.setPower(0.5);
+//            leftMotorBack.setPower(0.5);
+//            rightMotorBack.setPower(0.5);
+//
+//            Thread.sleep(3000);
+//
+//            leftMotorFront.setPower(0.0);
+//            rightMotorFront.setPower(0.0);
+//            leftMotorBack.setPower(0.0);
+//            rightMotorBack.setPower(0.0);
+
             intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            telemetry.addData("Encoders Reset", "good");
+//            telemetry.update();
 
             intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            telemetry.addData("Encoders Run", "good");
+//            telemetry.update();
+//
+//
+//            chassis.odometryRightShift(intakeLeft, shiftPower, 3000, telemetry);
+            chassis.setDriveMotorPowers(0.5, 0.5, 0.5, 0.5);
+            telemetry.addData("Shifted", "good");
+            telemetry.update();
+//            chassis.odometryDrive(spool, drivePower, 3000, telemetry);
+//            intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            arm.down();
+//            Thread.sleep(500);
+//            arm.open();
+//            Thread.sleep(500);
+//            chassis.odometryRightShift(intakeLeft, shiftPower, 300, telemetry);
+//            arm.grab();
+//            Thread.sleep(500);
+//            arm.up();
 
+//            arm.grabSkystone();
 
-            chassis.odometryRightShift(intakeLeft, shiftPower, 3000, telemetry);
-            chassis.odometryDrive(spool, drivePower, 3000, telemetry);
-
-            arm.grabSkystone();
-
-            chassis.odometryDrive(spool, -drivePower, -500, telemetry);
-
-            chassis.odometryLeftShift(intakeLeft, shiftPower, 100, telemetry);
+//            chassis.odometryDrive(spool, -drivePower, -500, telemetry);
+//
+//            chassis.odometryLeftShift(intakeLeft, shiftPower, 300, telemetry);
 
             //Update the data
             telemetry.update();

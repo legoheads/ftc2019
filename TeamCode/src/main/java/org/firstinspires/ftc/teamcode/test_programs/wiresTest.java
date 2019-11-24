@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import static org.firstinspires.ftc.teamcode.subsystems.DriveFunctions.oneMotorEncoder;
+import static org.firstinspires.ftc.teamcode.subsystems.Chassis.oneMotorEncoder;
 
 @Disabled
 @TeleOp(name="wires test ") //Name the class
