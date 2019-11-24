@@ -2,18 +2,20 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 //Import necessary items
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.subsystems.Chassis;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 
-@Autonomous(name="auto") //Name the class
-public class autoTest extends LinearOpMode
+@Autonomous(name="auto big") //Name the class
+public class autoAggressive extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
@@ -41,7 +43,7 @@ public class autoTest extends LinearOpMode
 
     float drivePower = (float) 0.6;
     float turnPower = (float) 0.4;
-    float shiftPower = (float) 0.4;
+    float shiftPower = (float) 0.8;
 
     BNO055IMU boschIMU;
 
@@ -93,7 +95,6 @@ public class autoTest extends LinearOpMode
 
         arm.init();
 
-
         //Wait for start button to be clicked
         waitForStart();
 
@@ -126,11 +127,17 @@ public class autoTest extends LinearOpMode
             intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             telemetry.addData("Encoders Run", "good");
-//            telemetry.update();
-//
-//
+
             telemetry.update();
-            chassis.odometryDrive(spool, drivePower, 1000, telemetry);
+            arm.openSkystone();
+            chassis.odometryRightShift(intakeLeft, shiftPower, 3500, telemetry);
+            arm.grab();
+            Thread.sleep(500);
+            sideGrab.setPosition(0.4);
+            chassis.odometryLeftShift(intakeLeft, shiftPower, 50, telemetry);
+            chassis.odometryDrive(spool, -drivePower, -8000, telemetry);
+            arm.open();
+            chassis.odometryDrive(spool, drivePower, -3000, telemetry);
 //            arm.down();
 //            Thread.sleep(500);
 //            arm.open();

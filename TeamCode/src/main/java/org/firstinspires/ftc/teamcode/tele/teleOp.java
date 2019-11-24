@@ -50,7 +50,6 @@ public class teleOp extends LinearOpMode
     float maxPower = (float) 0.8;
 
     int xPress = 0;
-    int aPress= 0;
     int yPress = 0;
 
     Arm arm;
@@ -111,13 +110,16 @@ public class teleOp extends LinearOpMode
 
         arm = new sideArm(sideLift, twister, sideGrab);
 
-        arm.initTele();
+        arm.init();
+        gripper.setPosition(0.95);
+        platformLeft.setPosition(0.0);
+        platformRight.setPosition((1.0));
 
         //Wait for start button to be clicked
         waitForStart();
 
 //***********************************************************************************************************
-        //LOOP BELOW
+        //LOOP BELOWF
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
@@ -125,10 +127,10 @@ public class teleOp extends LinearOpMode
 
             //DRIVE MOTOR CONTROLS
             //Set float variables as the inputs from the joysticks and the triggers
-            drivePower = (float) -((gamepad1.left_stick_y + gamepad2.left_stick_y) * 0.85);
-            shiftPower = (float) -((gamepad1.left_stick_x + gamepad2.left_stick_x) * 0.85);
-            leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.75);
-            rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger) * 0.75);
+            drivePower = (float) -((gamepad1.left_stick_y + gamepad2.left_stick_y));
+            shiftPower = (float) -((gamepad1.left_stick_x + gamepad2.left_stick_x));
+            leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger));
+            rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger));
             spoolPower = (float) ((gamepad1.right_stick_y)*0.5);
 
 
@@ -168,24 +170,18 @@ public class teleOp extends LinearOpMode
             }
 
 
-            if (gamepad1.a){
-                aPress++;
-                if (aPress%2==0){
+            if (gamepad1.a)
+            {
                     intakeLeft.setPower(maxPower*0.8);
                     intakeRight.setPower(maxPower*0.8);
                     intakeState = "In";
-                }
-                else if (aPress%2==1){
-                    intakeLeft.setPower(-maxPower);
-                    intakeRight.setPower(-maxPower);
-                    intakeState = "Out";
-                }
+
 //                telemetry.addData("BPress = ", bPress);
             }
             if (gamepad1.b){
-                intakeLeft.setPower(0);
-                intakeRight.setPower(0);
-                intakeState = "Stop";
+                intakeLeft.setPower(-maxPower);
+                intakeRight.setPower(-maxPower);
+                intakeState = "Out";
             }
 
             telemetry.addData("Intake: ", intakeState);
@@ -197,9 +193,9 @@ public class teleOp extends LinearOpMode
                 Thread.sleep((150));
                 spool.setPower(-1);
                 dumper.setPower(-flipUpPower);
-                Thread.sleep(300);
+                Thread.sleep(400);
                 spool.setPower(0.0);
-                Thread.sleep(200);
+                Thread.sleep(400);
                 spool.setPower(0);
                 for(int i = 5; i > 0; i--) {
                     dynamicPower = -flipUpPower*i*0.2;
@@ -249,6 +245,16 @@ public class teleOp extends LinearOpMode
             if (gamepad1.right_bumper){
                 platformLeft.setPosition(0.0);
                 platformRight.setPosition((1.0));
+            }
+
+            if (gamepad1.dpad_right)
+            {
+                arm.down();
+            }
+
+            if (gamepad1.dpad_left)
+            {
+                arm.up();
             }
 
             //Update the data

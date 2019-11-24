@@ -87,8 +87,8 @@ public class Chassis extends LinearOpMode
     {
         //Use the entered powers and feed them to the motors
         leftMotorFront.setPower((float)leftFrontPower);
-        rightMotorFront.setPower((float)rightFrontPower);
         leftMotorBack.setPower((float) leftBackPower);
+        rightMotorFront.setPower((float)rightFrontPower);
         rightMotorBack.setPower((float) rightBackPower);
     }
 
@@ -383,13 +383,14 @@ public class Chassis extends LinearOpMode
 
     public void odometryLeftShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, -power, power*(float)0.95, power, -power*(float)0.95, degrees, telemetry);
+        odometryMotion(motor, -power*(float)0.95, power, power*(float)0.95, -power, degrees, telemetry);
     }
 
     public void odometryRightShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, power, -power*(float)0.95, -power, power*(float)0.95, degrees, telemetry);
+        odometryMotion(motor, power*(float)0.95, -power, -power*(float)0.95, power, degrees, telemetry);
     }
+
 
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2)
     {

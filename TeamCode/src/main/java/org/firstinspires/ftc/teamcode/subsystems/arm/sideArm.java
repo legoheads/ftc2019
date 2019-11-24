@@ -33,21 +33,21 @@ public class sideArm implements Arm
     }
 
     @Override
-    public void initTele() throws InterruptedException
+    public void init() throws InterruptedException
     {
         sideLift.setPosition(TELE_START);
         twister.setPosition(PARALLEL_POSITION);
         sideGrab.setPosition(CLOSED_POSITION);
     }
 
-    @Override
-    public void initAuto() throws InterruptedException
-    {
-        sideLift.setPosition(AUTO_START);
-        twister.setPosition(PERPENDICULAR_POSITION);
-        sideGrab.setPosition(OPEN_POSITION);
-
-    }
+//    @Override
+//    public void initAuto() throws InterruptedException
+//    {
+//        sideLift.setPosition(AUTO_START);
+//        twister.setPosition(PERPENDICULAR_POSITION);
+//        sideGrab.setPosition(OPEN_POSITION);
+//
+//    }
 
     @Override
     public void down() throws InterruptedException{
@@ -77,7 +77,7 @@ public class sideArm implements Arm
 
 
     @Override
-    public void grabSkystone() throws InterruptedException {
+    public void openSkystone() throws InterruptedException {
         sideGrab.setPosition(OPEN_POSITION);
         Thread.sleep(500);
         twister.setPosition(PERPENDICULAR_POSITION);
@@ -85,11 +85,6 @@ public class sideArm implements Arm
 
         sideLift.setPosition(DOWN_POSITION);
         Thread.sleep(500);
-
-        sideGrab.setPosition(GRAB_POSITION);
-        Thread.sleep(500);
-
-        sideLift.setPosition(LIFT_POSITION);
     }
 
     @Override
