@@ -78,17 +78,9 @@ public class sideArm implements Arm
 
     @Override
     public void openSkystone() throws InterruptedException {
-        sideGrab.setPosition(OPEN_POSITION);
-        Thread.sleep(500);
+        open();
         twister.setPosition(PERPENDICULAR_POSITION);
         Thread.sleep(500);
-
-        sideLift.setPosition(DOWN_POSITION);
-        Thread.sleep(500);
-    }
-
-    @Override
-    public void dropSkystone() throws InterruptedException {
-        sideGrab.setPosition(OPEN_POSITION);
+        down();
     }
 }

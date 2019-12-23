@@ -11,9 +11,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
+import org.firstinspires.ftc.teamcode.subsystems.platform.*;
 
-@Autonomous(name="auto") //Name the class
-public class autoTest extends LinearOpMode
+@Autonomous(name="autoPlatform")
+
+public class autoPlatform extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
@@ -31,42 +33,41 @@ public class autoTest extends LinearOpMode
     DcMotor spool;
 
     //Platform mover
+    Platform platform;
     Servo platformLeft;
     Servo platformRight;
 
     //Sidearm
+    Arm arm;
     Servo sideLift;
     Servo twister;
     Servo sideGrab;
 
-    float drivePower = (float) 0.6;
-    float turnPower = (float) 0.4;
-    float shiftPower = (float) 0.4;
-
+    //IMU
     BNO055IMU boschIMU;
 
-    int xPress = 0;
-    int aPress= 0;
-    int yPress = 0;
-
-    Arm arm;
-
-    String intakeState = "Stop";
+    //Move powers
+    float drivePower = (float) 0.7;
+    float turnPower = (float) 0.4;
+    float shiftPower = (float) 0.9;
 
     //***********************************************************************************************************
     //MAIN BELOW
     @Override
     public void runOpMode() throws InterruptedException
     {
-        //Get references to the DC Motors from the hardware map
+        //Get references to the hardware map
+
+        //Drive Motors
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
         rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
 
-        //Get references to the Servo Motors from the hardware map
+        //Intake
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
+
         dumper = hardwareMap.dcMotor.get("dumper");
         gripper = hardwareMap.servo.get("gripper");
 
@@ -86,13 +87,10 @@ public class autoTest extends LinearOpMode
         spool.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Chassis chassis = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
-
-
         arm = new sideArm(sideLift, twister, sideGrab);
-
-
         arm.init();
 
+        Platform platform = new platformArms(platformLeft, platformRight);
 
         //Wait for start button to be clicked
         waitForStart();
@@ -103,57 +101,39 @@ public class autoTest extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            platformLeft.setPosition(0.0);
-            platformRight.setPosition((1.0));
-//            leftMotorFront.setPower(0.5);
-//            rightMotorFront.setPower(0.5);
-//            leftMotorBack.setPower(0.5);
-//            rightMotorBack.setPower(0.5);
-//
-//            Thread.sleep(3000);
-//
-//            leftMotorFront.setPower(0.0);
-//            rightMotorFront.setPower(0.0);
-//            leftMotorBack.setPower(0.0);
-//            rightMotorBack.setPower(0.0);
-
-//            chassis.leftTurnIMU();
+            platform.up();
 
             intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
             spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            telemetry.addData("Encoders Reset", "good");
-//            telemetry.update();
 
             intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            telemetry.addData("Encoders Run", "good");
-//            telemetry.update();
-//
-//
-            telemetry.update();
-            chassis.odometryDrive(spool, drivePower, 1000, telemetry);
-//            arm.down();
-//            Thread.sleep(500);
-//            arm.open();
-//            Thread.sleep(500);
-//            chassis.odometryRightShift(intakeLeft, shiftPower, 300, telemetry);
-//            arm.grab();
-//            Thread.sleep(500);
-//            arm.up();
 
-//            arm.grabSkystone();
 
+//            chassis.odometryDrive(spool, drivePower, 5500, telemetry);
+
+            chassis.driveTeleop(0.8);
+            Thread.sleep(2500);
+//            chassis.odometryLeftShift(intakeLeft, (float)0.3, 300, telemetry);
+
+            platform.grab();
+
+            chassis.coeffShiftTeleop(0.8);
+            Thread.sleep(3500);
+
+//            chassis.odometryLeftShift(intakeLeft, (float)shiftPower, 3000, telemetry);
+
+//            chassis.leftTurnIMU(-0.9, 90);
 //            chassis.odometryDrive(spool, -drivePower, -500, telemetry);
-//
-//            chassis.odometryLeftShift(intakeLeft, shiftPower, 300, telemetry);
+
+
+
+
 
             //Update the data
             telemetry.update();
-
             //Always call idle() at the bottom of your while(opModeIsActive()) loop
             idle();
-
             break;
         } //Close "while (opModeIsActive())" loop
     } //Close main

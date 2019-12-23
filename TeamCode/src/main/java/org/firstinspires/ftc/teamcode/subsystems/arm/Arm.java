@@ -15,6 +15,5 @@ public interface Arm
     //Open the grabber
     void open() throws InterruptedException;
     void openSkystone() throws InterruptedException;
-    void dropSkystone() throws InterruptedException;
 
 }

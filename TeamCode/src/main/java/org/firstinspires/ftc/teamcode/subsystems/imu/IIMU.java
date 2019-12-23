@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.imu;
 
 /**
- * Created by Sarthak on 8/1/2018.
+ * Created by Rohan on 8/1/2018.
  */
 public interface IIMU {
 

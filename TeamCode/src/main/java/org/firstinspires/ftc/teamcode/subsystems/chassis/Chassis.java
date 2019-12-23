@@ -1,5 +1,5 @@
 //Run from the package
-package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.subsystems.chassis;
 
 //Import necessary items
 
@@ -18,33 +18,17 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-//import com.disnodeteam.dogecv.CameraViewDisplay;
-//import com.disnodeteam.dogecv.filters.LeviColorFilter;
-//
-//import org.opencv.core.Point;
-
 @Disabled
 public class Chassis extends LinearOpMode
 {
     //Define drive motors
-    DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
-    DcMotor leftMotorBack;
-    DcMotor rightMotorBack;
+    private DcMotor leftMotorFront;
+    private DcMotor rightMotorFront;
+    private DcMotor leftMotorBack;
+    private DcMotor rightMotorBack;
 
-    BNO055IMU boschIMU;
-
-    IIMU imu;
-
-//    //TFOD Variables
-//    private static final String VUFORIA_KEY = "Adp/KFX/////AAAAGYMHgTasR0y/o1XMGBLR4bwahfNzuw2DQMMYq7vh4UvYHleflzPtt5rN2kFp7NCyO6Ikkqhj/20qTYc9ex+340/hvC49r4mphdmd6lI/Ip64CbMTB8Vo53jBHlGMkGr0xq/+C0SKL1hRXj5EkXtSe6q9F9T/nAIcg9Jr+OfAcifXPH9UJYG8WmbLlvpqN+QuVA5KQ6ve1USpxYhcimV9xWCBrq5hFk1hGLbeveHrKDG3wYRdwBeYv3Yo5qYTsotfB4CgJT9CX/fDR/0JUL7tE29d1v1eEF/VXCgQP4EPUoDNBtNE6jpKJhtQ8HJ2KjmJnW55f9OqNc6SsULV3bkQ52PY+lPLt1y4muyMrixCT7Lu";
-//    private VuforiaLocalizer vuforia;
-//    private TFObjectDetector tfod;
-//    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-//    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-//    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
-
+    private BNO055IMU boschIMU;
+    private IIMU imu;
 
     /**
      * Initialize all the hardware
@@ -52,9 +36,7 @@ public class Chassis extends LinearOpMode
      */
     public Chassis(DcMotor.ZeroPowerBehavior type, DcMotor leftMotorFront, DcMotor rightMotorFront, DcMotor leftMotorBack, DcMotor rightMotorBack, BNO055IMU boschIMU)
     {
-
-
-        //These lines enable us to store the motors, sensors and CDI without having to write them over and over again
+        //Sstore the motors, sensors and CDI without having to write them over and over again
         //Initialize DC motors
         this.leftMotorFront = leftMotorFront;
         this.leftMotorBack = leftMotorBack;
@@ -63,13 +45,13 @@ public class Chassis extends LinearOpMode
 
         this.boschIMU = boschIMU;
 
+        //Reverse left side motors
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        //Set the drive motors to brake mode to prevent rolling due to chain
+        //Set the drive motors either Brake or ___
         leftMotorFront.setZeroPowerBehavior(type);
         leftMotorBack.setZeroPowerBehavior(type);
         rightMotorFront.setZeroPowerBehavior(type);
@@ -105,8 +87,7 @@ public class Chassis extends LinearOpMode
     /**
      * If this function is called, turn on the drive motors at the given powers to make it drive forward or backwards
      */
-    public void driveTeleop(double power)
-    {
+    public void driveTeleop(double power) throws InterruptedException{
         //Send all the motors in the same direction
         setDriveMotorPowers(power, power, power, power);
     }
@@ -114,8 +95,7 @@ public class Chassis extends LinearOpMode
     /**
      * If this function is called, turn on the drive motors at the given powers, to make it tank turn left
      */
-    public void leftTurnTeleop(double power)
-    {
+    public void leftTurnTeleop(double power) throws InterruptedException{
         //Turn the left motors backwards and the right motors forward so that it turns left
         setDriveMotorPowers(power, power, -power, -power);
     }
@@ -123,8 +103,7 @@ public class Chassis extends LinearOpMode
     /**
      * If this function is called, turn on the drive motors at the given powers, to make it tank turn right
      */
-    public void rightTurnTeleop(double power)
-    {
+    public void rightTurnTeleop(double power) throws InterruptedException{
         //Turn the right motors backwards and the left motors forward so that it turns right
         setDriveMotorPowers(-power, -power, power, power);
     }
@@ -133,21 +112,18 @@ public class Chassis extends LinearOpMode
      * If this function is called, turn on the drive motors at the
      * given powers, to make it shift in the desired direction
      */
-    public void shiftTeleop(double power)
-    {
+    public void shiftTeleop(double power) throws InterruptedException{
         //This sequence of backwards, forwards, forwards, backwards makes the robot shift
         setDriveMotorPowers(-power, power, power, -power);
     }
 
-    public void coeffShiftTeleop(double power)
-    {
+    public void coeffShiftTeleop(double power) throws InterruptedException{
         double leftPower = 0.8 * power;
         double rightPower = power;
         setDriveMotorPowers(-leftPower, leftPower, rightPower, -rightPower);
     }
 
-    public void resetEncoders()
-    {
+    public void resetEncoders() throws InterruptedException{
         //Reset the encoders
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -164,8 +140,7 @@ public class Chassis extends LinearOpMode
      * Takes in powers for 4 drive motors, as well as 4 encoder distances
      * Allows us to run at the entered power, for the entered distance
      */
-    public void moveDriveMotorsWithEncoders(int leftFrontDegrees, int leftBackDegrees, int rightFrontDegrees, int rightBackDegrees, double leftFrontPower, double leftBackPower, double rightFrontPower, double rightBackPower)
-    {
+    public void moveDriveMotorsWithEncoders(int leftFrontDegrees, int leftBackDegrees, int rightFrontDegrees, int rightBackDegrees, double leftFrontPower, double leftBackPower, double rightFrontPower, double rightBackPower) throws InterruptedException{
         //Reset the encoders
         resetEncoders();
 
@@ -215,7 +190,7 @@ public class Chassis extends LinearOpMode
      * Turn left for the given distance at the given power
      * @param degrees distance
      */
-    public void leftTurnAutonomous(float power, int degrees) throws InterruptedException
+    public void leftTurnAutonomous(double power, int degrees) throws InterruptedException
     {
         //Left motors backwards and right motors forwards gives us a left turn
         moveDriveMotorsWithEncoders(degrees, degrees, -degrees, -degrees, power, power, -power, -power);
@@ -228,14 +203,14 @@ public class Chassis extends LinearOpMode
     {
         double factor = 21.7;
         int newDegrees = (int) factor * degrees;
-        leftTurnAutonomous((float) power, newDegrees);
+        leftTurnAutonomous(power, newDegrees);
     }
 
     /**
      * Turn right for the given distance at the given power
      * @param degrees distance
      */
-    public void rightTurnAutonomous(float power, int degrees) throws InterruptedException
+    public void rightTurnAutonomous(double power, int degrees) throws InterruptedException
     {
         //Right motors backwards and left motors forwards gives us a right turn
         moveDriveMotorsWithEncoders(-degrees, -degrees, degrees, degrees, -power, -power, power, power);
@@ -244,7 +219,7 @@ public class Chassis extends LinearOpMode
         stopDriving();
     }
 
-    public void encoderCoeffRightTurn(float power, int degrees) throws InterruptedException
+    public void encoderCoeffRightTurn(double power, int degrees) throws InterruptedException
     {
         double factor = 21.7;
         int newDegrees = (int) factor * degrees;
@@ -282,8 +257,7 @@ public class Chassis extends LinearOpMode
 
     }
 
-    public void pidIMULeft(float power, int degrees)
-    {
+    public void pidIMULeft(double power, int degrees) throws InterruptedException{
         while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1)
         {
             while (boschIMU.getAngularOrientation().firstAngle < degrees)
@@ -300,8 +274,7 @@ public class Chassis extends LinearOpMode
         stopDriving();
     }
 
-    public void pidIMURight(float power, int degrees)
-    {
+    public void pidIMURight(double power, int degrees) throws InterruptedException{
         while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1)
         {
             while (boschIMU.getAngularOrientation().firstAngle > degrees)
@@ -323,8 +296,7 @@ public class Chassis extends LinearOpMode
      * Shift left for the given distance at the given power
      * @param degrees distance
      */
-    public void leftShiftAutonomous(double power, int degrees) throws InterruptedException
-    {
+    public void leftShiftAutonomous(double power, int degrees) throws InterruptedException{
         //This sequence of backwards, forwards, forwards, backwards makes the robot shift left
         moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees, power, -power, -power, power);
         stopDriving();
@@ -336,7 +308,7 @@ public class Chassis extends LinearOpMode
      * Shift right for the given distance at the given power
      * @param degrees distance
      */
-    public void rightShiftAutonomous(float power, int degrees) throws InterruptedException
+    public void rightShiftAutonomous(double power, int degrees) throws InterruptedException
     {
         //This sequence of forwards, backwards, backwards, forwards makes the robot shift right
         moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -power, power, power, -power);
@@ -345,7 +317,7 @@ public class Chassis extends LinearOpMode
         stopDriving();
     }
 
-    public void odometryMotion(DcMotor motor, float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower, int degrees, Telemetry telemetry)
+    public void odometryMotion(DcMotor motor, double leftFrontPower,double leftBackPower, double rightFrontPower, double rightBackPower, int degrees, Telemetry telemetry)
     {
         degrees*=-1;
         //Empty while loop while the motors are moving
@@ -358,42 +330,25 @@ public class Chassis extends LinearOpMode
 
         //Stop driving
         stopDriving();
-
-//        motor.setTargetPosition(degrees);
-//
-//        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        motor.setTargetPosition(degrees);
-//
-//        //Turn on the motors at the corresponding powers
-//        setDriveMotorPowers(leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
-//
-//        //Empty while loop while the motors are moving
-//        while ((leftMotorFront.isBusy()) && (rightMotorFront.isBusy()) && (leftMotorBack.isBusy()) && (rightMotorBack.isBusy()))
-//        { }
-//
-//        //Stop driving
-//        stopDriving();
     }
 
-    public void odometryDrive(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
+    public void odometryDrive(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, power, power, power*(float)0.92, power*(float)0.92, degrees, telemetry);
+        odometryMotion(motor, power, power, power*0.92, power*0.92, degrees, telemetry);
     }
 
-    public void odometryLeftShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
+    public void odometryLeftShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, -power*(float)0.95, power, power*(float)0.95, -power, degrees, telemetry);
+        odometryMotion(motor, -power*0.95, power, power*0.95, -power, degrees, telemetry);
     }
 
-    public void odometryRightShift(DcMotor motor, float power, int degrees, Telemetry telemetry) throws InterruptedException
+    public void odometryRightShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException
     {
-        odometryMotion(motor, power*(float)0.95, -power, -power*(float)0.95, power, degrees, telemetry);
+        odometryMotion(motor, power*0.95, -power, -power*0.95, power, degrees, telemetry);
     }
 
 
-    public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2)
-    {
+    public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException{
         float drivePower = (float) ((gamepad1.left_stick_y + gamepad2.left_stick_y) * 0.6);
         float shiftPower = (float) ((gamepad1.left_stick_x + gamepad2.left_stick_x) * 0.6);
         float leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.6);
@@ -469,8 +424,7 @@ public class Chassis extends LinearOpMode
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void omeWithDriveMotors(DcMotor motor, double power, int degrees, Gamepad gamepad1, Gamepad gamepad2)
-    {
+    public void omeWithDriveMotors(DcMotor motor, double power, int degrees, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException{
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         runTime.reset();
 
@@ -502,9 +456,8 @@ public class Chassis extends LinearOpMode
 
     //Empty main
     @Override
-    public void runOpMode() throws InterruptedException
-    {
-        float power = (float) 1.0;
+    public void runOpMode() throws InterruptedException {
+        double power = 1.0;
         rightTurnAutonomous(power, 100);
         leftTurnAutonomous(power, 100);
         pidIMULeft(power, 90);

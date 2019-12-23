@@ -5,9 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import static org.firstinspires.ftc.teamcode.subsystems.Chassis.oneMotorEncoder;
+import static org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis.oneMotorEncoder;
 
-@Disabled
 @TeleOp(name="wires test ") //Name the class
 public class wiresTest extends LinearOpMode
 {
@@ -17,10 +16,10 @@ public class wiresTest extends LinearOpMode
     DcMotor leftMotorBack;
     DcMotor rightMotorBack;
 
-    //Define glyph motors
-    DcMotor dumper;
-    DcMotor intakeLeft;
-    DcMotor intakeRight;
+//    //Define other motors
+//    DcMotor dumper;
+//    DcMotor intakeLeft;
+//    DcMotor intakeRight;
 
     //Define drive powers to avoid magic numbers
     float power = (float) 0.5;
@@ -36,9 +35,9 @@ public class wiresTest extends LinearOpMode
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
 
-        dumper = hardwareMap.dcMotor.get("dumper");
-        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        intakeRight = hardwareMap.dcMotor.get("intakeRight");
+//        dumper = hardwareMap.dcMotor.get("dumper");
+//        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
+//        intakeRight = hardwareMap.dcMotor.get("intakeRight");
 
 
         //Wait for start button to be clicked
