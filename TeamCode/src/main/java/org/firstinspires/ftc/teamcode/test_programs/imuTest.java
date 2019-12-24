@@ -52,9 +52,9 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
  *
  * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
  */
-//@Disabled
-@TeleOp(name = "imu test")
+
 @Disabled
+@TeleOp(name = "imu test")
 public class imuTest extends LinearOpMode
 {
 

@@ -98,9 +98,9 @@ public class teleOp extends LinearOpMode
 //        platformLeft = hardwareMap.servo.get("platformLeft");
 //        platformRight = hardwareMap.servo.get("platformRight");
 
+        //Reverse right side motors so all go forward
         leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -141,9 +141,9 @@ public class teleOp extends LinearOpMode
 
 
             //Drive if the joystick is pushed more Y than X
-            if (Math.abs(drivePower) > Math.abs(shiftPower))
+            if (Math.abs(drivePower) > Math.abs(shiftPower) && Math.abs(drivePower)>0.1)
             {
-                setDriveMotorPowers(drivePower, drivePower, drivePower* (float)0.92, drivePower* (float)0.92);
+                setDriveMotorPowers(drivePower, drivePower, drivePower, drivePower);
             }
 
 //            spool.setPower(spoolPower);
@@ -154,7 +154,7 @@ public class teleOp extends LinearOpMode
             //Shift if the joystick is pushed more on X than Y
             if (Math.abs(shiftPower) > Math.abs(drivePower))
             {
-                setDriveMotorPowers(-shiftPower*(float)0.95, shiftPower, shiftPower*(float)0.95, -shiftPower);
+                setDriveMotorPowers(-shiftPower, shiftPower, shiftPower, -shiftPower);
             }
 
             //If the left trigger is pushed, turn left at that power
