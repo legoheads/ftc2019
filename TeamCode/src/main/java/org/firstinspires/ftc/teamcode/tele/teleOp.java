@@ -98,9 +98,9 @@ public class teleOp extends LinearOpMode
 //        platformLeft = hardwareMap.servo.get("platformLeft");
 //        platformRight = hardwareMap.servo.get("platformRight");
 
+        //Reverse right motors so all go in same direction
         leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        //rightMotorFront goes in wrong direction. Gearbox is messed up
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -109,10 +109,10 @@ public class teleOp extends LinearOpMode
 //        spool.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Set the drive motors to brake mode to prevent rolling due to chain
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 //        arm = new sideArm(sideLift, twister, sideGrab);
 
@@ -143,7 +143,7 @@ public class teleOp extends LinearOpMode
             //Drive if the joystick is pushed more Y than X
             if (Math.abs(drivePower) > Math.abs(shiftPower))
             {
-                setDriveMotorPowers(drivePower, drivePower, drivePower* (float)0.92, drivePower* (float)0.92);
+                setDriveMotorPowers(drivePower*(float)0.93, drivePower*(float)0.92, drivePower, drivePower);
             }
 
 //            spool.setPower(spoolPower);
