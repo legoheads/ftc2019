@@ -34,7 +34,6 @@ public class teleOp extends LinearOpMode
     //Outtake
 //    DcMotor dumper;
     Servo gripper;
-    Servo lock;
     DcMotor spool;
 
     CRServo extend;
@@ -99,7 +98,6 @@ public class teleOp extends LinearOpMode
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
 //        dumper = hardwareMap.dcMotor.get("dumper");
         gripper = hardwareMap.servo.get("gripper");
-        lock = hardwareMap.servo.get("lock");
 
         extend = hardwareMap.crservo.get("extend");
 
@@ -141,6 +139,8 @@ public class teleOp extends LinearOpMode
 //        platformLeft.setPosition(0.0);
 //        platformRight.setPosition((1.0));
 
+        gripper.setPosition(0.6);
+
         //Wait for start button to be clicked
         waitForStart();
 
@@ -155,9 +155,9 @@ public class teleOp extends LinearOpMode
             //Set float variables as the inputs from the joysticks and the triggers
             drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
             shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x);
-            leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger);
-            rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger);
-            spoolPower = gamepad1.right_stick_y;
+            leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.5);
+            rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger) * 0.5);
+            spoolPower = gamepad1.right_stick_y + gamepad2.right_stick_y;
 
 
             //Drive if the joystick is pushed more Y than X
@@ -205,15 +205,14 @@ public class teleOp extends LinearOpMode
             //Intake
             if (gamepad1.right_bumper)
             {
-                    intakeLeft.setPower(maxPower);
-                    intakeRight.setPower(maxPower);
-                    intakeState = "In";
-
-//                telemetry.addData("BPress = ", bPress);
+                intakeLeft.setPower(maxPower);
+                intakeRight.setPower(maxPower);
+                intakeState = "In";
             }
 
             //Outtake
-            if (gamepad1.left_bumper){
+            if (gamepad1.left_bumper)
+            {
                 intakeLeft.setPower(-0.3);
                 intakeRight.setPower(-0.3);
                 intakeState = "Out";
@@ -221,26 +220,15 @@ public class teleOp extends LinearOpMode
             telemetry.addData("Intake: ", intakeState);
 
             //grab
-            if(gamepad1.a){
+            if(gamepad1.a)
+            {
                 gripper.setPosition(0.45);
             }
 
             //release
-            if(gamepad1.x){
-                gripper.setPosition(0.6);
-            }
-
-            if (gamepad1.y)
+            if(gamepad1.x)
             {
-                yPress++;
-                if (yPress % 2 == 0)
-                {
-                    lock.setPosition(0.0);
-                }
-                if (yPress % 2 == 1)
-                {
-                    lock.setPosition(0.5);
-                }
+                gripper.setPosition(0.6);
             }
 
             //Stop intake
@@ -252,20 +240,17 @@ public class teleOp extends LinearOpMode
 
             }
 
-            while(gamepad1.dpad_right)
+            if (gamepad2.dpad_right)
             {
-                extendTime.reset();
-                while (extendTime.seconds() < 1)
-                {
-                    extend.setPower(1.0);
-                    driveTrain.chassisTeleOp(gamepad1, gamepad2);
-                }
-                driveTrain.stopDriving();
-                extend.setPower(0.0);
+                gripper.setPosition(0.45);
+                extend.setPower(1.0);
             }
 
-            while(gamepad1.dpad_left)
+            if (gamepad2.dpad_left)
             {
+                gripper.setPosition(0.6);
+                Thread.sleep(100);
+                gripper.setPosition(0.525);
                 extend.setPower(-1.0);
             }
 

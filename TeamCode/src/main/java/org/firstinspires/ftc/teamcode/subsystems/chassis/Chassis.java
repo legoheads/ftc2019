@@ -97,7 +97,7 @@ public class Chassis extends LinearOpMode
      */
     public void leftTurnTeleop(double power) throws InterruptedException{
         //Turn the left motors backwards and the right motors forward so that it turns left
-        setDriveMotorPowers(power, power, -power, -power);
+        setDriveMotorPowers(-power, -power, power, power);
     }
 
     /**
@@ -105,7 +105,7 @@ public class Chassis extends LinearOpMode
      */
     public void rightTurnTeleop(double power) throws InterruptedException{
         //Turn the right motors backwards and the left motors forward so that it turns right
-        setDriveMotorPowers(-power, -power, power, power);
+        setDriveMotorPowers(power, power, -power, -power);
     }
 
     /**
