@@ -23,8 +23,8 @@ public class Chassis extends LinearOpMode
 {
     //Define drive motors
     private DcMotor leftMotorFront;
-    private DcMotor rightMotorFront;
     private DcMotor leftMotorBack;
+    private DcMotor rightMotorFront;
     private DcMotor rightMotorBack;
 
     private BNO055IMU boschIMU;
@@ -34,7 +34,7 @@ public class Chassis extends LinearOpMode
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
      */
-    public Chassis(DcMotor.ZeroPowerBehavior type, DcMotor leftMotorFront, DcMotor rightMotorFront, DcMotor leftMotorBack, DcMotor rightMotorBack, BNO055IMU boschIMU)
+    public Chassis(DcMotor.ZeroPowerBehavior type, DcMotor leftMotorFront, DcMotor leftMotorBack, DcMotor rightMotorFront, DcMotor rightMotorBack, BNO055IMU boschIMU)
     {
         //Sstore the motors, sensors and CDI without having to write them over and over again
         //Initialize DC motors

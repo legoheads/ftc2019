@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.test_programs;
+package org.firstinspires.ftc.teamcode.odometry;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -57,8 +57,10 @@ public class positionTest extends LinearOpMode
 //***************************************************************************************************************************
         while (opModeIsActive())
         {
-            telemetry.addData("x displacement (port 0): ", intakeLeft.getCurrentPosition());
-            telemetry.addData("y displacement (port 3): ", spool.getCurrentPosition());
+
+            telemetry.addData("y displacement left (port 0): ", intakeLeft.getCurrentPosition());
+            telemetry.addData("y displacement right (port 1): ", intakeRight.getCurrentPosition());
+            telemetry.addData("x displacement right (port 2): ", spool.getCurrentPosition());
             telemetry.addData("x angle (use this one):", boschIMU.getAngularOrientation().firstAngle);
             telemetry.addData("y angle: ", boschIMU.getAngularOrientation().secondAngle);
             telemetry.addData("z angle: ", boschIMU.getAngularOrientation().thirdAngle);

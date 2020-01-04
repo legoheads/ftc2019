@@ -23,8 +23,8 @@ public class teleOp extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
     DcMotor leftMotorBack;
+    DcMotor rightMotorFront;
     DcMotor rightMotorBack;
 
     //Intake
@@ -32,10 +32,8 @@ public class teleOp extends LinearOpMode
     DcMotor intakeRight;
 
     //Outtake
-//    DcMotor dumper;
     Servo gripper;
     DcMotor spool;
-
     CRServo extend;
 
     //Platform mover
@@ -72,16 +70,6 @@ public class teleOp extends LinearOpMode
 
     String intakeState = "Stop";
 
-    //Define a function to use to set motor powers
-    public void setDriveMotorPowers(float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower)
-    {
-        //Use the entered powers and feed them to the motors
-        leftMotorFront.setPower(leftFrontPower);
-        leftMotorBack.setPower(leftBackPower);
-        rightMotorFront.setPower(rightFrontPower);
-        rightMotorBack.setPower(rightBackPower);
-    }
-
     //***********************************************************************************************************
     //MAIN BELOW
     @Override
@@ -89,14 +77,13 @@ public class teleOp extends LinearOpMode
     {
         //Get references to the DC Motors from the hardware map
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
+        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
 
         //Get references to the Servo Motors from the hardware map
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
-//        dumper = hardwareMap.dcMotor.get("dumper");
         gripper = hardwareMap.servo.get("gripper");
 
         extend = hardwareMap.crservo.get("extend");
@@ -114,30 +101,7 @@ public class teleOp extends LinearOpMode
 
         Chassis driveTrain = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
 
-
-//        leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
-//        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-//        //rightMotorFront goes in wrong direction. Gearbox is messed up
-//        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
-//        spool.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //Set the drive motors to brake mode to prevent rolling due to chain
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-//        arm = new sideArm(sideLift, twister, sideGrab);
-
-//        arm.init();
-//        gripper.setPosition(0.95);
-//        platformLeft.setPosition(0.0);
-//        platformRight.setPosition((1.0));
 
         gripper.setPosition(0.6);
 

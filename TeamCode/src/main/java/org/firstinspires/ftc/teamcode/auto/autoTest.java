@@ -19,8 +19,8 @@ public class autoTest extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
     DcMotor leftMotorBack;
+    DcMotor rightMotorFront;
     DcMotor rightMotorBack;
 
     //Intake
@@ -62,8 +62,8 @@ public class autoTest extends LinearOpMode
     {
         //Get references to the DC Motors from the hardware map
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
+        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
 
         //Get references to the Servo Motors from the hardware map
@@ -87,7 +87,7 @@ public class autoTest extends LinearOpMode
 
         spool.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Chassis chassis = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
+        Chassis chassis = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, leftMotorBack, rightMotorFront, rightMotorBack, boschIMU);
 
 
         arm = new sideArm(sideLift, twister, sideGrab);
