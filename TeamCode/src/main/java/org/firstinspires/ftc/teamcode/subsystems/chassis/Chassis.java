@@ -46,10 +46,10 @@ public class Chassis extends LinearOpMode
         this.boschIMU = boschIMU;
 
         //Reverse left side motors
-        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Set the drive motors either Brake or ___
         leftMotorFront.setZeroPowerBehavior(type);
@@ -180,7 +180,7 @@ public class Chassis extends LinearOpMode
     public void driveAutonomous(double power, int degrees) throws InterruptedException
     {
         //Everything in the same direction creates linear driving
-        moveDriveMotorsWithEncoders(-degrees, -degrees, -degrees, -degrees, -power, -power, -power, -power);
+        moveDriveMotorsWithEncoders(degrees, degrees, degrees, degrees, power, power, power, power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();
@@ -298,7 +298,7 @@ public class Chassis extends LinearOpMode
      */
     public void leftShiftAutonomous(double power, int degrees) throws InterruptedException{
         //This sequence of backwards, forwards, forwards, backwards makes the robot shift left
-        moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees, power, -power, -power, power);
+        moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -power, power, power, -power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();
@@ -311,7 +311,7 @@ public class Chassis extends LinearOpMode
     public void rightShiftAutonomous(double power, int degrees) throws InterruptedException
     {
         //This sequence of forwards, backwards, backwards, forwards makes the robot shift right
-        moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -power, power, power, -power);
+        moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees, power, -power, -power, power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();

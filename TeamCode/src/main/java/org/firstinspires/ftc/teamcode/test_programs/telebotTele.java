@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 
+@Disabled
 @TeleOp(name="TestBot Tele") //Name the class
 public class telebotTele extends LinearOpMode
 {

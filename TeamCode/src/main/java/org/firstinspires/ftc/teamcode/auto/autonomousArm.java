@@ -2,18 +2,20 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 //Import necessary items
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
+
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
+import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
 
-@Autonomous(name="auto") //Name the class
-public class autoTest extends LinearOpMode
+@Autonomous(name="AUTOARM") //Name the class
+public class autonomousArm extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
@@ -26,8 +28,8 @@ public class autoTest extends LinearOpMode
     DcMotor intakeRight;
 
     //Outtake
-    DcMotor dumper;
-    Servo gripper;
+//    DcMotor dumper;
+//    Servo gripper;
     DcMotor spool;
 
     //Platform mover
@@ -67,8 +69,8 @@ public class autoTest extends LinearOpMode
         //Get references to the Servo Motors from the hardware map
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
-        dumper = hardwareMap.dcMotor.get("dumper");
-        gripper = hardwareMap.servo.get("gripper");
+//        dumper = hardwareMap.dcMotor.get("dumper");
+//        gripper = hardwareMap.servo.get("gripper");
 
         sideLift = hardwareMap.servo.get("sideLift");
         twister = hardwareMap.servo.get("twister");
@@ -76,8 +78,8 @@ public class autoTest extends LinearOpMode
 
         spool = hardwareMap.dcMotor.get("spool");
 
-        platformLeft = hardwareMap.servo.get("platformLeft");
-        platformRight = hardwareMap.servo.get("platformRight");
+//        platformLeft = hardwareMap.servo.get("platformLeft");/
+//        platformRight = hardwareMap.servo.get("platformRight");
 
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
@@ -91,7 +93,11 @@ public class autoTest extends LinearOpMode
         arm = new sideArm(sideLift, twister, sideGrab);
 
 
-        arm.init();
+//        arm.init();
+
+        arm.twist();
+        arm.up();
+        arm.grab();
 
 
         //Wait for start button to be clicked
@@ -103,8 +109,47 @@ public class autoTest extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            platformLeft.setPosition(0.0);
-            platformRight.setPosition((1.0));
+
+//            arm.parallel();
+//            Thread.sleep(2000);
+            arm.partial();
+            Thread.sleep(500);
+            arm.parallel();
+            arm.open();
+            Thread.sleep(500);
+            arm.down();
+            Thread.sleep(500);
+            arm.grab();
+            Thread.sleep(500);
+            arm.partial();
+            Thread.sleep(200);
+            arm.twist();
+            Thread.sleep(500);
+            arm.up();
+
+            chassis.driveAutonomous(0.3, 3000);
+
+            chassis.rightShiftAutonomous(0.3, 300);
+
+            sideLift.setPosition(0.15);
+            Thread.sleep(500);
+            arm.open();
+            Thread.sleep(500);
+            arm.up();
+
+            chassis.leftShiftAutonomous(0.3,300);
+
+            chassis.driveAutonomous(-0.3, -3000);
+
+//            chassis.driveAutonomous(-0.5, -1000);
+
+
+
+
+
+
+
+
 //            leftMotorFront.setPower(0.5);
 //            rightMotorFront.setPower(0.5);
 //            leftMotorBack.setPower(0.5);
@@ -119,22 +164,28 @@ public class autoTest extends LinearOpMode
 
 //            chassis.leftTurnIMU();
 
-
-
-            intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            telemetry.addData("Encoders Reset", "good");
-//            telemetry.update();
-
-            intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            telemetry.addData("Encoders Run", "good");
-//            telemetry.update();
 //
 //
-            telemetry.update();
-            chassis.odometryDrive(spool, drivePower, 1000, telemetry);
+//            intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//            spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            telemetry.addData("Encoders Reset", "good");
+////            telemetry.update();
+//
+//            intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            telemetry.addData("Encoders Run", "good");
+////            telemetry.update();
+////
+////
+//            telemetry.update();
+//            chassis.odometryDrive(spool, drivePower, 1000, telemetry);
+
+
+
+
+
+
 //            arm.down();
 //            Thread.sleep(500);
 //            arm.open();

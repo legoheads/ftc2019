@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.tele;
 
 //Import necessary items
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,14 +11,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.*;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
-import org.firstinspires.ftc.teamcode.subsystems.chassis.DriveTrain;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
-@TeleOp(name="teleOp") //Name the class
-public class teleOp extends LinearOpMode
+@TeleOp(name="ARMTEST") //Name the class
+public class armTest extends LinearOpMode
 {
     //Drivetrain
     DcMotor leftMotorFront;
@@ -38,14 +35,14 @@ public class teleOp extends LinearOpMode
 
     CRServo extend;
 
-    //Platform mover
-    Servo platformLeft;
-    Servo platformRight;
+//    //Platform mover
+//    Servo platformLeft;
+//    Servo platformRight;
 
     //Sidearm
-//    Servo sideLift;
-//    Servo twister;
-//    Servo sideGrab;
+    Servo sideLift;
+    Servo twister;
+    Servo sideGrab;
 
 
     //Define floats to be used as joystick inputs and trigger inputs
@@ -101,27 +98,23 @@ public class teleOp extends LinearOpMode
 
         extend = hardwareMap.crservo.get("extend");
 
-//        sideLift = hardwareMap.servo.get("sideLift");
-//        twister = hardwareMap.servo.get("twister");
-//        sideGrab = hardwareMap.servo.get("sideGrab");
+        sideLift = hardwareMap.servo.get("sideLift");
+        twister = hardwareMap.servo.get("twister");
+        sideGrab = hardwareMap.servo.get("sideGrab");
 //
         spool = hardwareMap.dcMotor.get("spool");
 
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
-
-        platformLeft = hardwareMap.servo.get("platformLeft");
-        platformRight = hardwareMap.servo.get("platformRight");
+//
+//        platformLeft = hardwareMap.servo.get("platformLeft");
+//        platformRight = hardwareMap.servo.get("platformRight");
 
         Chassis driveTrain = new Chassis(DcMotor.ZeroPowerBehavior.BRAKE, leftMotorFront, rightMotorFront, leftMotorBack, rightMotorBack, boschIMU);
 
 
-//        leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
-//        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-//        //rightMotorFront goes in wrong direction. Gearbox is messed up
-//        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
 //        spool.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -132,14 +125,14 @@ public class teleOp extends LinearOpMode
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-//        arm = new sideArm(sideLift, twister, sideGrab);
+        arm = new sideArm(sideLift, twister, sideGrab);
 
 //        arm.init();
 //        gripper.setPosition(0.95);
 //        platformLeft.setPosition(0.0);
 //        platformRight.setPosition((1.0));
 
-        gripper.setPosition(0.6);
+//        gripper.setPosition(0.6);
 
         //Wait for start button to be clicked
         waitForStart();
@@ -202,48 +195,20 @@ public class teleOp extends LinearOpMode
 
             spool.setPower(spoolPower);
 
-            //Intake
-            if (gamepad1.right_bumper)
-            {
-                intakeLeft.setPower(maxPower);
-                intakeRight.setPower(maxPower);
-                intakeState = "In";
+
+            if (gamepad1.a){
+                arm.open();
+            }
+            if (gamepad1.x){
+                arm.grab();
             }
 
-            //Outtake
-            if (gamepad1.left_bumper)
-            {
-                intakeLeft.setPower(-0.3);
-                intakeRight.setPower(-0.3);
-                intakeState = "Out";
-            }
-            telemetry.addData("Intake: ", intakeState);
-
-            //grab
-            if(gamepad1.a)
-            {
-                platformLeft.setPosition(0.5);
-                platformRight.setPosition(0.5);
+            if (gamepad1.b){
+                arm.down();
             }
 
-            if(gamepad1.b){
-                platformLeft.setPosition(0.0);
-                platformRight.setPosition(1.0);
-            }
-
-
-            if (gamepad2.dpad_right)
-            {
-                gripper.setPosition(0.45);
-                extend.setPower(1.0);
-            }
-
-            if (gamepad2.dpad_left)
-            {
-                gripper.setPosition(0.6);
-                Thread.sleep(100);
-                gripper.setPosition(0.525);
-                extend.setPower(-1.0);
+            if (gamepad1.y){
+                arm.up();
             }
 
             //Update the data

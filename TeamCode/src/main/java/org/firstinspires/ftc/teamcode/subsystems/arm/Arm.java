@@ -14,6 +14,12 @@ public interface Arm
     void grab() throws InterruptedException;
     //Open the grabber
     void open() throws InterruptedException;
+    //Twist the block to prepare for drop
+    void twist() throws InterruptedException;
+
     void openSkystone() throws InterruptedException;
+    void parallel() throws InterruptedException;
+    void partial() throws InterruptedException;
+
 
 }

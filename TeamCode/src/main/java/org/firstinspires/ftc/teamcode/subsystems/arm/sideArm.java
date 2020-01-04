@@ -10,19 +10,19 @@ public class sideArm implements Arm
     private Servo sideGrab;
 
     //Positions for Lifter
-    private final double AUTO_START = 0.0;
+    private final double AUTO_START = 0.5;
     private final double TELE_START = 0.15;
-    private final double LIFT_POSITION = 0.4;
-    private final double DOWN_POSITION = 0.8;
+    private final double LIFT_POSITION = 0.3;
+    private final double DOWN_POSITION = 0.1;
 
     //Positions for Twister
     private final double PERPENDICULAR_POSITION = 0.9;
     private final double PARALLEL_POSITION = 0.5;
 
     //Positions for Grabber
-    private final double OPEN_POSITION = 0.3;
+    private final double OPEN_POSITION = 0.5;
     private final double GRAB_POSITION = 0.7;
-    private final double CLOSED_POSITION = 1.0;
+    private final double CLOSED_POSITION = 0.9;
 
 
     public sideArm(Servo sideLift, Servo twister, Servo sideGrab)
@@ -71,6 +71,18 @@ public class sideArm implements Arm
     public void open() throws InterruptedException{
         sideGrab.setPosition(OPEN_POSITION);
         Thread.sleep(500);
+    }
+
+    public void twist() throws InterruptedException{
+        twister.setPosition(PERPENDICULAR_POSITION);
+    }
+
+    public void parallel() throws InterruptedException{
+        twister.setPosition(PARALLEL_POSITION);
+    }
+
+    public void partial() throws InterruptedException{
+        sideLift.setPosition(LIFT_POSITION);
     }
 
 
