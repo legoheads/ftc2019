@@ -12,16 +12,18 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
-//import org.openftc.easyopencv.examples.PipelineStageSwitchingExample;
 
 
-
-public class skystoneDetector implements ComputerVision {
+public class skystoneDetector implements CV {
     private int valMid = -1;
     private int valLeft = -1;
     private int valRight = -1;
 
-    private int[] vals = {valMid, valLeft, valRight};
+    private int RUNTIME;
+
+    //Camera
+    private OpenCvInternalCamera.CameraDirection CAMERA_DIRECTION = OpenCvInternalCamera.CameraDirection.BACK;
+    private OpenCvCameraRotation ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     private static float rectHeight = .6f/8f;
     private static float rectWidth = 1.5f/8f;
@@ -34,6 +36,7 @@ public class skystoneDetector implements ComputerVision {
     private final int rows = 640;
     private final int cols = 480;
 
+    //3 Stones
     private stone left = stone.UNKNOWN;
     private stone mid = stone.UNKNOWN;
     private stone right = stone.UNKNOWN;
@@ -41,8 +44,6 @@ public class skystoneDetector implements ComputerVision {
     private location skystoneLocation = location.MID;
 
     public Boolean isFound = false;
-
-    private int RUNTIME;
 
     HardwareMap hardwareMap;
     Telemetry telemetry;
@@ -67,10 +68,10 @@ public class skystoneDetector implements ComputerVision {
 
     public void camSetup () {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        phoneCam = new OpenCvInternalCamera(CAMERA_DIRECTION, cameraMonitorViewId);
         phoneCam.openCameraDevice();//open camera
         phoneCam.setPipeline(new StageSwitchingPipeline());//different stages
-        phoneCam.startStreaming(rows, cols, OpenCvCameraRotation.UPRIGHT);//display on RC
+        phoneCam.startStreaming(rows, cols, ROTATION);//display on RC
     }
 
     public void camClose() {
@@ -89,19 +90,11 @@ public class skystoneDetector implements ComputerVision {
     }
 
 
-    public void updateStones() {
-        vals[0] = valLeft;
-        vals[1] = valMid;
-        vals[2] = valRight;
-
+    public void lookForSkystone(){
+        //Update Stones
         left = type(valLeft);
         mid = type(valMid);
         right = type(valRight);
-    }
-
-
-    public void lookForSkystone(){
-        updateStones();
 
         //Skystone found at Left
         if (left.equals(stone.SKY) && mid.equals(stone.STONE) && right.equals(stone.STONE)){

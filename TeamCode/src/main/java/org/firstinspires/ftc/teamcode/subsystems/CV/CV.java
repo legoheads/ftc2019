@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.CV;
 
-public interface ComputerVision {
+public interface CV {
 
 
     enum stone { SKY, STONE, UNKNOWN }

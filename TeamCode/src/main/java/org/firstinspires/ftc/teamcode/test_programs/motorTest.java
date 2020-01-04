@@ -32,10 +32,10 @@ public class motorTest extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
+        leftMotorFront = hardwareMap.dcMotor.get("LF");
+        rightMotorFront = hardwareMap.dcMotor.get("RF");
+        leftMotorBack = hardwareMap.dcMotor.get("LB");
+        rightMotorBack = hardwareMap.dcMotor.get("RB");
 
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);

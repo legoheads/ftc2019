@@ -63,7 +63,7 @@ public interface IIMU {
     double getZPos();
 
     /**
-     * Calibrate the imu and initialize the parameters
+     * Calibrate the imu and init the parameters
      */
     void calibrate();
 
@@ -81,5 +81,5 @@ public interface IIMU {
     /**
      * Initialize the parameters for the IMU
      */
-    void initialize();
+    void init();
 }

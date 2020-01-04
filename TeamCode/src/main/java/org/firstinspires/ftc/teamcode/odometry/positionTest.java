@@ -9,22 +9,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
-@Disabled
 @TeleOp(name="Track position") //Name the class
 public class positionTest extends LinearOpMode
 {
-    //Define drive motors
-    DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
-    DcMotor leftMotorBack;
-    DcMotor rightMotorBack;
+    private DcMotor lf;
+    private DcMotor lb;
+    private DcMotor rf;
+    private DcMotor rb;
 
-    DcMotor spool;
+    //Odometer ports
+    private DcMotor intakeLeft;
+    private DcMotor intakeRight;
+    private DcMotor spoolLeft;
 
-    DcMotor intakeLeft;
-    DcMotor intakeRight;
-
-    BNO055IMU boschIMU;
+    private BNO055IMU boschIMU;
 
     IIMU imu;
 
@@ -37,13 +35,14 @@ public class positionTest extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
+        lf = hardwareMap.dcMotor.get("lf");
+        lb = hardwareMap.dcMotor.get("lb");
+        rf = hardwareMap.dcMotor.get("rf");
+        rb = hardwareMap.dcMotor.get("rb");
 
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        spool = hardwareMap.dcMotor.get("spool");
+        intakeRight = hardwareMap.dcMotor.get("intakeRight");
+        spoolLeft = hardwareMap.dcMotor.get("spoolLeft");
 
 
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
@@ -57,13 +56,16 @@ public class positionTest extends LinearOpMode
 //***************************************************************************************************************************
         while (opModeIsActive())
         {
-
             telemetry.addData("y displacement left (port 0): ", intakeLeft.getCurrentPosition());
             telemetry.addData("y displacement right (port 1): ", intakeRight.getCurrentPosition());
-            telemetry.addData("x displacement right (port 2): ", spool.getCurrentPosition());
+            telemetry.addData("x displacement right (port 2): ", spoolLeft.getCurrentPosition());
             telemetry.addData("x angle (use this one):", boschIMU.getAngularOrientation().firstAngle);
             telemetry.addData("y angle: ", boschIMU.getAngularOrientation().secondAngle);
             telemetry.addData("z angle: ", boschIMU.getAngularOrientation().thirdAngle);
+            telemetry.addData("dcmotor toString test: ", lf.toString());
+            telemetry.addData("dcmotor getDeviceName test: ", lf.getDeviceName());
+            telemetry.addData("dcmotor getConnectionInfo test: ", lf.getConnectionInfo());
+
             telemetry.update();
 
             //Always call idle() at the bottom of your while(opModeIsActive()) loop

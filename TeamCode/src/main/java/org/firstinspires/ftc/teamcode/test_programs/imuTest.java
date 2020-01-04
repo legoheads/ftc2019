@@ -54,28 +54,10 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
  */
 
 @Disabled
-@TeleOp(name = "imu test")
-public class imuTest extends LinearOpMode
-{
+@TeleOp(name = "IMU Test")
+public class imuTest extends LinearOpMode {
 
-    DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
-    DcMotor leftMotorBack;
-    DcMotor rightMotorBack;
-
-    //Define  motors
-    Servo dunker;
-    DcMotor spinner;
-    Servo mineralFlipper;
-    DcMotor mineralSpool;
-
-    DcMotor hanger;
-    Servo markerDropper;
-
-    ColorSensor colorSensor;
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
+    private DcMotor LF, RF, LB, RB;
 
     // The IMU sensor object
     IIMU inertialMeasurementUnit;
@@ -99,24 +81,15 @@ public class imuTest extends LinearOpMode
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
         // provide positional information.
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
+        LF = hardwareMap.dcMotor.get("LF");
+        RF = hardwareMap.dcMotor.get("RF");
+        LB = hardwareMap.dcMotor.get("LB");
+        RB = hardwareMap.dcMotor.get("RB");
 
-        mineralSpool = hardwareMap.dcMotor.get("mineralSpool");
-        spinner = hardwareMap.dcMotor.get("spinner");
-        hanger = hardwareMap.dcMotor.get("hanger");
-
-        mineralFlipper = hardwareMap.servo.get("mineralFlipper");
-        dunker = hardwareMap.servo.get("dunker");
-        markerDropper = hardwareMap.servo.get("markerDropper");
-
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
         bosch = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
         inertialMeasurementUnit = new BoschIMU(bosch);
-        inertialMeasurementUnit.initialize();
+        inertialMeasurementUnit.init();
         inertialMeasurementUnit.calibrate();
 
         bosch.startAccelerationIntegration(new Position(), new Velocity(), 100);

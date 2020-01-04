@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.test_programs;
+package org.firstinspires.ftc.teamcode.tele;
 
 //Import necessary items
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -7,35 +7,24 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 
 @Disabled
-@TeleOp(name="TestBot Tele") //Name the class
-public class telebotTele extends LinearOpMode
-{
+@TeleOp(name="PushBot") //Name the class
+public class pushbotTele extends LinearOpMode {
     //Drivetrain
-    private DcMotor leftMotorFront;
-    private DcMotor rightMotorFront;
-    private DcMotor leftMotorBack;
-    private DcMotor rightMotorBack;
-
+    private DcMotor LF, RF, LB, RB;
 
     //Define floats to be used as joystick inputs and trigger inputs
-    private float drivePower;
-    private float shiftPower;
-    private float leftTurnPower;
-    private float rightTurnPower;
+    private float drivePower, shiftPower, leftTurnPower, rightTurnPower;
 
     //Define a function to use to set motor powers
     public void setDriveMotorPowers(float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower)
     {
         //Use the entered powers and feed them to the motors
-        leftMotorFront.setPower(leftFrontPower);
-        leftMotorBack.setPower(leftBackPower);
-        rightMotorFront.setPower(rightFrontPower);
-        rightMotorBack.setPower(rightBackPower);
+        LF.setPower(leftFrontPower);
+        LB.setPower(leftBackPower);
+        RF.setPower(rightFrontPower);
+        RB.setPower(rightBackPower);
     }
 
     //***********************************************************************************************************
@@ -44,22 +33,22 @@ public class telebotTele extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
         //Get references to the DC Motors from the hardware map
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
+        LF = hardwareMap.dcMotor.get("LF");
+        LB = hardwareMap.dcMotor.get("LB");
+        RF = hardwareMap.dcMotor.get("RF");
+        RB = hardwareMap.dcMotor.get("RB");
 
 
-        leftMotorFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.FORWARD);
+        RF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Set the drive motors to brake mode to prevent rolling due to chain
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        LB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         //Wait for start button to be clicked
@@ -74,10 +63,10 @@ public class telebotTele extends LinearOpMode
 
             //DRIVE MOTOR CONTROLS
             //Set float variables as the inputs from the joysticks and the triggers
-            drivePower = (float) -((gamepad1.left_stick_y + gamepad2.left_stick_y));
-            shiftPower = (float) -((gamepad1.left_stick_x + gamepad2.left_stick_x));
-            leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger));
-            rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger));
+            drivePower = ((gamepad1.left_stick_y + gamepad2.left_stick_y));
+            shiftPower = -((gamepad1.left_stick_x + gamepad2.left_stick_x));
+            leftTurnPower = ((gamepad1.left_trigger + gamepad2.left_trigger));
+            rightTurnPower = ((gamepad1.right_trigger + gamepad2.right_trigger));
 
 
             //Drive if the joystick is pushed more Y than X

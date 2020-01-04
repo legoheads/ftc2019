@@ -11,42 +11,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Disabled
 @TeleOp(name = "Data Logging Program") //Name the program
-public class dataLogging extends LinearOpMode
-{
+public class dataLogging extends LinearOpMode {
     //Define drive motors
-    DcMotor leftMotorFront;
-    DcMotor rightMotorFront;
-    DcMotor leftMotorBack;
-    DcMotor rightMotorBack;
-
-    //Define glyph motors
-    DcMotor mineralSpool;
-    DcMotor lifter;
-    DcMotor spinner;
-    DcMotor hanger;
-
-    Servo mineralFlipper;
-    Servo dunker;
-    Servo markerDropper;
+    private DcMotor LF, LB, RF, RB;
 
 //***************************************************************************************************************************
     //MAIN BELOW
     @Override
     public void runOpMode() throws InterruptedException
     {
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
-
-        mineralSpool = hardwareMap.dcMotor.get("mineralSpool");
-        lifter = hardwareMap.dcMotor.get("lifter");
-        spinner = hardwareMap.dcMotor.get("spinner");
-        hanger = hardwareMap.dcMotor.get("hanger");
-
-        mineralFlipper = hardwareMap.servo.get("mineralFlipper");
-        dunker = hardwareMap.servo.get("dunker");
-        markerDropper = hardwareMap.servo.get("markerDropper");
+        LF = hardwareMap.dcMotor.get("LF");
+        LB = hardwareMap.dcMotor.get("LB");
+        RF = hardwareMap.dcMotor.get("RF");
+        RB = hardwareMap.dcMotor.get("RB");
 
         waitForStart();
 
@@ -59,29 +36,23 @@ public class dataLogging extends LinearOpMode
             if (gamepad1.b)
             {
                 //Reset the encoders
-                leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                hanger.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
                 //Use the encoders
-                leftMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
             //Show all the encoder values on the driver station
-            telemetry.addData("left front", leftMotorFront.getCurrentPosition());
-            telemetry.addData("left back", leftMotorBack.getCurrentPosition());
-            telemetry.addData("right front", rightMotorFront.getCurrentPosition());
-            telemetry.addData("right back", rightMotorBack.getCurrentPosition());
-            telemetry.addData("hanger", hanger.getCurrentPosition());
-            telemetry.addData("lifter", lifter.getCurrentPosition());
+            telemetry.addData("LEFT FRONT", LF.getCurrentPosition());
+            telemetry.addData("LEFT BACK", LB.getCurrentPosition());
+            telemetry.addData("RIGHT FRONT", RF.getCurrentPosition());
+            telemetry.addData("RIGHT BACK", RB.getCurrentPosition());
 
             //Update the data if/when it changes
             telemetry.update();

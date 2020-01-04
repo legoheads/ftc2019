@@ -18,9 +18,16 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
     private boolean isRunning = true;
 
     //Position variables used for storage and calculations
-    double verticalRightEncoderWheelPosition = 0, verticalLeftEncoderWheelPosition = 0, normalEncoderWheelPosition = 0,  changeInRobotOrientation = 0;
-    private double robotGlobalXCoordinatePosition = 0, robotGlobalYCoordinatePosition = 0, robotOrientationRadians = 0;
-    private double previousVerticalRightEncoderWheelPosition = 0, previousVerticalLeftEncoderWheelPosition = 0, prevNormalEncoderWheelPosition = 0;
+    private double verticalRightEncoderWheelPosition = 0;
+    private double verticalLeftEncoderWheelPosition = 0;
+    private double normalEncoderWheelPosition = 0;
+    private double changeInRobotOrientation = 0;
+    private double robotGlobalXCoordinatePosition = 0;
+    private double robotGlobalYCoordinatePosition = 0;
+    private double robotOrientationRadians = 0;
+    private double previousVerticalRightEncoderWheelPosition = 0;
+    private double previousVerticalLeftEncoderWheelPosition = 0;
+    private double prevNormalEncoderWheelPosition = 0;
 
     //Algorithm constants
     private double robotEncoderWheelDistance;
