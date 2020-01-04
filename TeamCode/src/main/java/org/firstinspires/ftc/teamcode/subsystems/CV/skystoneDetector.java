@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.CV;
+package org.firstinspires.ftc.teamcode.subsystems.CV;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 
 
-public class skystoneDetectorClass implements ComputerVision {
+public class skystoneDetector implements ComputerVision {
     private int valMid = -1;
     private int valLeft = -1;
     private int valRight = -1;
@@ -49,7 +49,7 @@ public class skystoneDetectorClass implements ComputerVision {
     OpenCvCamera phoneCam;
 
 
-    public skystoneDetectorClass(HardwareMap myHardwareMap, Telemetry myTelemetry) {
+    public skystoneDetector(HardwareMap myHardwareMap, Telemetry myTelemetry) {
         hardwareMap = myHardwareMap;
         telemetry = myTelemetry;
 

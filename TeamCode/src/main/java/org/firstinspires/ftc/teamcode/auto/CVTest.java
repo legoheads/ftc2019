@@ -4,10 +4,9 @@ package org.firstinspires.ftc.teamcode.auto;
 //Import necessary items
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.CV.ComputerVision;
-import org.firstinspires.ftc.teamcode.CV.skystoneDetectorClass;
+import org.firstinspires.ftc.teamcode.subsystems.CV.ComputerVision;
+import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 
 
 @Autonomous(name="CVTEST") //Name the class
@@ -23,7 +22,7 @@ public class CVTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        skystoneDetectorClass cv = new skystoneDetectorClass(hardwareMap, telemetry);
+        skystoneDetector cv = new skystoneDetector(hardwareMap, telemetry);
 
         while(!isStarted()){
 

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
 
-@Autonomous(name="AUTOARM") //Name the class
+@Autonomous(name="Auto Arm") //Name the class
 public class autonomousArm extends LinearOpMode
 {
     //Drivetrain
@@ -141,65 +141,6 @@ public class autonomousArm extends LinearOpMode
 
             chassis.driveAutonomous(-0.3, -3000);
 
-//            chassis.driveAutonomous(-0.5, -1000);
-
-
-
-
-
-
-
-
-//            leftMotorFront.setPower(0.5);
-//            rightMotorFront.setPower(0.5);
-//            leftMotorBack.setPower(0.5);
-//            rightMotorBack.setPower(0.5);
-//
-//            Thread.sleep(3000);
-//
-//            leftMotorFront.setPower(0.0);
-//            rightMotorFront.setPower(0.0);
-//            leftMotorBack.setPower(0.0);
-//            rightMotorBack.setPower(0.0);
-
-//            chassis.leftTurnIMU();
-
-//
-//
-//            intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            telemetry.addData("Encoders Reset", "good");
-////            telemetry.update();
-//
-//            intakeLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            telemetry.addData("Encoders Run", "good");
-////            telemetry.update();
-////
-////
-//            telemetry.update();
-//            chassis.odometryDrive(spool, drivePower, 1000, telemetry);
-
-
-
-
-
-
-//            arm.down();
-//            Thread.sleep(500);
-//            arm.open();
-//            Thread.sleep(500);
-//            chassis.odometryRightShift(intakeLeft, shiftPower, 300, telemetry);
-//            arm.grab();
-//            Thread.sleep(500);
-//            arm.up();
-
-//            arm.grabSkystone();
-
-//            chassis.odometryDrive(spool, -drivePower, -500, telemetry);
-//
-//            chassis.odometryLeftShift(intakeLeft, shiftPower, 300, telemetry);
 
             //Update the data
             telemetry.update();

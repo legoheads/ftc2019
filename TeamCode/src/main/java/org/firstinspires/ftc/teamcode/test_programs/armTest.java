@@ -1,8 +1,9 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.tele;
+package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.arm.*;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
+@Disabled
 @TeleOp(name="ARMTEST") //Name the class
 public class armTest extends LinearOpMode
 {
