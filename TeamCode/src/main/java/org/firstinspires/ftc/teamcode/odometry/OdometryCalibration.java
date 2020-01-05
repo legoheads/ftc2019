@@ -21,23 +21,23 @@ import java.io.File;
 @TeleOp(name = "Odometry System Calibration", group = "Calibration")
 public class OdometryCalibration extends LinearOpMode
 {
-    private DcMotor leftMotorFront;
-    private DcMotor leftMotorBack;
-    private DcMotor rightMotorFront;
-    private DcMotor rightMotorBack;
+    DcMotor lf;
+    DcMotor lb;
+    DcMotor rf;
+    DcMotor rb;
 
     //Odometer ports
     DcMotor intakeLeft;
     DcMotor intakeRight;
-    DcMotor spool;
+    DcMotor spoolLeft;
 
     //IMU Sensor
     BNO055IMU boschIMU;
 
-    final float PIVOT_SPEED = (float) 0.5;
+    final float PIVOT_SPEED = (float) 0.2;
 
     //NEED TO UPDATE THIS VALUE
-    final double COUNTS_PER_INCH = 307.699557;
+    final double COUNTS_PER_INCH = 158;
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -50,21 +50,27 @@ public class OdometryCalibration extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException {
         //Initialize hardware map values. PLEASE UPDATE THESE VALUES TO MATCH YOUR CONFIGURATION
-        leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
-        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
-        rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
+        lf = hardwareMap.dcMotor.get("lf");
+        lb = hardwareMap.dcMotor.get("lb");
+        rf = hardwareMap.dcMotor.get("rf");
+        rb = hardwareMap.dcMotor.get("rb");
 
         //Get references to the Servo Motors from the hardware map
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
-        spool = hardwareMap.dcMotor.get("spool");
-
-        telemetry.addData("Status", "Hardware Map Init Complete");
-        telemetry.update();
+        spoolLeft = hardwareMap.dcMotor.get("spoolLeft");
 
         //Get references to the boschIMU Motors from the hardware map
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
+
+        //Reverse left side motors
+        lf.setDirection(DcMotorSimple.Direction.REVERSE);
+        lb.setDirection(DcMotorSimple.Direction.REVERSE);
+        rf.setDirection(DcMotorSimple.Direction.FORWARD);
+        rb.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        telemetry.addData("Status", "Hardware Map Init Complete");
+        telemetry.update();
 
         //Initialize IMU parameters
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -85,18 +91,18 @@ public class OdometryCalibration extends LinearOpMode
         waitForStart();
 
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
-        while(getZAngle() < 90 && opModeIsActive()){
-            leftMotorFront.setPower(-PIVOT_SPEED);
-            leftMotorBack.setPower(-PIVOT_SPEED);
-            rightMotorFront.setPower(PIVOT_SPEED);
-            rightMotorBack.setPower(PIVOT_SPEED);
+        while(boschIMU.getAngularOrientation().firstAngle < 90 && opModeIsActive()){
+            lf.setPower(PIVOT_SPEED);
+            lb.setPower(PIVOT_SPEED);
+            rf.setPower(-PIVOT_SPEED);
+            rb.setPower(-PIVOT_SPEED);
             if(getZAngle() < 60) {
-                setDriveMotorPowers(-PIVOT_SPEED, -PIVOT_SPEED, PIVOT_SPEED, PIVOT_SPEED);
+                setDriveMotorPowers(PIVOT_SPEED, PIVOT_SPEED, -PIVOT_SPEED, -PIVOT_SPEED);
             }else{
-                setDriveMotorPowers(-PIVOT_SPEED/2, -PIVOT_SPEED/2, PIVOT_SPEED/2, PIVOT_SPEED/2);
+                setDriveMotorPowers(PIVOT_SPEED/2, PIVOT_SPEED/2, -PIVOT_SPEED/2, -PIVOT_SPEED/2);
             }
 
-            telemetry.addData("IMU Angle", getZAngle());
+            telemetry.addData("IMU Angle", boschIMU.getAngularOrientation().firstAngle);
             telemetry.update();
         }
 
@@ -122,7 +128,7 @@ public class OdometryCalibration extends LinearOpMode
 
         double wheelBaseSeparation = (2*90*verticalEncoderTickOffsetPerDegree)/(Math.PI*COUNTS_PER_INCH);
 
-        horizontalTickOffset = spool.getCurrentPosition()/Math.toRadians(getZAngle());
+        horizontalTickOffset = spoolLeft.getCurrentPosition()/Math.toRadians(getZAngle());
 
         //Write the constants to text files
         ReadWriteFile.writeFile(wheelBaseSeparationFile, String.valueOf(wheelBaseSeparation));
@@ -138,7 +144,7 @@ public class OdometryCalibration extends LinearOpMode
             telemetry.addData("IMU Angle", getZAngle());
             telemetry.addData("Vertical Left Position", -intakeLeft.getCurrentPosition());
             telemetry.addData("Vertical Right Position", intakeRight.getCurrentPosition());
-            telemetry.addData("Horizontal Position", spool.getCurrentPosition());
+            telemetry.addData("Horizontal Position", spoolLeft.getCurrentPosition());
             telemetry.addData("Vertical Encoder Offset", verticalEncoderTickOffsetPerDegree);
 
             //Update values
@@ -155,13 +161,13 @@ public class OdometryCalibration extends LinearOpMode
     }
 
     //Define a function to use to set motor powers
-    void setDriveMotorPowers(float leftFrontPower, float leftBackPower, float rightFrontPower, float rightBackPower)
+    void setDriveMotorPowers(float lfPower, float lbPower, float rfPower, float rbPower)
     {
         //Use the entered powers and feed them to the motors
-        leftMotorFront.setPower(leftFrontPower);
-        leftMotorBack.setPower(leftBackPower);
-        rightMotorFront.setPower(rightFrontPower);
-        rightMotorBack.setPower(rightBackPower);
+        lf.setPower(lfPower);
+        lb.setPower(lbPower);
+        rf.setPower(rfPower);
+        rb.setPower(rbPower);
     }
 
 }
