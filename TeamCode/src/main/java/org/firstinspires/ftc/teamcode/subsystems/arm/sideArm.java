@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.arm;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
@@ -8,6 +9,8 @@ public class sideArm implements Arm
     private Servo sideLift;
     private Servo twister;
     private Servo sideGrab;
+
+    private HardwareMap hardwareMap;
 
     //Positions for Lifter
     private final double AUTO_START = 0.5;
@@ -25,11 +28,17 @@ public class sideArm implements Arm
     private final double CLOSED_POSITION = 0.9;
 
 
-    public sideArm(Servo sideLift, Servo twister, Servo sideGrab)
+    public sideArm(HardwareMap hardwareMap, Servo sideLift, Servo twister, Servo sideGrab)
     {
         this.sideLift = sideLift;
         this.twister = twister;
         this.sideGrab = sideGrab;
+
+        this.hardwareMap = hardwareMap;
+
+        sideLift = hardwareMap.servo.get("sideLift");
+        twister = hardwareMap.servo.get("twister");
+        sideGrab = hardwareMap.servo.get("sideGrab");
     }
 
     @Override
@@ -40,14 +49,14 @@ public class sideArm implements Arm
         sideGrab.setPosition(CLOSED_POSITION);
     }
 
-//    @Override
-//    public void initAuto() throws InterruptedException
-//    {
-//        sideLift.setPosition(AUTO_START);
-//        twister.setPosition(PERPENDICULAR_POSITION);
-//        sideGrab.setPosition(OPEN_POSITION);
-//
-//    }
+    @Override
+    public void initAuto() throws InterruptedException
+    {
+        sideLift.setPosition(AUTO_START);
+        twister.setPosition(PERPENDICULAR_POSITION);
+        sideGrab.setPosition(OPEN_POSITION);
+
+    }
 
     @Override
     public void down() throws InterruptedException{

@@ -5,7 +5,7 @@ public interface Arm
     //Init the arm for teleOp
     void init() throws InterruptedException;
     //Init the arm for autonomous
-//    void initAuto() throws InterruptedException;
+    void initAuto() throws InterruptedException;
     //Put the arm down
     void down() throws InterruptedException;
     //Put the arm up

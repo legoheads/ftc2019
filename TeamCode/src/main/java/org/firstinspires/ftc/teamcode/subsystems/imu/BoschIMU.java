@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.io.File;
 
@@ -16,6 +17,7 @@ public class BoschIMU implements IIMU {
     //Create imu hardware
     BNO055IMU imu;
     double offset;
+    HardwareMap hardwareMap;
 
     /**
      * Constructor for Bosch IMU
@@ -155,7 +157,7 @@ public class BoschIMU implements IIMU {
      * Initializes IMU parameters
      */
     @Override
-    public void initialize(){
+    public void init(){
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -164,6 +166,9 @@ public class BoschIMU implements IIMU {
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
+
+        //Hardware Map
+        imu = hardwareMap.get(BNO055IMU.class, "boschIMU");
     }
 
     /**
