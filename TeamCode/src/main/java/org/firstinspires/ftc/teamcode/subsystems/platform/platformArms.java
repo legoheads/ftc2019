@@ -19,11 +19,8 @@ public class platformArms implements Platform{
     private double LEFT_UP = 0.5;
     private double RIGHT_UP = 0.5;
 
-    public platformArms(HardwareMap hardwareMap, Servo leftArm, Servo rightArm){
+    public platformArms(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
-
-        this.platformLeft = leftArm;
-        this.platformRight = rightArm;
 
         platformLeft = hardwareMap.servo.get("platformLeft");
         platformRight = hardwareMap.servo.get("platformRight");
@@ -40,5 +37,13 @@ public class platformArms implements Platform{
         platformLeft.setPosition(LEFT_UP);
         platformRight.setPosition(RIGHT_UP);
         Thread.sleep(400);
+    }
+
+    public Servo getPlatformLeft(){
+        return platformLeft;
+    }
+
+    public Servo getPlatformRight(){
+        return platformRight;
     }
 }

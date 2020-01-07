@@ -16,7 +16,7 @@ public class skystoneChassis implements DriveTrain {
     //Define drive motors
     private DcMotor LF, LB, RF, RB;
 
-    private BNO055IMU boschIMU;
+//    private BNO055IMU boschIMU;
     private IIMU imu;
     private HardwareMap hardwareMap;
 
@@ -24,37 +24,29 @@ public class skystoneChassis implements DriveTrain {
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
      */
-    public skystoneChassis(HardwareMap hardwareMap, DcMotor.ZeroPowerBehavior type, DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, BNO055IMU boschIMU) {
-        
+    public skystoneChassis(HardwareMap hardwareMap, DcMotor.ZeroPowerBehavior type) {
+
         this.hardwareMap = hardwareMap;
-        
-        this.LF = LF;
-        this.LB = LB;
-        this.RF = RF;
-        this.RB = RB;
-
-        this.boschIMU = boschIMU;
-        
-
-        //Reverse right side motors
-        LF.setDirection(DcMotorSimple.Direction.FORWARD);
-        LB.setDirection(DcMotorSimple.Direction.FORWARD);
-        RF.setDirection(DcMotorSimple.Direction.REVERSE);
-        RB.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //Set the drive motors either Brake or Float
-        LF.setZeroPowerBehavior(type);
-        LB.setZeroPowerBehavior(type);
-        RF.setZeroPowerBehavior(type);
-        RB.setZeroPowerBehavior(type);
 
         //Hardware mapping
         this.LF = hardwareMap.dcMotor.get("LF");
         this.LB = hardwareMap.dcMotor.get("LB");
         this.RF = hardwareMap.dcMotor.get("RF");
         this.RB = hardwareMap.dcMotor.get("RB");
-        
-        imu = new BoschIMU(boschIMU);
+
+        //Reverse right side motors
+        this.LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.LB.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.RF.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.RB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //Set the drive motors either Brake or Float
+        this.LF.setZeroPowerBehavior(type);
+        this.LB.setZeroPowerBehavior(type);
+        this.RF.setZeroPowerBehavior(type);
+        this.RB.setZeroPowerBehavior(type);
+
+        imu = new BoschIMU(hardwareMap);
         imu.init();
     }
 
@@ -220,57 +212,57 @@ public class skystoneChassis implements DriveTrain {
     }
 
 
-    public void rightTurnIMU(double power, int target) throws InterruptedException {
-        while (boschIMU.getAngularOrientation().firstAngle > target) {
-            rightTurnTeleop(power);
-        }
-        stopDriving();
-        while (boschIMU.getAngularOrientation().firstAngle < target) {
-            leftTurnTeleop(0.2);
-        }
-        stopDriving();
-    }
-
-    public void leftTurnIMU(double power, int target) throws InterruptedException {
-        while (boschIMU.getAngularOrientation().firstAngle < target) {
-            leftTurnTeleop(power);
-        }
-
-        stopDriving();
-        while (boschIMU.getAngularOrientation().firstAngle > target) {
-            rightTurnTeleop(0.2);
-        }
-        stopDriving();
-
-    }
-
-    public void pidIMULeft(double power, int degrees) throws InterruptedException {
-        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
-            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
-                leftTurnTeleop(power);
-            }
-            stopDriving();
-            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
-                rightTurnTeleop(power);
-            }
-            stopDriving();
-        }
-        stopDriving();
-    }
-
-    public void pidIMURight(double power, int degrees) throws InterruptedException {
-        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
-            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
-                rightTurnTeleop(power);
-            }
-            stopDriving();
-            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
-                leftTurnTeleop(power);
-            }
-            stopDriving();
-        }
-        stopDriving();
-    }
+//    public void rightTurnIMU(double power, int target) throws InterruptedException {
+//        while (boschIMU.getAngularOrientation().firstAngle > target) {
+//            rightTurnTeleop(power);
+//        }
+//        stopDriving();
+//        while (boschIMU.getAngularOrientation().firstAngle < target) {
+//            leftTurnTeleop(0.2);
+//        }
+//        stopDriving();
+//    }
+//
+//    public void leftTurnIMU(double power, int target) throws InterruptedException {
+//        while (boschIMU.getAngularOrientation().firstAngle < target) {
+//            leftTurnTeleop(power);
+//        }
+//
+//        stopDriving();
+//        while (boschIMU.getAngularOrientation().firstAngle > target) {
+//            rightTurnTeleop(0.2);
+//        }
+//        stopDriving();
+//
+//    }
+//
+//    public void pidIMULeft(double power, int degrees) throws InterruptedException {
+//        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
+//            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
+//                leftTurnTeleop(power);
+//            }
+//            stopDriving();
+//            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
+//                rightTurnTeleop(power);
+//            }
+//            stopDriving();
+//        }
+//        stopDriving();
+//    }
+//
+//    public void pidIMURight(double power, int degrees) throws InterruptedException {
+//        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
+//            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
+//                rightTurnTeleop(power);
+//            }
+//            stopDriving();
+//            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
+//                leftTurnTeleop(power);
+//            }
+//            stopDriving();
+//        }
+//        stopDriving();
+//    }
 
 
     /**

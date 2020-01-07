@@ -21,10 +21,11 @@ public class BoschIMU implements IIMU {
 
     /**
      * Constructor for Bosch IMU
-     * @param imu imu sensor
      */
-    public BoschIMU(BNO055IMU imu){
-        this.imu = imu;
+    public BoschIMU(HardwareMap hardwareMap){
+        this.hardwareMap = hardwareMap;
+
+        imu = hardwareMap.get(BNO055IMU.class, "boschIMU");
     }
 
     /**
@@ -166,9 +167,6 @@ public class BoschIMU implements IIMU {
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
-
-        //Hardware Map
-        imu = hardwareMap.get(BNO055IMU.class, "boschIMU");
     }
 
     /**

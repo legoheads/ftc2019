@@ -12,10 +12,6 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 @TeleOp(name="Track position") //Name the class
 public class positionTest extends LinearOpMode
 {
-    private DcMotor lf;
-    private DcMotor lb;
-    private DcMotor rf;
-    private DcMotor rb;
 
     //Odometer ports
     private DcMotor intakeLeft;
@@ -35,10 +31,6 @@ public class positionTest extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        lf = hardwareMap.dcMotor.get("lf");
-        lb = hardwareMap.dcMotor.get("lb");
-        rf = hardwareMap.dcMotor.get("rf");
-        rb = hardwareMap.dcMotor.get("rb");
 
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
@@ -47,8 +39,8 @@ public class positionTest extends LinearOpMode
 
         boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
-        imu = new BoschIMU(boschIMU);
-        imu.initialize();
+        imu = new BoschIMU(hardwareMap);
+        imu.init();
 
         //Wait for start button to be clicked
         waitForStart();
@@ -62,9 +54,6 @@ public class positionTest extends LinearOpMode
             telemetry.addData("x angle (use this one):", boschIMU.getAngularOrientation().firstAngle);
             telemetry.addData("y angle: ", boschIMU.getAngularOrientation().secondAngle);
             telemetry.addData("z angle: ", boschIMU.getAngularOrientation().thirdAngle);
-            telemetry.addData("dcmotor toString test: ", lf.toString());
-            telemetry.addData("dcmotor getDeviceName test: ", lf.getDeviceName());
-            telemetry.addData("dcmotor getConnectionInfo test: ", lf.getConnectionInfo());
 
             telemetry.update();
 

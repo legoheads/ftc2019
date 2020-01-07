@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class sideArm implements Arm
 {
     private Servo sideLift;
-    private Servo twister;
     private Servo sideGrab;
 
     private HardwareMap hardwareMap;
@@ -15,7 +14,7 @@ public class sideArm implements Arm
     //Positions for Lifter
     private final double AUTO_START = 0.5;
     private final double TELE_START = 0.15;
-    private final double LIFT_POSITION = 0.3;
+    private final double LIFT_POSITION = 0.2;
     private final double DOWN_POSITION = 0.1;
 
     //Positions for Twister
@@ -28,16 +27,11 @@ public class sideArm implements Arm
     private final double CLOSED_POSITION = 0.9;
 
 
-    public sideArm(HardwareMap hardwareMap, Servo sideLift, Servo twister, Servo sideGrab)
+    public sideArm(HardwareMap hardwareMap)
     {
-        this.sideLift = sideLift;
-        this.twister = twister;
-        this.sideGrab = sideGrab;
-
         this.hardwareMap = hardwareMap;
 
         sideLift = hardwareMap.servo.get("sideLift");
-        twister = hardwareMap.servo.get("twister");
         sideGrab = hardwareMap.servo.get("sideGrab");
     }
 
@@ -45,7 +39,7 @@ public class sideArm implements Arm
     public void init() throws InterruptedException
     {
         sideLift.setPosition(TELE_START);
-        twister.setPosition(PARALLEL_POSITION);
+//        twister.setPosition(PARALLEL_POSITION);
         sideGrab.setPosition(CLOSED_POSITION);
     }
 
@@ -53,7 +47,7 @@ public class sideArm implements Arm
     public void initAuto() throws InterruptedException
     {
         sideLift.setPosition(AUTO_START);
-        twister.setPosition(PERPENDICULAR_POSITION);
+//        twister.setPosition(PERPENDICULAR_POSITION);
         sideGrab.setPosition(OPEN_POSITION);
 
     }
@@ -83,15 +77,27 @@ public class sideArm implements Arm
     }
 
     public void twist() throws InterruptedException{
-        twister.setPosition(PERPENDICULAR_POSITION);
+//        twister.setPosition(PERPENDICULAR_POSITION);
     }
 
     public void parallel() throws InterruptedException{
-        twister.setPosition(PARALLEL_POSITION);
+//        twister.setPosition(PARALLEL_POSITION);
     }
 
     public void partial() throws InterruptedException{
         sideLift.setPosition(LIFT_POSITION);
+    }
+
+    public Servo getSideLift(){
+        return sideLift;
+    }
+
+//    public Servo getTwister(){
+////        return twister;
+//    }
+
+    public Servo getSideGrab(){
+        return sideGrab;
     }
 
 
@@ -100,7 +106,7 @@ public class sideArm implements Arm
     @Override
     public void openSkystone() throws InterruptedException {
         open();
-        twister.setPosition(PERPENDICULAR_POSITION);
+//        twister.setPosition(PERPENDICULAR_POSITION);
         Thread.sleep(500);
         down();
     }

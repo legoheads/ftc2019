@@ -22,18 +22,6 @@ import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 @Autonomous(name="AutoBlue Full", group = "blue") //Name the class
 public class autoBlueFull extends LinearOpMode {
 
-    //Drivetrain motors
-    private DcMotor LF, LB, RF, RB;
-
-    //Intake motors
-    private DcMotor intakeLeft, intakeRight;
-
-    //Linear slide spool motors
-    private DcMotor spoolLeft, spoolRight;
-
-    //Sidearm
-    private Servo sideLift, twister, sideGrab;
-
     private float DRIVE_POWER = (float) 0.3;
     private float TURN_POWER = (float) 0.3;
     private float SHIFT_POWER = (float) 0.3;
@@ -49,6 +37,8 @@ public class autoBlueFull extends LinearOpMode {
     private skystoneChassis chassis;
     private skystoneDetector detector;
 
+    private int STONE_SPACE = 300;
+
 
     //***********************************************************************************************************
     //MAIN BELOW
@@ -56,14 +46,14 @@ public class autoBlueFull extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
 
-        intake = new intake(hardwareMap, intakeLeft, intakeRight);
-        slides = new slides(hardwareMap, spoolLeft, spoolRight);
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE, LF, LB, RF, RB, boschIMU);
-        arm = new sideArm(hardwareMap, sideLift, twister, sideGrab);
+        intake = new intake(hardwareMap);
+        slides = new slides(hardwareMap);
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
+        arm = new sideArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
 
         //Initialize sidearm servos
-        arm.twist();
+//        arm.twist();
         arm.up();
         arm.grab();
 
@@ -74,6 +64,8 @@ public class autoBlueFull extends LinearOpMode {
         //Wait for start button to be clicked
         waitForStart();
 
+        telemetry.addData("Skystone", skystoneLocation);
+
 //***********************************************************************************************************
         //LOOP BELOW
         //While the op mode is active, do anything within the loop
@@ -81,9 +73,49 @@ public class autoBlueFull extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-            if (skystoneLocation== CV.location.LEFT){
+//            if (skystoneLocation== CV.location.LEFT){
+            chassis.rightShiftAutonomous(0.3, 900);
 
-            }
+            chassis.driveAutonomous(-0.3, -700);
+
+            arm.partial();
+            Thread.sleep(500);
+
+            arm.open();
+            Thread.sleep(500);
+
+            arm.down();
+            Thread.sleep(500);
+
+            arm.grab();
+            Thread.sleep(500);
+
+            arm.partial();
+            Thread.sleep(200);
+
+            chassis.leftShiftAutonomous(0.3, 300);
+
+//            arm.up();
+
+            chassis.driveAutonomous(DRIVE_POWER, 3000);
+
+            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
+
+            arm.down();
+
+            Thread.sleep(500);
+            arm.open();
+            Thread.sleep(500);
+            arm.up();
+
+            chassis.leftShiftAutonomous(SHIFT_POWER,400);
+
+            chassis.driveAutonomous(-DRIVE_POWER, -2000);
+
+
+
+
+//            }
 
             if (skystoneLocation== CV.location.MID){
 
@@ -93,34 +125,7 @@ public class autoBlueFull extends LinearOpMode {
 
             }
 
-            arm.partial();
-            Thread.sleep(500);
-            arm.parallel();
-            arm.open();
-            Thread.sleep(500);
-            arm.down();
-            Thread.sleep(500);
-            arm.grab();
-            Thread.sleep(500);
-            arm.partial();
-            Thread.sleep(200);
-            arm.twist();
-            Thread.sleep(500);
-            arm.up();
 
-            chassis.driveAutonomous(DRIVE_POWER, 3000);
-
-            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
-
-            sideLift.setPosition(0.15);
-            Thread.sleep(500);
-            arm.open();
-            Thread.sleep(500);
-            arm.up();
-
-            chassis.leftShiftAutonomous(SHIFT_POWER,300);
-
-            chassis.driveAutonomous(-DRIVE_POWER, -3000);
 
             //Update the data
             telemetry.update();

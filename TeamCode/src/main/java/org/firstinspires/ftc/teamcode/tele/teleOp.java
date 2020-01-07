@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
@@ -15,29 +16,10 @@ import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
 import org.firstinspires.ftc.teamcode.subsystems.platform.*;
+import org.firstinspires.ftc.teamcode.subsystems.stoner.stoner;
 
 @TeleOp(name="teleOp") //Name the class
-public class teleOp extends LinearOpMode
-{
-    //Drivetrain
-    private DcMotor LF, LB, RF, RB;
-
-    //Intake
-    private DcMotor intakeLeft, intakeRight;
-
-    private DcMotor spoolLeft, spoolRight;
-
-    //Outtake
-    Servo gripper;
-    DcMotor spool;
-    CRServo extend;
-
-    //Platform mover
-    private Servo platformLeft, platformRight;
-
-    //Sidearm
-    private Servo sideLift, twister, sideGrab;
-
+public class teleOp extends LinearOpMode {
 
     //Define floats to be used as joystick inputs and trigger inputs
     private float drivePower, shiftPower, leftTurnPower, rightTurnPower, spoolPower;
@@ -53,11 +35,12 @@ public class teleOp extends LinearOpMode
 
     BNO055IMU boschIMU;
 
+    private skystoneChassis chassis;
     private Arm arm;
     private Platform platform;
-    private skystoneChassis chassis;
     private IntakeWheels intake;
     private LinearSlides slides;
+    private stoner stoner;
 
 
     //***********************************************************************************************************
@@ -66,17 +49,12 @@ public class teleOp extends LinearOpMode
     public void runOpMode() throws InterruptedException {
 
 
-        intake = new intake(hardwareMap, intakeLeft, intakeRight);
-        slides = new slides(hardwareMap, spoolLeft, spoolRight);
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE, LF, LB, RF, RB, boschIMU);
-        arm = new sideArm(hardwareMap, sideLift, twister, sideGrab);
-        platform = new platformArms(hardwareMap, platformLeft, platformRight);
-
-        //Get references to the Servo Motors from the hardware map
-        gripper = hardwareMap.servo.get("gripper");
-        extend = hardwareMap.crservo.get("extend");
-
-        gripper.setPosition(0.6);
+        intake = new intake(hardwareMap);
+        slides = new slides(hardwareMap);
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
+        arm = new sideArm(hardwareMap);
+        platform = new platformArms(hardwareMap);
+        stoner = new stoner(hardwareMap);
 
         //Wait for start button to be clicked
         waitForStart();
@@ -91,8 +69,7 @@ public class teleOp extends LinearOpMode
             shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x);
             leftTurnPower = (float) ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.5);
             rightTurnPower = (float) ((gamepad1.right_trigger + gamepad2.right_trigger) * 0.5);
-            spoolPower = gamepad1.right_stick_y + gamepad2.right_stick_y;
-
+            spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
 
             //Drive if the joystick is pushed more Y than X
             if (Math.abs(drivePower) > Math.abs(shiftPower))
@@ -100,9 +77,12 @@ public class teleOp extends LinearOpMode
                chassis.driveTeleop(drivePower);
             }
 
-            if (Math.abs(spoolPower)<0.1){
+            if (Math.abs(spoolPower)>0.1){
+
                 slides.moveSpool(spoolPower);
             }
+            slides.stop();
+
 
             //Shift if the joystick is pushed more on X than Y
             if (Math.abs(shiftPower) > Math.abs(drivePower))
@@ -113,7 +93,7 @@ public class teleOp extends LinearOpMode
             //If the left trigger is pushed, turn left at that power
             if (leftTurnPower > 0)
             {
-//              chassis.leftTurnTeleop(leftTurnPower);
+              chassis.leftTurnTeleop(leftTurnPower);
             }
 
             //If the right trigger is pushed, turn right at that power
@@ -124,8 +104,7 @@ public class teleOp extends LinearOpMode
             }
 
             //If the joysticks are not pushed significantly shut off the wheels
-            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < 0.15)
-            {
+            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < 0.15) {
                 chassis.stopDriving();
             }
 
@@ -141,18 +120,18 @@ public class teleOp extends LinearOpMode
             if(gamepad1.dpad_down){ platform.grab(); }
 
 
-            if (gamepad2.dpad_right)
-            {
-                gripper.setPosition(0.45);
-                extend.setPower(1.0);
+            if (gamepad2.dpad_right) { stoner.extend(); }
+
+            if (gamepad2.x) { stoner.drop(); }
+
+            if (gamepad2.dpad_left) { stoner.retract(); }
+
+            if(gamepad1.back || gamepad2.back){
+                stoner.capDrop();
             }
 
-            if (gamepad2.dpad_left)
-            {
-                gripper.setPosition(0.6);
-                Thread.sleep(100);
-                gripper.setPosition(0.525);
-                extend.setPower(-1.0);
+            if (gamepad1.y){
+                slides.spoolEncoder();
             }
 
             //Update the data

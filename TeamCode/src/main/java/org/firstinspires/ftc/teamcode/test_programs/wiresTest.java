@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import static org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis.oneMotorEncoder;
 
-@Disabled
 @TeleOp(name="Wires Test ") //Name the class
 public class wiresTest extends LinearOpMode {
     //Define drive motors

@@ -15,17 +15,15 @@ public class intake implements IntakeWheels{
     private String intakeState = "Stop";
 
 
-    public intake(HardwareMap hardwareMap, DcMotor intakeLeft, DcMotor intakeRight){
+    public intake(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
-        this.intakeLeft = intakeLeft;
-        this.intakeRight = intakeRight;
-
-        this.intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        this.intakeRight = hardwareMap.dcMotor.get("intakeRight");
+        //Hardware map
+        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
+        intakeRight = hardwareMap.dcMotor.get("intakeRight");
 
         //Reverse left intake motor
-        this.intakeLeft.setDirection(DcMotor.Direction.REVERSE);
+        intakeLeft.setDirection(DcMotor.Direction.REVERSE);
     }
 
     @Override
@@ -47,5 +45,13 @@ public class intake implements IntakeWheels{
     @Override
     public String getIntakeState(){
         return intakeState;
+    }
+
+    public DcMotor getIntakeLeft() {
+        return intakeLeft;
+    }
+
+    public DcMotor getIntakeRight() {
+        return intakeRight;
     }
 }
