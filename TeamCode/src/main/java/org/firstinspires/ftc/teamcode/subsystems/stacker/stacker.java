@@ -1,19 +1,18 @@
-package org.firstinspires.ftc.teamcode.subsystems.stoner;
+package org.firstinspires.ftc.teamcode.subsystems.stacker;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
+import org.firstinspires.ftc.teamcode.subsystems.chassis.DriveTrain;
+import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 
-
-
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
-
-public class stoner {
+public class stacker extends LinearOpMode {
 
     private Servo pusher;
     private Servo gripper;
@@ -28,13 +27,22 @@ public class stoner {
 
     private double CAP_POS = 0.7;
 
-    private long EXTEND_TIME = 3000;
+    private double EXTEND_TIME = 3.0;
+
+    private double MAX_POWER = 1.0;
+    private double STOP_POWER = 0.0;
+    private double SPOOL_POWER = 0.3;
 
     private HardwareMap hardwareMap;
 
     private LinearSlides slides;
 
-    public stoner(HardwareMap hardwareMap){
+    private skystoneChassis chassis;
+
+    private ElapsedTime extensionTimer = new ElapsedTime();
+
+
+    public stacker(HardwareMap hardwareMap){
 
         this.hardwareMap = hardwareMap;
 
@@ -42,9 +50,10 @@ public class stoner {
         gripper = hardwareMap.servo.get("gripper");
         extend = hardwareMap.crservo.get("extend");
 
-        gripper.setPosition(0.525);
+        gripper.setPosition(GRIP_OPEN);
 
         slides = new slides(hardwareMap);
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
 
@@ -52,30 +61,43 @@ public class stoner {
         pusher.setPosition(PUSH);
         Thread.sleep(700);
         gripper.setPosition(GRIP_GRAB);
-        extend.setPower(1.0);
-        Thread.sleep(EXTEND_TIME);
-        extend.setPower(0.0);
+
+        extensionTimer.reset();
+        while (extensionTimer.seconds() < EXTEND_TIME)
+        {
+            extend.setPower(MAX_POWER);
+            chassis.chassisTeleOp(gamepad1, gamepad2);
+        }
+        chassis.stopDriving();
+        extend.setPower(STOP_POWER);
         pusher.setPosition(UNPUSH);
+//        extend.setPower(1.0);
+//        Thread.sleep(EXTEND_TIME);
+//        extend.setPower(0.0);
     }
 
     public void drop() throws InterruptedException{
         gripper.setPosition(GRIP_OPEN);
     }
 
-    public void retract() throws InterruptedException{
+    public void retract() throws InterruptedException
+    {
         drop();
-        slides.moveSpool(0.3);
+        slides.moveSpool(SPOOL_POWER);
         Thread.sleep(1000);
-
         slides.stop();
-        extend.setPower(-1.0);
-        Thread.sleep(EXTEND_TIME);
 
-        long time = System.nanoTime();
-
-        if (System.nanoTime() - time > 1000)
-
-        extend.setPower(0.0);
+        extensionTimer.reset();
+        while (extensionTimer.seconds() < EXTEND_TIME)
+        {
+            extend.setPower(-MAX_POWER);
+            chassis.chassisTeleOp(gamepad1, gamepad2);
+        }
+        chassis.stopDriving();
+        extend.setPower(STOP_POWER);
+//        Thread.sleep(EXTEND_TIME);
+//        long time = System.nanoTime();
+//        if (System.nanoTime() - time > 1000)
     }
 
     public void capDrop() throws InterruptedException{
@@ -110,5 +132,10 @@ public class stoner {
             hasRun = true;
             servo.setPower(power);
         }
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
     }
 }

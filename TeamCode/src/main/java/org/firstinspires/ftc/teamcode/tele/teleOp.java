@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
 import org.firstinspires.ftc.teamcode.subsystems.platform.*;
-import org.firstinspires.ftc.teamcode.subsystems.stoner.stoner;
+import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @TeleOp(name="teleOp") //Name the class
 public class teleOp extends LinearOpMode {
@@ -37,7 +37,7 @@ public class teleOp extends LinearOpMode {
     private Platform platform;
     private IntakeWheels intake;
     private LinearSlides slides;
-    private stoner stoner;
+    private stacker stacker;
 
 
     //***********************************************************************************************************
@@ -51,7 +51,7 @@ public class teleOp extends LinearOpMode {
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         arm = new blueArm(hardwareMap);
         platform = new platformArms(hardwareMap);
-        stoner = new stoner(hardwareMap);
+        stacker = new stacker(hardwareMap);
 
         //Wait for start button to be clicked
         waitForStart();
@@ -117,14 +117,14 @@ public class teleOp extends LinearOpMode {
             if(gamepad1.dpad_down){ platform.grab(); }
 
 
-            if (gamepad2.dpad_right) { stoner.extend(); }
+            if (gamepad2.dpad_right) { stacker.extend(); }
 
-            if (gamepad2.x) { stoner.drop(); }
+            if (gamepad2.x) { stacker.drop(); }
 
-            if (gamepad2.dpad_left) { stoner.retract(); }
+            if (gamepad2.dpad_left) { stacker.retract(); }
 
             if(gamepad1.back || gamepad2.back){
-                stoner.capDrop();
+                stacker.capDrop();
             }
 
             if (gamepad1.y){
