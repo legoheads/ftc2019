@@ -43,14 +43,14 @@ public class redArm implements Arm {
     @Override
     public void partial() throws InterruptedException {
         sideLift.setPosition(LIFT_POS);
-        Thread.sleep(500);
+//        Thread.sleep(500);
     }
 
 
     @Override
     public void grab() throws InterruptedException {
         sideGrab.setPosition(GRAB_POS);
-        Thread.sleep(500);
+        Thread.sleep(1000);
     }
 
     @Override

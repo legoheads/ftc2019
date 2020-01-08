@@ -22,11 +22,13 @@ import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 @Autonomous(name="AutoRed Full", group = "Red") //Name the class
 public class autoRedFull extends LinearOpMode {
 
-    private float DRIVE_POWER = (float) 0.3;
-    private float TURN_POWER = (float) 0.3;
-    private float SHIFT_POWER = (float) 0.3;
+    private float DRIVE_POWER = (float) 0.5;
+    private float TURN_POWER = (float) 0.5;
+    private float SHIFT_POWER = (float) 0.5;
 
     private BNO055IMU boschIMU;
+
+    int driveDistance;
 
     //Skystone location variable
     private CV.location skystoneLocation = CV.location.MID;
@@ -73,15 +75,23 @@ public class autoRedFull extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
-
-//            if (skystoneLocation== CV.location.LEFT){
-            chassis.rightShiftAutonomous(SHIFT_POWER, 950);
-
-            chassis.driveAutonomous(DRIVE_POWER, 800);
-
             arm.partial();
 
             arm.open();
+
+            chassis.rightShiftAutonomous(SHIFT_POWER, 950);
+
+            if (skystoneLocation== CV.location.LEFT) {
+                driveDistance = 200;
+            }
+            if (skystoneLocation== CV.location.MID) {
+                driveDistance = 100;
+            }
+            if (skystoneLocation== CV.location.RIGHT) {
+                driveDistance = 0;
+            }
+
+            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
 
             arm.down();
 
