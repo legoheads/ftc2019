@@ -22,7 +22,7 @@ public class skystoneDetector implements CV {
     private int RUNTIME;
 
     //Camera
-    private OpenCvInternalCamera.CameraDirection CAMERA_DIRECTION = OpenCvInternalCamera.CameraDirection.BACK;
+    private OpenCvInternalCamera.CameraDirection CAMERA_DIRECTION = OpenCvInternalCamera.CameraDirection.FRONT;
     private OpenCvCameraRotation ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     private static float rectHeight = .6f/8f;

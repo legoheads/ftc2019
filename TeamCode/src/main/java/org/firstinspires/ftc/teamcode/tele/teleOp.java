@@ -5,13 +5,10 @@ package org.firstinspires.ftc.teamcode.tele;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.sideArm;
+
+import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
@@ -36,7 +33,7 @@ public class teleOp extends LinearOpMode {
     BNO055IMU boschIMU;
 
     private skystoneChassis chassis;
-    private Arm arm;
+    private blueArm arm;
     private Platform platform;
     private IntakeWheels intake;
     private LinearSlides slides;
@@ -52,7 +49,7 @@ public class teleOp extends LinearOpMode {
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
-        arm = new sideArm(hardwareMap);
+        arm = new blueArm(hardwareMap);
         platform = new platformArms(hardwareMap);
         stoner = new stoner(hardwareMap);
 
@@ -133,6 +130,8 @@ public class teleOp extends LinearOpMode {
             if (gamepad1.y){
                 slides.spoolEncoder();
             }
+
+
 
             //Update the data
             telemetry.update();

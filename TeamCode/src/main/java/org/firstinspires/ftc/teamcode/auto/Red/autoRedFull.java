@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.auto.Blue;
+package org.firstinspires.ftc.teamcode.auto.Red;
 
 //Import necessary items
 
@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
-@Autonomous(name="AutoBlue Full", group = "Blue")
-public class autoBlueFull extends LinearOpMode {
+@Autonomous(name="AutoRed Full", group = "Red") //Name the class
+public class autoRedFull extends LinearOpMode {
 
     private float DRIVE_POWER = (float) 0.3;
     private float TURN_POWER = (float) 0.3;
@@ -49,23 +49,23 @@ public class autoBlueFull extends LinearOpMode {
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new blueArm(hardwareMap);
+        arm = new redArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
+
+        //Initialize sidearm servos
+//        arm.twist();
+        arm.up();
+        arm.grab();
 
         //Look for skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
-
-        //Initialize sidearm
-
-        arm.initAuto();
-
-
-
 
         //Wait for start button to be clicked
         waitForStart();
 
         telemetry.addData("Skystone", skystoneLocation);
+
+
 
 //***********************************************************************************************************
         //LOOP BELOW
@@ -75,32 +75,29 @@ public class autoBlueFull extends LinearOpMode {
 
 
 //            if (skystoneLocation== CV.location.LEFT){
-            chassis.rightShiftAutonomous(0.3, 900);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 950);
 
-            chassis.driveAutonomous(-0.3, -700);
+            chassis.driveAutonomous(DRIVE_POWER, 800);
 
             arm.partial();
-            Thread.sleep(500);
 
             arm.open();
-            Thread.sleep(500);
 
             arm.down();
-            Thread.sleep(500);
 
             arm.grab();
-            Thread.sleep(500);
+
+            Thread.sleep(1000);
 
             arm.partial();
-            Thread.sleep(200);
 
-            chassis.leftShiftAutonomous(0.3, 300);
+            chassis.leftShiftAutonomous(SHIFT_POWER, 400);
 
 //            arm.up();
 
-            chassis.driveAutonomous(DRIVE_POWER, 3000);
+            chassis.driveAutonomous(-DRIVE_POWER, -3100);
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
 
             arm.down();
 
@@ -108,10 +105,11 @@ public class autoBlueFull extends LinearOpMode {
             arm.open();
             Thread.sleep(500);
             arm.up();
+            arm.grab();
 
-            chassis.leftShiftAutonomous(SHIFT_POWER,400);
+            chassis.leftShiftAutonomous(SHIFT_POWER,200);
 
-            chassis.driveAutonomous(-DRIVE_POWER, -2000);
+            chassis.driveAutonomous(DRIVE_POWER, 3000);
 
 
 
