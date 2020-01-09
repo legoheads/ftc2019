@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Disabled
 @TeleOp(name="Motor Test ") //Name the class
 public class motorTest extends LinearOpMode
 {
@@ -43,10 +42,12 @@ public class motorTest extends LinearOpMode
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        DcMotor.ZeroPowerBehavior type = DcMotor.ZeroPowerBehavior.FLOAT;
+
+        leftMotorFront.setZeroPowerBehavior(type);
+        rightMotorFront.setZeroPowerBehavior(type);
+        leftMotorBack.setZeroPowerBehavior(type);
+        rightMotorBack.setZeroPowerBehavior(type);
 
 //        dumper = hardwareMap.dcMotor.get("dumper");
 //        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
@@ -65,7 +66,7 @@ public class motorTest extends LinearOpMode
             int LBStart = leftMotorBack.getCurrentPosition();
             int RBStart = rightMotorBack.getCurrentPosition();
 
-            while (gamepad1.a){
+            while (gamepad1.y){
 
                 leftMotorFront.setPower(0.6);
                 telemetry.addData("LMF: ", leftMotorFront.getCurrentPosition()-LFStart);
@@ -77,6 +78,54 @@ public class motorTest extends LinearOpMode
                 telemetry.addData("LMB: ", leftMotorBack.getCurrentPosition()-LBStart);
 
                 rightMotorBack.setPower(0.6);
+                telemetry.addData("RMB: ", rightMotorBack.getCurrentPosition()-RBStart);
+
+                telemetry.update();
+            }
+            while (gamepad1.x){
+
+                leftMotorFront.setPower(-0.6);
+                telemetry.addData("LMF: ", leftMotorFront.getCurrentPosition()-LFStart);
+
+                rightMotorFront.setPower(0.6);
+                telemetry.addData("RMF: ", rightMotorFront.getCurrentPosition()-RFStart);
+
+                leftMotorBack.setPower(0.6);
+                telemetry.addData("LMB: ", leftMotorBack.getCurrentPosition()-LBStart);
+
+                rightMotorBack.setPower(-0.6);
+                telemetry.addData("RMB: ", rightMotorBack.getCurrentPosition()-RBStart);
+
+                telemetry.update();
+            }
+            while (gamepad1.b){
+
+                leftMotorFront.setPower(0.6);
+                telemetry.addData("LMF: ", leftMotorFront.getCurrentPosition()-LFStart);
+
+                rightMotorFront.setPower(-0.6);
+                telemetry.addData("RMF: ", rightMotorFront.getCurrentPosition()-RFStart);
+
+                leftMotorBack.setPower(-0.6);
+                telemetry.addData("LMB: ", leftMotorBack.getCurrentPosition()-LBStart);
+
+                rightMotorBack.setPower(0.6);
+                telemetry.addData("RMB: ", rightMotorBack.getCurrentPosition()-RBStart);
+
+                telemetry.update();
+            }
+            while (gamepad1.a){
+
+                leftMotorFront.setPower(-0.6);
+                telemetry.addData("LMF: ", leftMotorFront.getCurrentPosition()-LFStart);
+
+                rightMotorFront.setPower(-0.6);
+                telemetry.addData("RMF: ", rightMotorFront.getCurrentPosition()-RFStart);
+
+                leftMotorBack.setPower(-0.6);
+                telemetry.addData("LMB: ", leftMotorBack.getCurrentPosition()-LBStart);
+
+                rightMotorBack.setPower(-0.6);
                 telemetry.addData("RMB: ", rightMotorBack.getCurrentPosition()-RBStart);
 
                 telemetry.update();

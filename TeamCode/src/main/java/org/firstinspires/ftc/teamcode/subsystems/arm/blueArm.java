@@ -13,11 +13,11 @@ public class blueArm implements Arm {
     //Positions for Lifter
     private final double AUTO_START = 0.5;
     private final double TELE_START = 0.15;
-    private final double LIFT_POS = 0.6;
+    private final double LIFT_POS = 0.75;
     private final double DOWN_POS= 0.85;
 
     //Positions for Grabber
-    private final double  OPEN_POS= 0.5;
+    private final double  OPEN_POS= 0.7;
     private final double GRAB_POS = 0.1;
 
 
@@ -50,7 +50,6 @@ public class blueArm implements Arm {
     @Override
     public void grab() throws InterruptedException {
         sideGrab.setPosition(GRAB_POS);
-        Thread.sleep(500);
     }
 
     @Override
@@ -71,6 +70,11 @@ public class blueArm implements Arm {
     public void initAuto() throws InterruptedException {
         up();
         grab();
+    }
+
+    @Override
+    public void partial2() throws InterruptedException {
+        sideLift.setPosition(0.6);
     }
 
     public void setPos(double pos) throws InterruptedException{

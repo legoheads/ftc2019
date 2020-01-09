@@ -167,7 +167,7 @@ public class skystoneChassis implements DriveTrain {
      */
     public void driveAutonomous(double power, int degrees) throws InterruptedException {
         //Everything in the same direction creates linear driving
-        moveDriveMotorsWithEncoders(degrees, degrees, degrees, degrees, 0.97*power, 0.97*power, power, power);
+        moveDriveMotorsWithEncoders(degrees, degrees, degrees, degrees, power, power, power, power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();
@@ -272,7 +272,7 @@ public class skystoneChassis implements DriveTrain {
      */
     public void leftShiftAutonomous(double power, int degrees) throws InterruptedException {
         //This sequence of backwards, forwards, forwards, backwards makes the robot shift left
-        moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -0.95*power, power, 0.95*power, power);
+        moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -power, power, power, -power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();
@@ -285,7 +285,7 @@ public class skystoneChassis implements DriveTrain {
      */
     public void rightShiftAutonomous(double power, int degrees) throws InterruptedException {
         //This sequence of forwards, backwards, backwards, forwards makes the robot shift right
-        moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees, power, -power, -power, power);
+        moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees,power, -power, -power, power);
         stopDriving();
         Thread.sleep(10);
         stopDriving();

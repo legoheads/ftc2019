@@ -13,12 +13,12 @@ public class redArm implements Arm {
     //Positions for Lifter
     private final double AUTO_START = 0.5;
     private final double TELE_START = 0.15;
-    private final double LIFT_POS = 0.3;
+    private final double LIFT_POS = 0.1;
     private final double DOWN_POS= 0.0;
 
     //Positions for Grabber
     private final double  OPEN_POS= 0.5;
-    private final double GRAB_POS = 0.9;
+    private final double GRAB_POS = 1.0;
 
 
     public redArm(HardwareMap hardwareMap) {
@@ -37,12 +37,18 @@ public class redArm implements Arm {
     @Override
     public void down() throws InterruptedException {
         sideLift.setPosition(DOWN_POS);
-        Thread.sleep(500);
+//        Thread.sleep(500);
     }
 
     @Override
     public void partial() throws InterruptedException {
         sideLift.setPosition(LIFT_POS);
+//        Thread.sleep(500);
+    }
+
+
+    public void partial2() throws InterruptedException {
+        sideLift.setPosition(0.3);
 //        Thread.sleep(500);
     }
 

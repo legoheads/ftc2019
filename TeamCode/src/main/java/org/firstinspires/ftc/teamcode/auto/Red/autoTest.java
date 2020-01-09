@@ -15,17 +15,14 @@ import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
-import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
-import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
-@Autonomous(name="AutoRed Full", group = "Red") //Name the class
-public class autoRedFull extends LinearOpMode {
+@Autonomous(name="AutoTest", group = "Red") //Name the class
+public class autoTest extends LinearOpMode {
 
     private float DRIVE_POWER = (float) 0.5;
     private float TURN_POWER = (float) 0.5;
@@ -45,7 +42,6 @@ public class autoRedFull extends LinearOpMode {
     private LinearSlides slides;
     private skystoneChassis chassis;
     private skystoneDetector detector;
-    private Platform platform;
 
     private int STONE_SPACE = 300;
 
@@ -63,7 +59,6 @@ public class autoRedFull extends LinearOpMode {
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
         arm = new blueArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
-        platform = new platformArms(hardwareMap);
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distSensor;
 
@@ -88,62 +83,39 @@ public class autoRedFull extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
-            chassis.shiftTeleop(0.5);
-
-            arm.down();
-
-            arm.open();
-
-//            Thread.sleep(1000);
-
             while((!(distSensor.getDistance(DistanceUnit.INCH)<8))){
                 chassis.shiftTeleop(0.5);
-
             }
-            chassis.stopDriving();
-
-            arm.grab();
-
-            Thread.sleep(500);
-
-            arm.partial2();
-
-            chassis.rightShiftAutonomous(SHIFT_POWER, 400);
-
-            chassis.driveAutonomous(DRIVE_POWER, 3100);
-
-            chassis.leftShiftAutonomous(SHIFT_POWER, 300);
-
-            arm.down();
-
-            Thread.sleep(500);
-            arm.open();
-            arm.up();
-            arm.grab();
-
-            chassis.rightShiftAutonomous(SHIFT_POWER,200);
-
-            chassis.leftTurnAutonomous(0.5,770);
-
-            chassis.driveAutonomous(-0.5, -300);
-
-            platform.grab();
-
-            Thread.sleep(500);
-
-            chassis.rightShiftAutonomous(0.5, 300);
-
-            chassis.driveAutonomous(0.5, 500);
-
-            chassis.leftTurnAutonomous(0.5, 770);
-
-            platform.up();
-
-            chassis.driveAutonomous(0.5, 1500);
-
-
-
-//            chassis.driveAutonomous(-DRIVE_POWER, -2700);
+//
+//            chassis.stopDriving();
+//
+//            arm.grab();
+//
+//            Thread.sleep(1000);
+//
+//            arm.partial2();
+//
+//            Thread.sleep(500);
+//
+//            chassis.rightShiftAutonomous(SHIFT_POWER, 400);
+//
+////            arm.up();
+//
+//            chassis.driveAutonomous(DRIVE_POWER, 2500);
+//
+//            chassis.leftShiftAutonomous(SHIFT_POWER, 400);
+//
+//            arm.down();
+//
+//            Thread.sleep(500);
+//            arm.open();
+//            Thread.sleep(500);
+//            arm.up();
+//            arm.grab();
+//
+//            chassis.rightShiftAutonomous(SHIFT_POWER,400);
+//
+//            chassis.driveAutonomous(-DRIVE_POWER, -3000);
 
 //            chassis.rightShiftAutonomous(SHIFT_POWER, 1050);
 //
