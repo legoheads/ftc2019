@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.imu.*;
+import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
+import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,6 +22,8 @@ public class skystoneChassis implements DriveTrain {
     private IIMU imu;
     private HardwareMap hardwareMap;
 
+    private LinearSlides slides;
+
     /**
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
@@ -27,6 +31,8 @@ public class skystoneChassis implements DriveTrain {
     public skystoneChassis(HardwareMap hardwareMap, DcMotor.ZeroPowerBehavior type) {
 
         this.hardwareMap = hardwareMap;
+
+        slides = new slides(hardwareMap);
 
         //Hardware mapping
         this.LF = hardwareMap.dcMotor.get("LF");
@@ -356,15 +362,22 @@ public class skystoneChassis implements DriveTrain {
 
 
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
-        float drivePower = (gamepad1.left_stick_y + gamepad2.left_stick_y);
-        float shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x);
-        float leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger);
-        float rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger);
+        float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.7;
+        float shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x)*(float)0.7;
+        float leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger)*(float)0.5;
+        float rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger)*(float)0.5;
+        float spoolPower = -(gamepad2.right_stick_y);
 
         //Drive if joystick pushed more Y than X on gamepad1 (fast)
         if (Math.abs(drivePower) > Math.abs(shiftPower)) {
             driveTeleop(drivePower);
         }
+
+        if (Math.abs(spoolPower)>0.1){
+
+            slides.moveSpool(spoolPower);
+        }
+        slides.stop();
 
         //Shift if pushed more on X than Y on gamepad1 (fast)
         if (Math.abs(shiftPower) > Math.abs(drivePower)) {

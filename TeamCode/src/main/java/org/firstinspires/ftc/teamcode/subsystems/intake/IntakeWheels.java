@@ -4,5 +4,6 @@ public interface IntakeWheels {
 
     void intake();
     void eject();
+    void stop();
     String getIntakeState();
 }

@@ -9,8 +9,8 @@ public class intake implements IntakeWheels{
 
     private DcMotor intakeLeft, intakeRight;
 
-    private double INTAKE_POWER = 1.0;
-    private double EJECT_POWER = 0.3;
+    private double INTAKE_POWER = 0.3;
+    private double EJECT_POWER = 1.0;
 
     private String intakeState = "Stop";
 
@@ -40,6 +40,11 @@ public class intake implements IntakeWheels{
         intakeRight.setPower(-EJECT_POWER);
 
         intakeState = "Out";
+    }
+
+    public void stop(){
+        intakeLeft.setPower(0.0);
+        intakeRight.setPower(0.0);
     }
 
     @Override

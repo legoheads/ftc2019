@@ -2,18 +2,27 @@
 package org.firstinspires.ftc.teamcode.tele;
 
 //Import necessary items
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
 import org.firstinspires.ftc.teamcode.subsystems.platform.*;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
+
+import java.sql.Time;
+import java.util.Locale;
 
 @TeleOp(name="teleOp") //Name the class
 public class teleOp extends LinearOpMode {
@@ -25,12 +34,9 @@ public class teleOp extends LinearOpMode {
     float flipDownPower = (float) 0.3;
     float maxPower = (float) 0.8;
 
+    private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
     ElapsedTime extendTime = new ElapsedTime();
-
-    int xPress = 0;
-    int yPress = 0;
-
-    BNO055IMU boschIMU;
 
     private skystoneChassis chassis;
     private redArm arm;
@@ -51,10 +57,12 @@ public class teleOp extends LinearOpMode {
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         arm = new redArm(hardwareMap);
         platform = new platformArms(hardwareMap);
-        stacker = new stacker(hardwareMap);
+        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
         //Wait for start button to be clicked
         waitForStart();
+
+        intake.intake();
 
 //***********************************************************************************************************
         //LOOP BELOWF
@@ -112,16 +120,27 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("Intake: ", intake.getIntakeState());
 
 
-            if(gamepad1.dpad_up) { platform.up(); }
+//            if(gamepad1.dpad_up) { platform.up(); }
+//
+//            if(gamepad1.dpad_down){ platform.grab(); }
 
-            if(gamepad1.dpad_down){ platform.grab(); }
 
-
-            if (gamepad2.dpad_right) { stacker.extend(); }
+            if (gamepad2.dpad_right) {
+                stacker.extend();
+                intake.stop();
+            }
 
             if (gamepad2.x) { stacker.drop(); }
 
-            if (gamepad2.dpad_left) { stacker.retract(); }
+            if (gamepad2.dpad_left) {
+                stacker.retract();
+                intake.intake();
+            }
+
+            if (gamepad2.b){
+                chassis.stopDriving();
+                intake.stop();
+            }
 
             if(gamepad1.back || gamepad2.back){
                 stacker.capDrop();
@@ -131,8 +150,20 @@ public class teleOp extends LinearOpMode {
                 slides.spoolEncoder();
             }
 
+            if (gamepad1.dpad_left){
+                stacker.stoneShiftLeft();
+            }
+
+            if (gamepad1.dpad_right){
+                stacker.stoneShiftRight();
+            }
+
+            if (gamepad1.dpad_down){
+                stacker.stoneReverse();
+            }
 
 
+            telemetry.addData("Runtime", runtime);
             //Update the data
             telemetry.update();
 

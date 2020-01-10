@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.tele;
+package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Disabled
 @TeleOp(name="PushBot") //Name the class
-public class pushbotTele extends LinearOpMode {
+public class testbotTele extends LinearOpMode {
     //Drivetrain
     private DcMotor LF, RF, LB, RB;
 
