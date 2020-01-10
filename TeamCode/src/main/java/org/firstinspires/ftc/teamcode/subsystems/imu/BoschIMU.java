@@ -26,6 +26,8 @@ public class BoschIMU implements IIMU {
         this.hardwareMap = hardwareMap;
 
         imu = hardwareMap.get(BNO055IMU.class, "boschIMU");
+
+        offset = 0;
     }
 
     /**
@@ -34,7 +36,7 @@ public class BoschIMU implements IIMU {
      */
     @Override
     public double getXAngle() {
-        return -imu.getAngularOrientation().thirdAngle - offset;
+        return imu.getAngularOrientation().thirdAngle - offset;
     }
 
     /**
@@ -43,7 +45,7 @@ public class BoschIMU implements IIMU {
      */
     @Override
     public double getYAngle() {
-        return -imu.getAngularOrientation().secondAngle - offset;
+        return imu.getAngularOrientation().secondAngle - offset;
     }
 
     /**
@@ -52,7 +54,7 @@ public class BoschIMU implements IIMU {
      */
     @Override
     public double getZAngle() {
-        return -imu.getAngularOrientation().firstAngle - offset;
+        return imu.getAngularOrientation().firstAngle - offset;
     }
     /**
      * Gets the angle on the z-axis while placing the imu discontinuity 180 degrees from the desired angle

@@ -6,8 +6,7 @@ public interface Arm {
     //Put the arm down
     void down() throws InterruptedException;
     //Put the arm between up and down
-    void partial() throws InterruptedException;
-    void partial2() throws InterruptedException;
+    void lift() throws InterruptedException;
 
     //Grab the block
     void grab() throws InterruptedException;

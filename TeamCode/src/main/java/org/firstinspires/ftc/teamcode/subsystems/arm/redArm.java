@@ -13,50 +13,36 @@ public class redArm implements Arm {
     //Positions for Lifter
     private final double AUTO_START = 0.5;
     private final double TELE_START = 0.15;
-    private final double LIFT_POS = 0.1;
-    private final double DOWN_POS= 0.0;
+    private final double LIFT_POS = 0.75;
+    private final double DOWN_POS= 0.85;
 
     //Positions for Grabber
-    private final double  OPEN_POS= 0.5;
-    private final double GRAB_POS = 1.0;
+    private final double  OPEN_POS= 0.7;
+    private final double GRAB_POS = 0.1;
 
 
     public redArm(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
 
-        sideLift = hardwareMap.servo.get("sideLiftRed");
-        sideGrab = hardwareMap.servo.get("sideGrabRed");
+        sideLift = hardwareMap.servo.get("sideLiftBlue");
+        sideGrab = hardwareMap.servo.get("sideGrabBlue");
     }
 
     @Override
     public void up() throws InterruptedException {
         sideLift.setPosition(AUTO_START);
-        Thread.sleep(500);
+//        Thread.sleep(500);
     }
 
     @Override
     public void down() throws InterruptedException {
         sideLift.setPosition(DOWN_POS);
-//        Thread.sleep(500);
+        Thread.sleep(500);
     }
-
-    @Override
-    public void partial() throws InterruptedException {
-        sideLift.setPosition(LIFT_POS);
-//        Thread.sleep(500);
-    }
-
-
-    public void partial2() throws InterruptedException {
-        sideLift.setPosition(0.3);
-//        Thread.sleep(500);
-    }
-
 
     @Override
     public void grab() throws InterruptedException {
         sideGrab.setPosition(GRAB_POS);
-        Thread.sleep(1000);
     }
 
     @Override
@@ -64,6 +50,8 @@ public class redArm implements Arm {
         sideGrab.setPosition(OPEN_POS);
         Thread.sleep(500);
     }
+
+
 
     @Override
     public void init() throws InterruptedException {
@@ -75,5 +63,14 @@ public class redArm implements Arm {
     public void initAuto() throws InterruptedException {
         up();
         grab();
+    }
+
+    @Override
+    public void lift() throws InterruptedException {
+        sideLift.setPosition(0.6);
+    }
+
+    public void setPos(double pos) throws InterruptedException{
+        sideGrab.setPosition(pos);
     }
 }

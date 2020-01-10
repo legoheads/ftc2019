@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.imu.*;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -103,11 +103,7 @@ public class skystoneChassis implements DriveTrain {
         setDriveMotorPowers(-power, power, power, -power);
     }
 
-    public void coeffShiftTeleop(double power) throws InterruptedException {
-        double leftPower = 0.8 * power;
-        double rightPower = power;
-        setDriveMotorPowers(-leftPower, leftPower, rightPower, -rightPower);
-    }
+
 
     public void resetEncoders() throws InterruptedException {
         //Reset the encoders
@@ -127,7 +123,66 @@ public class skystoneChassis implements DriveTrain {
      * Takes in powers for 4 drive motors, as well as 4 encoder distances
      * Allows us to run at the entered power, for the entered distance
      */
-    public void moveDriveMotorsWithEncoders(int LFDegrees, int LBDegrees, int RFDegrees, int RBDegrees, double LFPower, double LBPower, double RFPower, double RBPower) throws InterruptedException {
+    public void driveAutonomous(double power, int degrees) throws InterruptedException {
+        //Reset the encoders
+        resetEncoders();
+
+        //Sets the target position as the corresponding values entered
+        LF.setTargetPosition(degrees);
+        LB.setTargetPosition(degrees);
+        RF.setTargetPosition(degrees);
+        RB.setTargetPosition(degrees);
+
+        //Set up the motors to run to the given position
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        double startAngle = imu.getZAngle();
+        double COEFF = 0.94;
+
+        ElapsedTime timer = new ElapsedTime();
+
+        //Turn on the motors at the corresponding powers
+        setDriveMotorPowers(power, power, power, power);
+
+        timer.reset();
+
+        //Empty while loop while the motors are moving
+        while ((LF.isBusy()) && (RF.isBusy()) && (LB.isBusy()) && (RB.isBusy()) || (timer.seconds() < 4.0))
+        {
+            if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
+                if (imu.getZAngle() > startAngle) {
+                    setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
+                }
+
+                if (imu.getZAngle() < startAngle) {
+                    setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
+                }
+            }
+        }
+
+        //Stop driving
+        stopDriving();
+
+        //Set up the motors to run to the given position
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+
+
+
+    /**
+     * Shift right for the given distance at the given power
+     *
+     * @param degrees distance
+     */
+    public void rightShiftAutonomous( double power, int degrees) throws InterruptedException {
         //Reset the encoders
         resetEncoders();
 
@@ -138,143 +193,36 @@ public class skystoneChassis implements DriveTrain {
         RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Sets the target position as the corresponding values entered
-        LF.setTargetPosition(LFDegrees);
-        LB.setTargetPosition(LBDegrees);
-        RF.setTargetPosition(RFDegrees);
-        RB.setTargetPosition(RBDegrees);
+        LF.setTargetPosition(degrees);
+        LB.setTargetPosition(-degrees);
+        RF.setTargetPosition(-degrees);
+        RB.setTargetPosition(degrees);
+
+        double startAngle = imu.getZAngle();
+        double COEFF = 0.94;
+
+        ElapsedTime timer = new ElapsedTime();
 
         //Turn on the motors at the corresponding powers
-        setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
+        setDriveMotorPowers(power, -power, -power, power);
+
+        timer.reset();
 
         //Empty while loop while the motors are moving
-        while ((LF.isBusy()) && (RF.isBusy()) && (LB.isBusy()) && (RB.isBusy())) {
+        while ((LF.isBusy()) && (RF.isBusy()) && (LB.isBusy()) && (RB.isBusy()) || (timer.seconds() < 4.0))
+        {
+            if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
+                if (imu.getZAngle() > startAngle) {
+                    setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
+                }
+
+                if (imu.getZAngle() < startAngle) {
+                    setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
+                }
+            }
         }
 
         //Stop driving
-        stopDriving();
-
-        //Use the encoders in the future
-        LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * Drive for the given distance at the given power
-     *
-     * @param degrees distance
-     */
-    public void driveAutonomous(double power, int degrees) throws InterruptedException {
-        //Everything in the same direction creates linear driving
-        moveDriveMotorsWithEncoders(degrees, degrees, degrees, degrees, power, power, power, power);
-        stopDriving();
-        Thread.sleep(10);
-        stopDriving();
-    }
-
-    /**
-     * Turn left for the given distance at the given power
-     *
-     * @param degrees distance
-     */
-    public void leftTurnAutonomous(double power, int degrees) throws InterruptedException {
-        //Left motors backwards and right motors forwards gives us a left turn
-        moveDriveMotorsWithEncoders(degrees, degrees, -degrees, -degrees, power, power, -power, -power);
-        stopDriving();
-        Thread.sleep(10);
-        stopDriving();
-    }
-
-    public void encoderCoeffLeftTurn(double power, int degrees) throws InterruptedException {
-        double factor = 21.7;
-        int newDegrees = (int) factor * degrees;
-        leftTurnAutonomous(power, newDegrees);
-    }
-
-    /**
-     * Turn right for the given distance at the given power
-     *
-     * @param degrees distance
-     */
-    public void rightTurnAutonomous(double power, int degrees) throws InterruptedException {
-        //Right motors backwards and left motors forwards gives us a right turn
-        moveDriveMotorsWithEncoders(-degrees, -degrees, degrees, degrees, -power, -power, power, power);
-        stopDriving();
-        Thread.sleep(10);
-        stopDriving();
-    }
-
-    public void encoderCoeffRightTurn(double power, int degrees) throws InterruptedException {
-        double factor = 21.7;
-        int newDegrees = (int) factor * degrees;
-        rightTurnAutonomous(power, newDegrees);
-    }
-
-
-//    public void rightTurnIMU(double power, int target) throws InterruptedException {
-//        while (boschIMU.getAngularOrientation().firstAngle > target) {
-//            rightTurnTeleop(power);
-//        }
-//        stopDriving();
-//        while (boschIMU.getAngularOrientation().firstAngle < target) {
-//            leftTurnTeleop(0.2);
-//        }
-//        stopDriving();
-//    }
-//
-//    public void leftTurnIMU(double power, int target) throws InterruptedException {
-//        while (boschIMU.getAngularOrientation().firstAngle < target) {
-//            leftTurnTeleop(power);
-//        }
-//
-//        stopDriving();
-//        while (boschIMU.getAngularOrientation().firstAngle > target) {
-//            rightTurnTeleop(0.2);
-//        }
-//        stopDriving();
-//
-//    }
-//
-//    public void pidIMULeft(double power, int degrees) throws InterruptedException {
-//        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
-//            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
-//                leftTurnTeleop(power);
-//            }
-//            stopDriving();
-//            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
-//                rightTurnTeleop(power);
-//            }
-//            stopDriving();
-//        }
-//        stopDriving();
-//    }
-//
-//    public void pidIMURight(double power, int degrees) throws InterruptedException {
-//        while (Math.abs((double) degrees - boschIMU.getAngularOrientation().firstAngle) > 1) {
-//            while (boschIMU.getAngularOrientation().firstAngle > degrees) {
-//                rightTurnTeleop(power);
-//            }
-//            stopDriving();
-//            while (boschIMU.getAngularOrientation().firstAngle < degrees) {
-//                leftTurnTeleop(power);
-//            }
-//            stopDriving();
-//        }
-//        stopDriving();
-//    }
-
-
-    /**
-     * Shift left for the given distance at the given power
-     *
-     * @param degrees distance
-     */
-    public void leftShiftAutonomous(double power, int degrees) throws InterruptedException {
-        //This sequence of backwards, forwards, forwards, backwards makes the robot shift left
-        moveDriveMotorsWithEncoders(-degrees, degrees, degrees, -degrees, -power, power, power, -power);
-        stopDriving();
-        Thread.sleep(10);
         stopDriving();
     }
 
@@ -283,13 +231,103 @@ public class skystoneChassis implements DriveTrain {
      *
      * @param degrees distance
      */
-    public void rightShiftAutonomous(double power, int degrees) throws InterruptedException {
-        //This sequence of forwards, backwards, backwards, forwards makes the robot shift right
-        moveDriveMotorsWithEncoders(degrees, -degrees, -degrees, degrees,power, -power, -power, power);
-        stopDriving();
-        Thread.sleep(10);
+    public void leftShiftAutonomous( double power, int degrees) throws InterruptedException {
+        //Reset the encoders
+        resetEncoders();
+
+        //Set up the motors to run to the given position
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Sets the target position as the corresponding values entered
+        LF.setTargetPosition(-degrees);
+        LB.setTargetPosition(degrees);
+        RF.setTargetPosition(degrees);
+        RB.setTargetPosition(-degrees);
+
+        double startAngle = imu.getZAngle();
+        double COEFF = 0.94;
+
+        ElapsedTime timer = new ElapsedTime();
+
+        //Turn on the motors at the corresponding powers
+        setDriveMotorPowers(-power, power, power, -power);
+
+        timer.reset();
+
+        //Empty while loop while the motors are moving
+        while ((LF.isBusy()) && (RF.isBusy()) && (LB.isBusy()) && (RB.isBusy()) || (timer.seconds() < 4.0))
+        {
+            if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
+                if (imu.getZAngle() > startAngle) {
+                    setDriveMotorPowers(COEFF * power, power, power, COEFF * power);
+                }
+
+                if (imu.getZAngle() < startAngle) {
+                    setDriveMotorPowers(power, COEFF * power, COEFF * power, power);
+                }
+            }
+        }
+
+        //Stop driving
         stopDriving();
     }
+
+
+    public void rightTurnIMU(double power, int target) throws InterruptedException {
+        while (imu.getZAngle() > target) {
+            rightTurnTeleop(power);
+        }
+        stopDriving();
+        while (imu.getZAngle() < target) {
+            leftTurnTeleop(0.2);
+        }
+        stopDriving();
+    }
+
+    public void leftTurnIMU(double power, int target) throws InterruptedException {
+        while (imu.getZAngle() < target) {
+            leftTurnTeleop(power);
+        }
+
+        stopDriving();
+        while (imu.getZAngle() > target) {
+            rightTurnTeleop(0.2);
+        }
+        stopDriving();
+
+    }
+
+    public void pidIMULeft(double power, int degrees) throws InterruptedException {
+        while (Math.abs((double) degrees - imu.getZAngle()) > 1) {
+            while (imu.getZAngle() < degrees) {
+                leftTurnTeleop(power);
+            }
+            stopDriving();
+            while (imu.getZAngle() > degrees) {
+                rightTurnTeleop(power);
+            }
+            stopDriving();
+        }
+        stopDriving();
+    }
+
+    public void pidIMURight(double power, int degrees) throws InterruptedException {
+        while (Math.abs((double) degrees - imu.getZAngle()) > 1) {
+            while (imu.getZAngle() > degrees) {
+                rightTurnTeleop(power);
+            }
+            stopDriving();
+            while (imu.getZAngle() < degrees) {
+                leftTurnTeleop(power);
+            }
+            stopDriving();
+        }
+        stopDriving();
+    }
+
 
     public void odometryMotion(DcMotor motor, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry) {
         degrees *= -1;

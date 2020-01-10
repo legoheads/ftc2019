@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
@@ -33,7 +33,7 @@ public class teleOp extends LinearOpMode {
     BNO055IMU boschIMU;
 
     private skystoneChassis chassis;
-    private blueArm arm;
+    private redArm arm;
     private Platform platform;
     private IntakeWheels intake;
     private LinearSlides slides;
@@ -49,7 +49,7 @@ public class teleOp extends LinearOpMode {
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
-        arm = new blueArm(hardwareMap);
+        arm = new redArm(hardwareMap);
         platform = new platformArms(hardwareMap);
         stacker = new stacker(hardwareMap);
 

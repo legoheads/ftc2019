@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
@@ -49,7 +48,7 @@ public class autoBlueFull extends LinearOpMode {
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new blueArm(hardwareMap);
+        arm = new redArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
 
         //Look for skystone until play is pressed
@@ -79,20 +78,20 @@ public class autoBlueFull extends LinearOpMode {
 
             chassis.driveAutonomous(-0.3, -700);
 
-            arm.partial();
-            Thread.sleep(500);
-
-            arm.open();
-            Thread.sleep(500);
-
-            arm.down();
-            Thread.sleep(500);
-
-            arm.grab();
-            Thread.sleep(500);
-
-            arm.partial();
-            Thread.sleep(200);
+//            arm.partial();
+//            Thread.sleep(500);
+//
+//            arm.open();
+//            Thread.sleep(500);
+//
+//            arm.down();
+//            Thread.sleep(500);
+//
+//            arm.grab();
+//            Thread.sleep(500);
+//
+//            arm.partial();
+//            Thread.sleep(200);
 
             chassis.leftShiftAutonomous(0.3, 300);
 

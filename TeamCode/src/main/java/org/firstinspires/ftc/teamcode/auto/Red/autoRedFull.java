@@ -14,9 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
@@ -31,8 +32,6 @@ public class autoRedFull extends LinearOpMode {
     private float TURN_POWER = (float) 0.5;
     private float SHIFT_POWER = (float) 0.5;
 
-    private BNO055IMU boschIMU;
-
     private DistanceSensor distSensor;
 
     int driveDistance;
@@ -46,6 +45,7 @@ public class autoRedFull extends LinearOpMode {
     private skystoneChassis chassis;
     private skystoneDetector detector;
     private Platform platform;
+    private IIMU imu;
 
     private int STONE_SPACE = 300;
 
@@ -61,9 +61,10 @@ public class autoRedFull extends LinearOpMode {
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new blueArm(hardwareMap);
+        arm = new redArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
         platform = new platformArms(hardwareMap);
+        imu = new BoschIMU(hardwareMap);
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distSensor;
 
@@ -72,7 +73,9 @@ public class autoRedFull extends LinearOpMode {
         arm.up();
         arm.grab();
 
-        //Look for skystone until play is pressed
+
+
+        //Look for Skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
 
         //Wait for start button to be clicked
@@ -88,7 +91,20 @@ public class autoRedFull extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
-            chassis.shiftTeleop(0.5);
+            if (skystoneLocation== CV.location.LEFT) {
+                driveDistance = 0;
+            }
+            if (skystoneLocation== CV.location.MID) {
+                driveDistance = 160;
+            }
+            if (skystoneLocation== CV.location.RIGHT) {
+                driveDistance = 320;
+            }
+
+            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
+
+
+            chassis.shiftTeleop(SHIFT_POWER);
 
             arm.down();
 
@@ -96,8 +112,25 @@ public class autoRedFull extends LinearOpMode {
 
 //            Thread.sleep(1000);
 
-            while((!(distSensor.getDistance(DistanceUnit.INCH)<8))){
-                chassis.shiftTeleop(0.5);
+            double startAngle = imu.getZAngle();
+            double COEFF = 0.94;
+
+
+
+            while((!(distSensor.getDistance(DistanceUnit.INCH)<10)))
+            {
+                chassis.shiftTeleop(SHIFT_POWER);
+                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+                {
+                    if (imu.getZAngle() > startAngle) {
+                        chassis.setDriveMotorPowers(COEFF * SHIFT_POWER, SHIFT_POWER, SHIFT_POWER, COEFF * SHIFT_POWER);
+                    }
+
+                    if (imu.getZAngle() < startAngle) {
+                        chassis.setDriveMotorPowers(SHIFT_POWER, COEFF * SHIFT_POWER, COEFF * SHIFT_POWER, SHIFT_POWER);
+                    }
+                }
+
 
             }
             chassis.stopDriving();
@@ -106,13 +139,13 @@ public class autoRedFull extends LinearOpMode {
 
             Thread.sleep(500);
 
-            arm.partial2();
+            arm.lift();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 400);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
 
-            chassis.driveAutonomous(DRIVE_POWER, 3100);
+            chassis.driveAutonomous(DRIVE_POWER, 3100 - driveDistance);
 
-            chassis.leftShiftAutonomous(SHIFT_POWER, 300);
+            chassis.leftShiftAutonomous(SHIFT_POWER, 400);
 
             arm.down();
 
@@ -123,101 +156,23 @@ public class autoRedFull extends LinearOpMode {
 
             chassis.rightShiftAutonomous(SHIFT_POWER,200);
 
-            chassis.leftTurnAutonomous(0.5,770);
+            chassis.rightTurnIMU(TURN_POWER,-90);
 
-            chassis.driveAutonomous(-0.5, -300);
+            chassis.driveAutonomous(-DRIVE_POWER, -300);
 
             platform.grab();
 
             Thread.sleep(500);
 
-            chassis.rightShiftAutonomous(0.5, 300);
+//            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
 
-            chassis.driveAutonomous(0.5, 500);
-
-            chassis.leftTurnAutonomous(0.5, 770);
+            chassis.driveAutonomous(DRIVE_POWER, 500);
 
             platform.up();
 
-            chassis.driveAutonomous(0.5, 1500);
+            chassis.rightShiftAutonomous(SHIFT_POWER,1000);
 
-
-
-//            chassis.driveAutonomous(-DRIVE_POWER, -2700);
-
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 1050);
-//
-//            if (skystoneLocation== CV.location.LEFT) {
-//                driveDistance = 200;
-//            }
-//            if (skystoneLocation== CV.location.MID) {
-//                driveDistance = 100;
-//            }
-//            if (skystoneLocation== CV.location.RIGHT) {
-//                driveDistance = 0;
-//            }
-
-
-
-
-
-
-//            chassis.driveAutonomous(0.5, 1000);
-
-//            arm.partial();
-//
-//            arm.open();
-//
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 1050);
-//
-//            if (skystoneLocation== CV.location.LEFT) {
-//                driveDistance = 200;
-//            }
-//            if (skystoneLocation== CV.location.MID) {
-//                driveDistance = 100;
-//            }
-//            if (skystoneLocation== CV.location.RIGHT) {
-//                driveDistance = 0;
-//            }
-//
-//            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
-//
-//            arm.down();
-//
-//            arm.grab();
-//
-//            Thread.sleep(1000);
-//
-//            arm.partial2();
-//
-//            Thread.sleep(500);
-//
-//            chassis.leftShiftAutonomous(SHIFT_POWER, 400);
-//
-////            arm.up();
-//
-//            chassis.driveAutonomous(-DRIVE_POWER, -2500);
-//
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 400);
-//
-//            arm.down();
-//
-//            Thread.sleep(500);
-//            arm.open();
-//            Thread.sleep(500);
-//            arm.up();
-//            arm.grab();
-//
-//            chassis.leftShiftAutonomous(SHIFT_POWER,400);
-//
-//            chassis.driveAutonomous(DRIVE_POWER, 3000);
-//
-//
-//
-//
-////            }
-
-
+//            chassis.driveAutonomous(DRIVE_POWER, 1500);
 
             //Update the data
             telemetry.update();
