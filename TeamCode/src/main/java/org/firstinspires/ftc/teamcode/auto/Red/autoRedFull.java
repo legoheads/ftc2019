@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
+import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @Autonomous(name="AutoRed Full", group = "Red") //Name the class
 public class autoRedFull extends LinearOpMode {
@@ -46,6 +47,7 @@ public class autoRedFull extends LinearOpMode {
     private skystoneDetector detector;
     private Platform platform;
     private IIMU imu;
+    private stacker stacker;
 
     private int STONE_SPACE = 300;
 
@@ -65,6 +67,7 @@ public class autoRedFull extends LinearOpMode {
         detector = new skystoneDetector(hardwareMap, telemetry);
         platform = new platformArms(hardwareMap);
         imu = new BoschIMU(hardwareMap);
+        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distSensor;
 
@@ -109,8 +112,6 @@ public class autoRedFull extends LinearOpMode {
             arm.down();
 
             arm.open();
-
-//            Thread.sleep(1000);
 
             double startAngle = imu.getZAngle();
             double COEFF = 0.94;
@@ -160,19 +161,17 @@ public class autoRedFull extends LinearOpMode {
 
             chassis.driveAutonomous(-DRIVE_POWER, -300);
 
+            stacker.stoneReverse();
+
             platform.grab();
 
             Thread.sleep(500);
-
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
 
             chassis.driveAutonomous(DRIVE_POWER, 500);
 
             platform.up();
 
             chassis.rightShiftAutonomous(SHIFT_POWER,1000);
-
-//            chassis.driveAutonomous(DRIVE_POWER, 1500);
 
             //Update the data
             telemetry.update();

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.odometry;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 /**
  * Created by Samedh on 10/4/2019.
  */
+@Disabled
 @TeleOp(name = "My Odometry OpMode")
 public class OdometryTest extends LinearOpMode
 {

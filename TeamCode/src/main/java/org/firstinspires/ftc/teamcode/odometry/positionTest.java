@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
+@Disabled
 @TeleOp(name="Track position") //Name the class
-public class positionTest extends LinearOpMode
-{
+public class positionTest extends LinearOpMode {
 
     //Odometer ports
     private DcMotor intakeLeft;

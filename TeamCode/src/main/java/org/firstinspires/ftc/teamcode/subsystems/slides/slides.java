@@ -12,6 +12,8 @@ public class slides implements LinearSlides{
 
     HardwareMap hardwareMap;
 
+    int start;
+
     //Add variables for distance needed to turn to go up 1 skystone distance
 
     public slides(HardwareMap hardwareMap){
@@ -23,10 +25,17 @@ public class slides implements LinearSlides{
 
         //Reverse right spool motor, both turn in same direction
         spoolLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        spoolLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        start = spoolLeft.getCurrentPosition();
     }
 
     @Override
     public void moveSpool(double spoolPower) throws InterruptedException{
+        spoolLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        spoolRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         spoolLeft.setPower(spoolPower);
         spoolRight.setPower(spoolPower);
     }
@@ -44,23 +53,51 @@ public class slides implements LinearSlides{
         return spoolRight;
     }
 
-    public void spoolEncoder() throws InterruptedException{
-//        spoolLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//        //Set up the motor to run to the given position
-//        spoolLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void spoolEncoder(double power, int degrees) throws InterruptedException{
+//        spoolLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //Set the target position as the value entered
-        spoolLeft.setTargetPosition(spoolLeft.getCurrentPosition() + 100);
+        spoolLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        while (spoolLeft.getCurrentPosition() < spoolLeft.getTargetPosition()){
-            moveSpool(0.2);
+        int initial = spoolLeft.getCurrentPosition();
+
+        int target = initial - degrees;
+
+        if (target > initial){
+            while (spoolLeft.getCurrentPosition() < target) {
+                moveSpool(power);
+            }
         }
 
+        if (initial > target){
+            while (spoolLeft.getCurrentPosition() > target) {
+                moveSpool(power);
+            }
+        }
         stop();
-
-        //Use the encoder in the future
-        spoolRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+    public void spoolReturn(double power) throws InterruptedException{
+
+        spoolLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        int initial = spoolLeft.getCurrentPosition();
+
+        int target = start;
+
+        if (target > initial){
+            while (spoolLeft.getCurrentPosition() < target) {
+                moveSpool(power);
+            }
+        }
+
+        if (initial > target){
+            while (spoolLeft.getCurrentPosition() > target) {
+                moveSpool(power);
+            }
+        }
+        stop();
+    }
+
+
 
 }

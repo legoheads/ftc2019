@@ -44,8 +44,6 @@ public class stacker {
     private LinearSlides slides;
     private skystoneChassis chassis;
 
-
-
     Gamepad gamepad1, gamepad2;
 
 
@@ -56,7 +54,6 @@ public class stacker {
         pusher = hardwareMap.servo.get("pusher");
         gripper = hardwareMap.servo.get("gripper");
         extend = hardwareMap.crservo.get("extend");
-
 
         //Back distance sensors
         stoneDistLeft = hardwareMap.get(DistanceSensor.class, "stoneDistLeft");
@@ -99,19 +96,28 @@ public class stacker {
         ElapsedTime extensionTimer = new ElapsedTime();
 
         drop();
-        slides.moveSpool(SPOOL_POWER);
-        Thread.sleep(1000);
-        slides.stop();
+
+        chassis.stopDriving();
+
+        slides.spoolEncoder(0.8, 350);
 
         extensionTimer.reset();
-        while (extensionTimer.seconds() < EXTEND_TIME)
-        {
-            chassis.stopDriving();
+        while (extensionTimer.seconds() < EXTEND_TIME) {
+//            chassis.stopDriving();
             extend.setPower(-MAX_POWER);
             chassis.chassisTeleOp(gamepad1, gamepad2);
         }
         chassis.stopDriving();
+
         extend.setPower(STOP_POWER);
+
+        slides.spoolReturn(-0.8);
+
+//        slides.spoolEncoder(-0.8, -350);
+
+
+
+
     }
 
     public void capDrop() throws InterruptedException{
@@ -119,8 +125,7 @@ public class stacker {
 
         gripper.setPosition(CAP_POS);
         drop();
-        slides.moveSpool(SPOOL_POWER);
-        Thread.sleep(1000);
+        slides.spoolEncoder(0.8, 370);
         slides.stop();
 
         extensionTimer.reset();
@@ -137,7 +142,11 @@ public class stacker {
 
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
-        while (!(stoneDistRight.getDistance(DistanceUnit.INCH)<5) || runTime.time()>4){
+        runTime.reset();
+
+        
+
+        while (!(stoneDistRight.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
             chassis.shiftTeleop(0.3);
         }
         chassis.stopDriving();
@@ -147,7 +156,9 @@ public class stacker {
 
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
-        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH)<5) || runTime.time()>4){
+        runTime.reset();
+
+        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
             chassis.shiftTeleop(-0.3);
         }
         chassis.stopDriving();
@@ -157,7 +168,9 @@ public class stacker {
 
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
-        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5)){
+        runTime.reset();
+
+        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<3 || gamepad1.back){
             chassis.driveTeleop(-0.2);
         }
         chassis.stopDriving();
