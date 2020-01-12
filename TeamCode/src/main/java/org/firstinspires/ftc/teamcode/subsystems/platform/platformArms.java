@@ -12,12 +12,12 @@ public class platformArms implements Platform{
     private Servo platformRight;
 
     //Servo positions when up
-    private double LEFT_DOWN = 0.0;
-    private double RIGHT_DOWN = 1.0;
+    private double LEFT_DOWN = 0.1;
+    private double RIGHT_DOWN = 0.9;
 
     //Servo positions when latched onto platform
-    private double LEFT_UP = 0.4;
-    private double RIGHT_UP = 0.6;
+    private double LEFT_UP = 0.6;
+    private double RIGHT_UP = 0.4;
 
     public platformArms(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;

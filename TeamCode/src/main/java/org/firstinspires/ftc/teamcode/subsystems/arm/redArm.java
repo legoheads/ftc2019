@@ -18,7 +18,7 @@ public class redArm implements Arm {
 
     //Positions for Grabber
     private final double  OPEN_POS= 0.7;
-    private final double GRAB_POS = 0.1;
+    private final double GRAB_POS = 0.05;
 
 
     public redArm(HardwareMap hardwareMap) {
@@ -43,6 +43,13 @@ public class redArm implements Arm {
     @Override
     public void grab() throws InterruptedException {
         sideGrab.setPosition(GRAB_POS);
+        Thread.sleep(300);
+    }
+
+    public void grabAuto()throws InterruptedException
+    {
+        sideLift.setPosition(DOWN_POS + 0.03);
+        grab();
     }
 
     @Override

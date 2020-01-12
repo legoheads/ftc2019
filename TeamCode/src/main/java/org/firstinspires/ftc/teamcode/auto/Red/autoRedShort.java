@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 
 //Import necessary items
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,14 +25,14 @@ import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
-@Autonomous(name="AutoRed Full", group = "Red") //Name the class
-public class autoRedFull extends LinearOpMode {
+@Autonomous(name="AutoRed Short", group = "Red") //Name the class
+public class autoRedShort extends LinearOpMode {
 
-    private float DRIVE_POWER = (float) 0.5;
-    private float TURN_POWER = (float) 0.5;
-    private float SHIFT_POWER = (float) 0.5;
+    private float DRIVE_POWER = (float) 0.4;
+    private float TURN_POWER = (float) 0.2;
+    private float SHIFT_POWER = (float) 0.3;
 
-    private DistanceSensor distSensor;
+    private DistanceSensor distLeft;
 
     int driveDistance;
 
@@ -58,7 +57,7 @@ public class autoRedFull extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
 
-        distSensor = hardwareMap.get(DistanceSensor.class, "distLeft");
+        distLeft = hardwareMap.get(DistanceSensor.class, "distLeft");
 
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
@@ -69,7 +68,10 @@ public class autoRedFull extends LinearOpMode {
         imu = new BoschIMU(hardwareMap);
         stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distSensor;
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) distLeft;
+
+        imu.calibrate();
+        imu.init();
 
         //Initialize sidearm servos
 //        arm.twist();
@@ -94,84 +96,105 @@ public class autoRedFull extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
+            arm.down();
+
+            arm.open();
+
+            chassis.shiftTeleop(0.5);
+
+            double startAngle = imu.getZAngle();
+            double COEFF = 0.94;
+
+            while((!(distLeft.getDistance(DistanceUnit.INCH)<8.75)))
+            {
+                chassis.shiftTeleop(0.5);
+                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+                {
+                    if (imu.getZAngle() > startAngle) {
+                        chassis.setDriveMotorPowers(-COEFF * 0.5, 0.5, COEFF * 0.5, - 0.5);
+                    }
+
+                    if (imu.getZAngle() < startAngle) {
+                        chassis.setDriveMotorPowers(-0.5, COEFF * 0.5, 0.5, -COEFF * 0.5);
+                    }
+                }
+            }
+            chassis.stopDriving();
+
+            Thread.sleep(200);
+
             if (skystoneLocation== CV.location.LEFT) {
                 driveDistance = 0;
             }
             if (skystoneLocation== CV.location.MID) {
-                driveDistance = 160;
+                driveDistance = 225;
             }
             if (skystoneLocation== CV.location.RIGHT) {
-                driveDistance = 320;
+                driveDistance = 470;
             }
 
             chassis.driveAutonomous(DRIVE_POWER, driveDistance);
 
 
-            chassis.shiftTeleop(SHIFT_POWER);
-
-            arm.down();
-
-            arm.open();
-
-            double startAngle = imu.getZAngle();
-            double COEFF = 0.94;
-
-
-
-            while((!(distSensor.getDistance(DistanceUnit.INCH)<10)))
-            {
-                chassis.shiftTeleop(SHIFT_POWER);
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-                {
-                    if (imu.getZAngle() > startAngle) {
-                        chassis.setDriveMotorPowers(COEFF * SHIFT_POWER, SHIFT_POWER, SHIFT_POWER, COEFF * SHIFT_POWER);
-                    }
-
-                    if (imu.getZAngle() < startAngle) {
-                        chassis.setDriveMotorPowers(SHIFT_POWER, COEFF * SHIFT_POWER, COEFF * SHIFT_POWER, SHIFT_POWER);
-                    }
-                }
-
-
-            }
-            chassis.stopDriving();
-
-            arm.grab();
+            arm.grabAuto();
 
             Thread.sleep(500);
 
             arm.lift();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 300);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 220);
 
-            chassis.driveAutonomous(DRIVE_POWER, 3100 - driveDistance);
 
-            chassis.leftShiftAutonomous(SHIFT_POWER, 400);
+            chassis.driveAutonomous(DRIVE_POWER, 3050 - driveDistance);
+
+            Thread.sleep(300);
+
+            stacker.platformLeftShift();
 
             arm.down();
 
-            Thread.sleep(500);
+            Thread.sleep(200);
             arm.open();
             arm.up();
             arm.grab();
 
             chassis.rightShiftAutonomous(SHIFT_POWER,200);
 
-            chassis.rightTurnIMU(TURN_POWER,-90);
+            Thread.sleep(300);
 
-            chassis.driveAutonomous(-DRIVE_POWER, -300);
+            chassis.rightTurnIMU(0.5,-90);
 
-            stacker.stoneReverse();
+//            chassis.driveAutonomous(-DRIVE_POWER, -200);
+
+            stacker.stoneReverseAuto();
 
             platform.grab();
 
-            Thread.sleep(500);
+            Thread.sleep(200);
 
-            chassis.driveAutonomous(DRIVE_POWER, 500);
+//                        chassis.driveAutonomous(DRIVE_POWER / 1.2, 1200);
+//            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
+//            chassis.driveAutonomous(-DRIVE_POWER, 500);
+//            chassis.rightShiftAutonomous(SHIFT_POWER, 500);
+
+            imu.init();
+
+            while (imu.getZAngle() > -90)
+            {
+                chassis.setDriveMotorPowers(DRIVE_POWER* 1.5, DRIVE_POWER * 1.5, DRIVE_POWER / 3, DRIVE_POWER / 3);
+            }
+
+            chassis.stopDriving();
+
+            imu.init();
 
             platform.up();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER,1000);
+            chassis.driveAutonomous(-DRIVE_POWER, -650);
+
+            chassis.rightShiftAutonomous(SHIFT_POWER,225);
+
+            chassis.driveAutonomous(DRIVE_POWER, 1200);
 
             //Update the data
             telemetry.update();

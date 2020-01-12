@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -51,11 +52,18 @@ public class teleOp extends LinearOpMode {
     private Arm blueArm;
     private Arm redArm;
 
+    private Servo saberLeft;
+    private Servo saberRight;
+
 
     //***********************************************************************************************************
     //MAIN BELOW
     @Override
     public void runOpMode() throws InterruptedException {
+
+
+        saberLeft = hardwareMap.servo.get("saberLeft");
+        saberLeft = hardwareMap.servo.get("saberRight");
 
 
         intake = new intake(hardwareMap);
@@ -94,10 +102,10 @@ public class teleOp extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
             //DRIVE MOTOR CONTROLS
-            drivePower = -(gamepad1.left_stick_y);
-            shiftPower = -(gamepad1.left_stick_x);
-            leftTurnPower = (float) ((gamepad1.left_trigger) * 0.5);
-            rightTurnPower = (float) ((gamepad1.right_trigger) * 0.5);
+            drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.5;
+            shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x)*(float)0.5;
+            leftTurnPower = ((gamepad1.left_trigger) *(float) 0.5);
+            rightTurnPower = ((gamepad1.right_trigger) *(float) 0.5);
             spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
 
 
@@ -110,10 +118,15 @@ public class teleOp extends LinearOpMode {
                 chassis.stopDriving();
             }
 
-            if (Math.abs(spoolPower)>0.1){
+            if (spoolPower>0.1){
+
+                slides.moveSpool(spoolPower*(float)0.6);
+            }
+            if (spoolPower<0.1){
 
                 slides.moveSpool(spoolPower);
             }
+
             slides.stop();
 
             if(gamepad1.y) {
@@ -125,11 +138,10 @@ public class teleOp extends LinearOpMode {
                 platform.grab();
             }
 
-            if(gamepad1.x){
-                platform.grab();
+            if (gamepad1.x){
+                saberLeft.setPosition(1.0);
+                saberRight.setPosition(0.0);
             }
-
-
 
             //Shift if the joystick is pushed more on X than Y
             if (Math.abs(shiftPower) > Math.abs(drivePower)) {
@@ -146,11 +158,6 @@ public class teleOp extends LinearOpMode {
                 chassis.rightTurnTeleop(rightTurnPower);
             }
 
-
-
-
-
-
             if (gamepad1.dpad_left){
                 stacker.stoneShiftLeft();
             }
@@ -164,56 +171,30 @@ public class teleOp extends LinearOpMode {
             }
 
             if (gamepad2.right_bumper) {
-                slides.spoolEncoder(0.8, 370);
+                slides.spoolEncoder(0.8, 420);
             }
 
             if (gamepad2.left_bumper) {
-                slides.spoolEncoder(-0.8, -370);
+                slides.spoolEncoder(-0.8, -420);
             }
 
 
 
 
 
-//
-//                spoolLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
-//                int start = spoolLeft.getCurrentPosition();
-//
-//                int target = start - (raiseClick*350);
-//
-//                while (spoolLeft.getCurrentPosition() > target){
-//                    chassis.chassisTeleOp(gamepad1, gamepad2);
-//                    slides.moveSpool(0.8);
-//                    telemetry.addData("Current", spoolLeft.getCurrentPosition());
-//                    telemetry.addData("Target", target);
-//                    telemetry.update();
-//
-//                }
-//                slides.stop();
-//
-//                raiseClick=0;
-
-//            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //Intake
-            if (gamepad1.right_bumper) { intake.intake(); }
-
             //Eject
-            if (gamepad1.left_bumper) { intake.eject(); }
+            if (gamepad1.left_bumper) {
+                intake.eject();
+                chassis.setDriveMotorPowers(-0.5, -0.5,-0.5, -0.5);
+                Thread.sleep(500);
+                chassis.stopDriving();
+            }
+            else{
+                //Intake
+                intake.intake();
+            }
+
+
             telemetry.addData("Intake: ", intake.getIntakeState());
 
             //Killswitch
@@ -244,6 +225,8 @@ public class teleOp extends LinearOpMode {
                 chassis.stopDriving();
                 intake.stop();
             }
+
+
 
             if(gamepad2.back){
                 stacker.capDrop();

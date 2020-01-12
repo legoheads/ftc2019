@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
@@ -18,7 +20,7 @@ public class stacker {
     private Servo gripper;
     private double GRIP_OPEN = 0.525;
     private double GRIP_GRAB = 0.45;
-    private double CAP_POS = 0.7;
+    private double CAP_POS = 0.95;
 
     //Pusher
     private Servo pusher;
@@ -38,11 +40,15 @@ public class stacker {
     private DistanceSensor stoneDistLeft;
     private DistanceSensor stoneDistRight;
     private DistanceSensor stoneDistLow;
+    private DistanceSensor platformLeftSensor;
+    private DistanceSensor platformRightSensor;
 
     private HardwareMap hardwareMap;
 
     private LinearSlides slides;
     private skystoneChassis chassis;
+    private IIMU imu;
+
 
     Gamepad gamepad1, gamepad2;
 
@@ -59,11 +65,14 @@ public class stacker {
         stoneDistLeft = hardwareMap.get(DistanceSensor.class, "stoneDistLeft");
         stoneDistRight = hardwareMap.get(DistanceSensor.class, "stoneDistRight");
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
+        platformLeftSensor = hardwareMap.get(DistanceSensor.class, "platformLeftSensor");
+        platformRightSensor = hardwareMap.get(DistanceSensor.class, "platformRightSensor");
 
         gripper.setPosition(GRIP_OPEN);
 
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
+        imu = new BoschIMU(hardwareMap);
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -72,6 +81,8 @@ public class stacker {
 
     public void extend() throws InterruptedException{
         ElapsedTime extensionTimer = new ElapsedTime();
+
+        chassis.stopDriving();
 
         pusher.setPosition(PUSH);
         Thread.sleep(700);
@@ -97,6 +108,8 @@ public class stacker {
 
         drop();
 
+        Thread.sleep(300);
+
         chassis.stopDriving();
 
         slides.spoolEncoder(0.8, 350);
@@ -111,7 +124,7 @@ public class stacker {
 
         extend.setPower(STOP_POWER);
 
-        slides.spoolReturn(-0.8);
+//        slides.spoolReturn(-0.8);
 
 //        slides.spoolEncoder(-0.8, -350);
 
@@ -124,7 +137,8 @@ public class stacker {
         ElapsedTime extensionTimer = new ElapsedTime();
 
         gripper.setPosition(CAP_POS);
-        drop();
+
+
         slides.spoolEncoder(0.8, 370);
         slides.stop();
 
@@ -144,9 +158,8 @@ public class stacker {
 
         runTime.reset();
 
-        
-
         while (!(stoneDistRight.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
+            chassis.chassisTeleOp(gamepad1, gamepad2);
             chassis.shiftTeleop(0.3);
         }
         chassis.stopDriving();
@@ -159,6 +172,7 @@ public class stacker {
         runTime.reset();
 
         while (!(stoneDistLeft.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
+            chassis.chassisTeleOp(gamepad1, gamepad2);
             chassis.shiftTeleop(-0.3);
         }
         chassis.stopDriving();
@@ -171,7 +185,68 @@ public class stacker {
         runTime.reset();
 
         while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<3 || gamepad1.back){
+            chassis.chassisTeleOp(gamepad1, gamepad2);
             chassis.driveTeleop(-0.2);
+        }
+        chassis.stopDriving();
+    }
+
+    public void stoneReverseAuto() throws InterruptedException
+    {
+        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
+        runTime.reset();
+
+        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<3 || gamepad1.back){
+            chassis.driveTeleop(-0.3);
+        }
+        chassis.stopDriving();
+    }
+
+    public void platformLeftShift() throws InterruptedException{
+        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
+        runTime.reset();
+
+        double startAngle = 0;
+        double COEFF = 0.94;
+        while (!(platformLeftSensor.getDistance(DistanceUnit.INCH)<12) && runTime.time()<6 || gamepad1.back)
+        {
+            chassis.shiftTeleop(0.4);
+            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            {
+                if (imu.getZAngle() > startAngle) {
+                    chassis.setDriveMotorPowers(-COEFF * 0.5, 0.5, COEFF * 0.5, - 0.5);
+                }
+
+                if (imu.getZAngle() < startAngle) {
+                    chassis.setDriveMotorPowers(-0.5, COEFF * 0.5, 0.5, -COEFF * 0.5);
+                }
+            }
+        }
+        chassis.stopDriving();
+    }
+
+    public void platformRightShift() throws InterruptedException{
+        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
+        runTime.reset();
+
+        double startAngle = 0;
+        double COEFF = 0.94;
+        while (!(platformRightSensor.getDistance(DistanceUnit.INCH)<12) && runTime.time()<6 || gamepad1.back)
+        {
+            chassis.shiftTeleop(-0.4);
+            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            {
+                if (imu.getZAngle() > startAngle) {
+                    chassis.setDriveMotorPowers(COEFF * 0.5, -0.5, -COEFF * 0.5, 0.5);
+                }
+
+                if (imu.getZAngle() < startAngle) {
+                    chassis.setDriveMotorPowers(0.5, -COEFF * 0.5, -0.5, COEFF * 0.5);
+                }
+            }
         }
         chassis.stopDriving();
     }

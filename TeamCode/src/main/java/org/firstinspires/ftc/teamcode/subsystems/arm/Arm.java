@@ -10,6 +10,8 @@ public interface Arm {
 
     //Grab the block
     void grab() throws InterruptedException;
+
+    void grabAuto() throws InterruptedException;
     //Open the grabber
     void open() throws InterruptedException;
 

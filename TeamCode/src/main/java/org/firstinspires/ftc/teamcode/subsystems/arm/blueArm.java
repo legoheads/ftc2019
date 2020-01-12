@@ -50,6 +50,12 @@ public class blueArm implements Arm {
         Thread.sleep(1000);
     }
 
+    public void grabAuto()throws InterruptedException
+    {
+        sideLift.setPosition(DOWN_POS);
+        grab();
+    }
+
     @Override
     public void open() throws InterruptedException {
         sideGrab.setPosition(OPEN_POS);
