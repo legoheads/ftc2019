@@ -29,7 +29,7 @@ public class stacker {
 
     //Extender
     private CRServo extend;
-    private double EXTEND_TIME = 3.0;
+    private double EXTEND_TIME = 3.3;
     private double MAX_POWER = 1.0;
 
     //Spool
@@ -134,22 +134,22 @@ public class stacker {
     }
 
     public void capDrop() throws InterruptedException{
-        ElapsedTime extensionTimer = new ElapsedTime();
+//        ElapsedTime extensionTimer = new ElapsedTime();
 
         gripper.setPosition(CAP_POS);
 
-
-        slides.spoolEncoder(0.8, 370);
-        slides.stop();
-
-        extensionTimer.reset();
-        while (extensionTimer.seconds() < EXTEND_TIME){
-            chassis.stopDriving();
-            extend.setPower(-MAX_POWER);
-            chassis.chassisTeleOp(gamepad1, gamepad2);
-        }
-        chassis.stopDriving ();
-        extend.setPower(STOP_POWER);
+//
+//        slides.spoolEncoder(0.8, 370);
+//        slides.stop();
+//
+//        extensionTimer.reset();
+//        while (extensionTimer.seconds() < EXTEND_TIME){
+//            chassis.stopDriving();
+//            extend.setPower(-MAX_POWER);
+//            chassis.chassisTeleOp(gamepad1, gamepad2);
+//        }
+//        chassis.stopDriving ();
+//        extend.setPower(STOP_POWER);
     }
 
     public void stoneShiftLeft() throws InterruptedException{
@@ -184,7 +184,7 @@ public class stacker {
 
         runTime.reset();
 
-        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<3 || gamepad1.back){
+        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<4 || gamepad1.back){
             chassis.chassisTeleOp(gamepad1, gamepad2);
             chassis.driveTeleop(-0.2);
         }

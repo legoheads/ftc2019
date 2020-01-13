@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.slides;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -62,14 +63,19 @@ public class slides implements LinearSlides{
 
         int target = initial - degrees;
 
+        ElapsedTime runTime = new ElapsedTime();
+
+        runTime.reset();
+
         if (target > initial){
-            while (spoolLeft.getCurrentPosition() < target) {
+            while ((spoolLeft.getCurrentPosition() < target) && runTime.seconds() < 1.5)
+            {
                 moveSpool(power);
             }
         }
 
         if (initial > target){
-            while (spoolLeft.getCurrentPosition() > target) {
+            while ((spoolLeft.getCurrentPosition() > target) && runTime.seconds() < 1.5){
                 moveSpool(power);
             }
         }
@@ -84,14 +90,18 @@ public class slides implements LinearSlides{
 
         int target = start;
 
+        ElapsedTime runTime = new ElapsedTime();
+
+        runTime.reset();
+
         if (target > initial){
-            while (spoolLeft.getCurrentPosition() < target) {
+            while ((spoolLeft.getCurrentPosition() < target) && runTime.seconds() < 3.0){
                 moveSpool(power);
             }
         }
 
         if (initial > target){
-            while (spoolLeft.getCurrentPosition() > target) {
+            while ((spoolLeft.getCurrentPosition() > target) && runTime.seconds() < 3.0){
                 moveSpool(power);
             }
         }

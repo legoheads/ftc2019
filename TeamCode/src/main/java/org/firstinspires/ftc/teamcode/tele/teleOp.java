@@ -63,7 +63,7 @@ public class teleOp extends LinearOpMode {
 
 
         saberLeft = hardwareMap.servo.get("saberLeft");
-        saberLeft = hardwareMap.servo.get("saberRight");
+        saberRight = hardwareMap.servo.get("saberRight");
 
 
         intake = new intake(hardwareMap);
@@ -139,6 +139,9 @@ public class teleOp extends LinearOpMode {
             }
 
             if (gamepad1.x){
+                redArm.open();
+                blueArm.open();
+                Thread.sleep(300);
                 saberLeft.setPosition(1.0);
                 saberRight.setPosition(0.0);
             }
@@ -178,10 +181,6 @@ public class teleOp extends LinearOpMode {
                 slides.spoolEncoder(-0.8, -420);
             }
 
-
-
-
-
             //Eject
             if (gamepad1.left_bumper) {
                 intake.eject();
@@ -193,7 +192,6 @@ public class teleOp extends LinearOpMode {
                 //Intake
                 intake.intake();
             }
-
 
             telemetry.addData("Intake: ", intake.getIntakeState());
 

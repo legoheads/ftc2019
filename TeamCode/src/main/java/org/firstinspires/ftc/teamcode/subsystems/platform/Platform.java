@@ -7,6 +7,7 @@ public interface Platform {
 
     void up() throws InterruptedException;
     void grab() throws InterruptedException;
+    void middle() throws InterruptedException;
 
     Servo getPlatformLeft();
     Servo getPlatformRight();

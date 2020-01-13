@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
@@ -40,6 +41,7 @@ public class autoBlueShort extends LinearOpMode {
     private CV.location skystoneLocation = CV.location.MID;
 
     private Arm arm;
+    private Arm arm2;
     private IntakeWheels intake;
     private LinearSlides slides;
     private skystoneChassis chassis;
@@ -57,13 +59,15 @@ public class autoBlueShort extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
 
+        detector = new skystoneDetector(hardwareMap, telemetry);
+
         distRight = hardwareMap.get(DistanceSensor.class, "distRight");
 
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
         arm = new blueArm(hardwareMap);
-        detector = new skystoneDetector(hardwareMap, telemetry);
+        arm2 = new redArm(hardwareMap);
         platform = new platformArms(hardwareMap);
         imu = new BoschIMU(hardwareMap);
         stacker = new stacker(hardwareMap, gamepad1, gamepad2);
@@ -77,6 +81,8 @@ public class autoBlueShort extends LinearOpMode {
 //        arm.twist();
         arm.up();
         arm.grab();
+        arm2.up();
+        arm2.grab();
 
 
 
@@ -94,7 +100,9 @@ public class autoBlueShort extends LinearOpMode {
         //LOOP BELOW
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
+            platform.middle();
 
             arm.down();
 
@@ -105,32 +113,38 @@ public class autoBlueShort extends LinearOpMode {
             double startAngle = imu.getZAngle();
             double COEFF = 0.94;
 
-            while((!(distRight.getDistance(DistanceUnit.INCH)<8.75)))
-            {
-                chassis.shiftTeleop(-0.5);
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-                {
-                    if (imu.getZAngle() > startAngle) {
-                        chassis.setDriveMotorPowers(COEFF * 0.5, -0.5, -COEFF * 0.5, 0.5);
-                    }
+//            while((!(distRight.getDistance(DistanceUnit.INCH)<10)))
+//            {
+//                telemetry.addData("distance", distRight.getDistance(DistanceUnit.INCH));
+//                chassis.shiftTeleop(-0.5);
+//                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+//                {
+//                    if (imu.getZAngle() > startAngle) {
+//                        chassis.setDriveMotorPowers(COEFF * 0.5, -0.5, -COEFF * 0.5, 0.5);
+//                    }
+//
+//                    if (imu.getZAngle() < startAngle) {
+//                        chassis.setDriveMotorPowers(0.5, -COEFF * 0.5, -0.5, COEFF * 0.5);
+//                    }
+//                }
+//                telemetry.update();
+//            }
 
-                    if (imu.getZAngle() < startAngle) {
-                        chassis.setDriveMotorPowers(0.5, -COEFF * 0.5, -0.5, COEFF * 0.5);
-                    }
-                }
-            }
+            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
+
+
             chassis.stopDriving();
 
             Thread.sleep(200);
 
             if (skystoneLocation== CV.location.LEFT) {
-                driveDistance = 0;
+                driveDistance = 470;
             }
             if (skystoneLocation== CV.location.MID) {
                 driveDistance = 225;
             }
             if (skystoneLocation== CV.location.RIGHT) {
-                driveDistance = 470;
+                driveDistance = 0;
             }
 
             chassis.driveAutonomous(DRIVE_POWER, driveDistance);
@@ -144,7 +158,7 @@ public class autoBlueShort extends LinearOpMode {
 
             chassis.leftShiftAutonomous(SHIFT_POWER, 220);
 
-            chassis.driveAutonomous(DRIVE_POWER, 3050 - driveDistance);
+            chassis.driveAutonomous(DRIVE_POWER, 2950 - driveDistance);
 
             Thread.sleep(300);
 

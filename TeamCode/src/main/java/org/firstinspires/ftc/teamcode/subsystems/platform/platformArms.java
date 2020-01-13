@@ -19,6 +19,9 @@ public class platformArms implements Platform{
     private double LEFT_UP = 0.6;
     private double RIGHT_UP = 0.4;
 
+    private double LEFT_MIDDLE = 0.5;
+    private double RIGHT_MIDDLE = 0.5;
+
     public platformArms(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
@@ -37,6 +40,13 @@ public class platformArms implements Platform{
         platformLeft.setPosition(LEFT_DOWN);
         platformRight.setPosition(RIGHT_DOWN);
         Thread.sleep(400);
+    }
+
+    @Override
+    public void middle() throws InterruptedException {
+        platformLeft.setPosition(LEFT_MIDDLE);
+        platformRight.setPosition(RIGHT_MIDDLE);
+
     }
 
     public void up() throws InterruptedException{

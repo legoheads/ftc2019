@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
 import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
@@ -40,6 +41,7 @@ public class autoRedShort extends LinearOpMode {
     private CV.location skystoneLocation = CV.location.MID;
 
     private Arm arm;
+    private Arm arm2;
     private IntakeWheels intake;
     private LinearSlides slides;
     private skystoneChassis chassis;
@@ -63,6 +65,7 @@ public class autoRedShort extends LinearOpMode {
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
         arm = new redArm(hardwareMap);
+        arm2 = new blueArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
         platform = new platformArms(hardwareMap);
         imu = new BoschIMU(hardwareMap);
@@ -77,6 +80,8 @@ public class autoRedShort extends LinearOpMode {
 //        arm.twist();
         arm.up();
         arm.grab();
+        arm2.up();
+        arm2.grab();
 
 
 
@@ -94,7 +99,9 @@ public class autoRedShort extends LinearOpMode {
         //LOOP BELOW
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
+            platform.middle();
 
             arm.down();
 
@@ -142,10 +149,10 @@ public class autoRedShort extends LinearOpMode {
 
             arm.lift();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 220);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
 
 
-            chassis.driveAutonomous(DRIVE_POWER, 3050 - driveDistance);
+            chassis.driveAutonomous(DRIVE_POWER, 2950 - driveDistance);
 
             Thread.sleep(300);
 
@@ -190,9 +197,12 @@ public class autoRedShort extends LinearOpMode {
 
             platform.up();
 
+            chassis.rightShiftAutonomous(SHIFT_POWER,225);
+
+
             chassis.driveAutonomous(-DRIVE_POWER, -650);
 
-            chassis.rightShiftAutonomous(SHIFT_POWER,225);
+            chassis.rightShiftAutonomous(SHIFT_POWER, 250);
 
             chassis.driveAutonomous(DRIVE_POWER, 1200);
 
