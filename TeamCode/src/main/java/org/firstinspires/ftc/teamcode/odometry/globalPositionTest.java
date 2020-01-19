@@ -5,28 +5,26 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
 //import org.firstinspires.ftc.teamcode.Robot.Drivetrain.Odometry.OdometryGlobalCoordinatePosition;
 
 /**
  * Created by Samedh on 10/4/2019.
  */
-@Disabled
-@TeleOp(name = "My Odometry OpMode")
-public class OdometryTest extends LinearOpMode
+@TeleOp(name = "Global Position Test")
+public class globalPositionTest extends LinearOpMode
 {
-    private DcMotor lf;
-    private DcMotor lb;
-    private DcMotor rf;
-    private DcMotor rb;
+    private DcMotor LF;
+    private DcMotor LB;
+    private DcMotor RF;
+    private DcMotor RB;
 
-    //Odometer ports
-    private DcMotor intakeLeft;
-    private DcMotor intakeRight;
-    private DcMotor spoolLeft;
+    private DcMotor backOdometer;
 
-    private BNO055IMU boschIMU;
+    private IIMU imu;
 
     final double COUNTS_PER_INCH = 158;
 
@@ -37,18 +35,15 @@ public class OdometryTest extends LinearOpMode
     public void runOpMode() throws InterruptedException {
         //Initialize hardware map values. PLEASE UPDATE THESE VALUES TO MATCH YOUR CONFIGURATION
         //Initialize hardware map values. PLEASE UPDATE THESE VALUES TO MATCH YOUR CONFIGURATION
-        lf = hardwareMap.dcMotor.get("lf");
-        lb = hardwareMap.dcMotor.get("lb");
-        rf = hardwareMap.dcMotor.get("rf");
-        rb = hardwareMap.dcMotor.get("rb");
-
-        //Get references to the Servo Motors from the hardware map
-        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        intakeRight = hardwareMap.dcMotor.get("intakeRight");
-        spoolLeft = hardwareMap.dcMotor.get("spoolLeft");
+        LF = hardwareMap.dcMotor.get("LF");
+        LB = hardwareMap.dcMotor.get("LB");
+        RF = hardwareMap.dcMotor.get("LB");
+        RB = hardwareMap.dcMotor.get("RB");
+        backOdometer = hardwareMap.dcMotor.get("backOdometer");
 
         //Get references to the boschIMU Motors from the hardware map
-        boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
+
+        imu = new BoschIMU(hardwareMap);
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
@@ -57,7 +52,7 @@ public class OdometryTest extends LinearOpMode
         waitForStart();
 
         //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions
-        globalPositionUpdate = new OdometryGlobalCoordinatePosition(intakeLeft, intakeRight, spoolLeft, COUNTS_PER_INCH, 75);
+        globalPositionUpdate = new OdometryGlobalCoordinatePosition(LF, RB, backOdometer, COUNTS_PER_INCH, 75);
         Thread positionThread = new Thread(globalPositionUpdate);
         positionThread.start();
 
@@ -70,9 +65,9 @@ public class OdometryTest extends LinearOpMode
             telemetry.addData("Y Position", globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH);
             telemetry.addData("Orientation (Degrees)", globalPositionUpdate.returnOrientation());
 
-            telemetry.addData("Vertical left encoder position", intakeLeft.getCurrentPosition());
-            telemetry.addData("Vertical right encoder position", intakeRight.getCurrentPosition());
-            telemetry.addData("horizontal encoder position", spoolLeft.getCurrentPosition());
+            telemetry.addData("Vertical left encoder position", LF.getCurrentPosition());
+            telemetry.addData("Vertical right encoder position", RB.getCurrentPosition());
+            telemetry.addData("horizontal encoder position", backOdometer.getCurrentPosition());
 
             telemetry.addData("Thread Active", positionThread.isAlive());
             telemetry.update();

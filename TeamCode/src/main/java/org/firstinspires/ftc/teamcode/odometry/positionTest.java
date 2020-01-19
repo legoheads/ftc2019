@@ -9,16 +9,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
-@Disabled
 @TeleOp(name="Track position") //Name the class
 public class positionTest extends LinearOpMode {
 
     //Odometer ports
-    private DcMotor intakeLeft;
-    private DcMotor intakeRight;
-    private DcMotor spoolLeft;
+    private DcMotor LF;
+    private DcMotor RB;
+    private DcMotor backOdometer;
 
-    private BNO055IMU boschIMU;
 
     IIMU imu;
 
@@ -32,14 +30,13 @@ public class positionTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException
     {
 
-        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        intakeRight = hardwareMap.dcMotor.get("intakeRight");
-        spoolLeft = hardwareMap.dcMotor.get("spoolLeft");
+        LF = hardwareMap.dcMotor.get("LF");
+        RB = hardwareMap.dcMotor.get("RB");
+        backOdometer = hardwareMap.dcMotor.get("backOdometer");
 
-
-        boschIMU = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
         imu = new BoschIMU(hardwareMap);
+
         imu.init();
 
         //Wait for start button to be clicked
@@ -48,12 +45,23 @@ public class positionTest extends LinearOpMode {
 //***************************************************************************************************************************
         while (opModeIsActive())
         {
-            telemetry.addData("y displacement left (port 0): ", intakeLeft.getCurrentPosition());
-            telemetry.addData("y displacement right (port 1): ", intakeRight.getCurrentPosition());
-            telemetry.addData("x displacement right (port 2): ", spoolLeft.getCurrentPosition());
-            telemetry.addData("x angle (use this one):", boschIMU.getAngularOrientation().firstAngle);
-            telemetry.addData("y angle: ", boschIMU.getAngularOrientation().secondAngle);
-            telemetry.addData("z angle: ", boschIMU.getAngularOrientation().thirdAngle);
+            if (gamepad1.b)
+            {
+                LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                backOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+
+            telemetry.addData("y displacement left (port 0): ", LF.getCurrentPosition());
+            telemetry.addData("y displacement right (port 1): ", RB.getCurrentPosition());
+            telemetry.addData("x displacement right (port 2): ", backOdometer.getCurrentPosition());
+            telemetry.addData("x angle :", imu.getXAngle());
+            telemetry.addData("y angle: ", imu.getYAngle());
+            telemetry.addData("z angle (use this one): ", imu.getZAngle());
 
             telemetry.update();
 

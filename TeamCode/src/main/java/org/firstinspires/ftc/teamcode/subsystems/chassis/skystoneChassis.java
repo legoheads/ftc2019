@@ -32,8 +32,6 @@ public class skystoneChassis implements DriveTrain {
 
         this.hardwareMap = hardwareMap;
 
-        slides = new slides(hardwareMap);
-
         //Hardware mapping
         this.LF = hardwareMap.dcMotor.get("LF");
         this.LB = hardwareMap.dcMotor.get("LB");
@@ -350,11 +348,13 @@ public class skystoneChassis implements DriveTrain {
     }
 
 
-    public void odometryMotion(DcMotor motor, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry) {
-        degrees *= -1;
+    public void odometryMotion(DcMotor motor1, DcMotor motor2, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry)
+    {
         //Empty while loop while the motors are moving
-        while (Math.abs(motor.getCurrentPosition() - degrees) > 20) {
-            telemetry.addData("enc", motor.getCurrentPosition());
+        while ((Math.abs(motor1.getCurrentPosition() - degrees) > 20) && (Math.abs(motor2.getCurrentPosition() - degrees) > 20))
+        {
+            telemetry.addData("enc 1", motor1.getCurrentPosition());
+            telemetry.addData("enc 2", motor2.getCurrentPosition());
             setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
             telemetry.update();
         }
@@ -363,16 +363,16 @@ public class skystoneChassis implements DriveTrain {
         stopDriving();
     }
 
-    public void odometryDrive(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor, power, power, power * 0.92, power * 0.92, degrees, telemetry);
+    public void odometryDrive(DcMotor motor1, DcMotor motor2, double power, int degrees, Telemetry telemetry) throws InterruptedException {
+        odometryMotion(motor1, motor2, power, power, power, power, -degrees, telemetry);
     }
 
     public void odometryLeftShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor, -power * 0.95, power, power * 0.95, -power, degrees, telemetry);
+        odometryMotion(motor, motor, -power, power, power, -power, -degrees, telemetry);
     }
 
     public void odometryRightShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor, power * 0.95, -power, -power * 0.95, power, degrees, telemetry);
+        odometryMotion(motor, motor, power, -power, -power, power, degrees, telemetry);
     }
 
 
