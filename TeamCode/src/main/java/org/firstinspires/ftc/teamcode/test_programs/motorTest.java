@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Disabled
 @TeleOp(name="Motor Test ") //Name the class
-public class motorTest extends LinearOpMode
-{
+public class motorTest extends LinearOpMode {
+
     //Define drive motors
     DcMotor leftMotorFront;
     DcMotor rightMotorFront;

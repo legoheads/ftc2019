@@ -12,12 +12,12 @@ public class platformArms implements Platform{
     private Servo platformRight;
 
     //Servo positions when up
-    private double LEFT_DOWN = 0.1;
-    private double RIGHT_DOWN = 0.9;
+    private double LEFT_DOWN = 1.0;
+    private double RIGHT_DOWN = 0.0;
 
     //Servo positions when latched onto platform
-    private double LEFT_UP = 0.6;
-    private double RIGHT_UP = 0.4;
+    private double LEFT_UP = 0.5;
+    private double RIGHT_UP = 0.5;
 
     private double LEFT_MIDDLE = 0.5;
     private double RIGHT_MIDDLE = 0.5;
@@ -25,15 +25,15 @@ public class platformArms implements Platform{
     public platformArms(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
-        platformLeft = hardwareMap.servo.get("platformLeft");
-        platformRight = hardwareMap.servo.get("platformRight");
+        platformLeft = hardwareMap.servo.get("platLeft");
+        platformRight = hardwareMap.servo.get("platRight");
 
         init();
     }
 
     public void init(){
-        platformLeft.setPosition(LEFT_UP);
-        platformRight.setPosition(RIGHT_UP);
+        platformLeft.setPosition(LEFT_DOWN);
+        platformRight.setPosition(RIGHT_DOWN);
     }
 
     public void grab() throws InterruptedException{

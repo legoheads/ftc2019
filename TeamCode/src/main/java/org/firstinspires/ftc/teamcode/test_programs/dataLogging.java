@@ -7,9 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
+//@Disabled
 @TeleOp(name = "Data Logging Program") //Name the program
 public class dataLogging extends LinearOpMode {
     //Define drive motors
@@ -18,12 +19,16 @@ public class dataLogging extends LinearOpMode {
 //***************************************************************************************************************************
     //MAIN BELOW
     @Override
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
         LF = hardwareMap.dcMotor.get("LF");
         LB = hardwareMap.dcMotor.get("LB");
         RF = hardwareMap.dcMotor.get("RF");
         RB = hardwareMap.dcMotor.get("RB");
+
+        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.FORWARD);
+        RF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
@@ -40,12 +45,6 @@ public class dataLogging extends LinearOpMode {
                 LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                //Use the encoders
-                LF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                LB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                RF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                RB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
             //Show all the encoder values on the driver station

@@ -53,7 +53,7 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
  * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
  */
 
-@Disabled
+//@Disabled
 @TeleOp(name = "IMU Test")
 public class imuTest extends LinearOpMode {
 
@@ -78,6 +78,8 @@ public class imuTest extends LinearOpMode {
 
     @Override public void runOpMode() {
 
+        inertialMeasurementUnit = new BoschIMU(hardwareMap);
+
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
         // provide positional information.
@@ -86,13 +88,15 @@ public class imuTest extends LinearOpMode {
         LB = hardwareMap.dcMotor.get("LB");
         RB = hardwareMap.dcMotor.get("RB");
 
+
+
 //        bosch = hardwareMap.get(BNO055IMU.class, "boschIMU");
 
 
         inertialMeasurementUnit.init();
-        inertialMeasurementUnit.calibrate();
+//        inertialMeasurementUnit.calibrate();
 
-        bosch.startAccelerationIntegration(new Position(), new Velocity(), 100);
+//        bosch.startAccelerationIntegration(new Position(), new Velocity(), 100);
 
         // Wait until we're told to go
         waitForStart();

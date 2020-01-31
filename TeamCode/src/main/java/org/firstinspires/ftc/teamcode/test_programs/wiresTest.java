@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import static org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis.oneMotorEncoder;
 
-@Disabled
+
 @TeleOp(name="Wires Test ") //Name the class
 public class wiresTest extends LinearOpMode {
     //Define drive motors
@@ -23,8 +23,7 @@ public class wiresTest extends LinearOpMode {
 //***************************************************************************************************************************
     //MAIN BELOW
     @Override
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
         LF = hardwareMap.dcMotor.get("LF");
         LB = hardwareMap.dcMotor.get("LB");
         RF = hardwareMap.dcMotor.get("RF");
@@ -33,8 +32,13 @@ public class wiresTest extends LinearOpMode {
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
 
-        RF.setDirection(DcMotor.Direction.REVERSE);
-        RB.setDirection(DcMotor.Direction.REVERSE);
+//        RF.setDirection(DcMotor.Direction.REVERSE);
+//        RB.setDirection(DcMotor.Direction.REVERSE);
+
+        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.FORWARD);
+        RF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Wait for start button to be clicked
         waitForStart();
