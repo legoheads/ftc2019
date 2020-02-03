@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 //Import necessary items
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
+
 
 @Autonomous(name="AUTO NEW ENCODER RED", group = "Red") //Name the class
 public class autoRedIntakeEncodr extends LinearOpMode {

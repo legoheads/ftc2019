@@ -2,241 +2,261 @@
 package org.firstinspires.ftc.teamcode.tele;
 
 //Import necessary items
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.slides.*;
 import org.firstinspires.ftc.teamcode.subsystems.intake.*;
 import org.firstinspires.ftc.teamcode.subsystems.platform.*;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
-import java.sql.Time;
-import java.util.Locale;
-
 @TeleOp(name="teleOp") //Name the class
 public class teleOp extends LinearOpMode {
 
     //Define floats to be used as joystick inputs and trigger inputs
-    private float drivePower, shiftPower, leftTurnPower, rightTurnPower, spoolPower;
+    private double drivePower, shiftPower, leftTurnPower, rightTurnPower, spoolPower;
 
-    float flipUpPower = (float) 0.5;
-    float flipDownPower = (float) 0.3;
-    float maxPower = (float) 0.8;
+    private final double MAX_POWER = 0.8;
+    private final double CHASSIS_POWER = 0.7;
+    private final double STOP_POWER = 0.0;
 
-    private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+    private final double ERROR_MARGIN = 0.1;
 
-    ElapsedTime extendTime = new ElapsedTime();
+    private final int LIFT_DISTANCE = 420;
+
+//    private String team = "red";
+    private String team = "blue";
+
+    int two = 2;
 
     private skystoneChassis chassis;
-    private redArm arm;
     private Platform platform;
     private IntakeWheels intake;
     private LinearSlides slides;
     private stacker stacker;
+    private Arm leftArm;
+    private Arm rightArm;
+    private IIMU imu;
 
-    private int raiseClick = 0;
+    private Servo saber;
+    private Servo shortSaber;
 
-    private Arm blueArm;
-    private Arm redArm;
-
-    private Servo saberLeft;
-    private Servo saberRight;
-
-
-    //***********************************************************************************************************
+//***********************************************************************************************************
     //MAIN BELOW
     @Override
-    public void runOpMode() throws InterruptedException {
-
-
-        saberLeft = hardwareMap.servo.get("saberLeft");
-        saberRight = hardwareMap.servo.get("saberRight");
-
+    public void runOpMode() throws InterruptedException
+    {
+        saber = hardwareMap.servo.get("saber");
+        shortSaber = hardwareMap.servo.get("shortSaber");
 
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
-        arm = new redArm(hardwareMap);
         platform = new platformArms(hardwareMap);
         stacker = new stacker(hardwareMap, gamepad1, gamepad2);
-        redArm = new redArm(hardwareMap);
-        blueArm = new redArm(hardwareMap);
+        leftArm = new leftArm(hardwareMap);
+        rightArm = new rightArm(hardwareMap);
+        imu = new BoschIMU(hardwareMap);
 
-        slides.getSpoolLeft().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        platform.teleInit();
+        shortSaber.setPosition(0.45);
 
+        leftArm.tele();
+        rightArm.tele();
 
+        telemetry.addData("init complete", two);
+        telemetry.update();
 
         //Wait for start button to be clicked
         waitForStart();
 
-        redArm.up();
-        redArm.grab();
-
-        blueArm.up();
-        blueArm.grab();
-
-        platform.up();
-
         intake.intake();
-
-        DcMotor spoolLeft = slides.getSpoolLeft();
-
-
 
     //***********************************************************************************************************
         //LOOP BELOWF
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
             //DRIVE MOTOR CONTROLS
-            drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.5;
-            shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x)*(float)0.5;
-            leftTurnPower = ((gamepad1.left_trigger) *(float) 0.5);
-            rightTurnPower = ((gamepad1.right_trigger) *(float) 0.5);
+            drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y) * CHASSIS_POWER;
+            shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
+            leftTurnPower = (gamepad1.left_trigger) * CHASSIS_POWER;
+            rightTurnPower = (gamepad1.right_trigger) * CHASSIS_POWER;
             spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
 
 
             //Drive if the joystick is pushed more Y than X
-            if (Math.abs(drivePower) > Math.abs(shiftPower)) {
+            if (Math.abs(drivePower) > Math.abs(shiftPower))
+            {
                chassis.driveTeleop(drivePower);
             }
 
-            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < 0.15) {
+            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < ERROR_MARGIN)
+            {
                 chassis.stopDriving();
             }
 
-            if (spoolPower>0.1){
+//            if (spoolPower > ERROR_MARGIN)
+//            {
+//                slides.moveSpool(spoolPower);
+//            }
+//            if (spoolPower < ERROR_MARGIN)
+//            {
+//                slides.moveSpool(spoolPower);
+//            }
 
-                slides.moveSpool(spoolPower*(float)0.6);
-            }
-            if (spoolPower<0.1){
-
+            if (Math.abs(spoolPower) > ERROR_MARGIN)
+            {
                 slides.moveSpool(spoolPower);
             }
 
             slides.stop();
 
-            if(gamepad1.y) {
+            if(gamepad1.y)
+            {
                 platform.up();
             }
 
-            if(gamepad1.a){
-                stacker.stoneReverse();
+            if(gamepad1.a)
+            {
+//                stacker.platformReverse();
                 platform.grab();
             }
 
-            if (gamepad1.x){
-                redArm.open();
-                blueArm.open();
-                Thread.sleep(300);
-                saberLeft.setPosition(1.0);
-                saberRight.setPosition(0.0);
+            //Saber red
+            if (gamepad2.y)
+            {
+                leftArm.open();
+                rightArm.open();
+                saber.setPosition(0.0);
+//                saberRight.setPosition(0.0);
+            }
+
+            //Saber blue
+            if (gamepad2.a)
+            {
+                leftArm.open();
+                rightArm.open();
+                saber.setPosition(0.9);
             }
 
             //Shift if the joystick is pushed more on X than Y
-            if (Math.abs(shiftPower) > Math.abs(drivePower)) {
+            if (Math.abs(shiftPower) > Math.abs(drivePower))
+            {
               chassis.shiftTeleop(shiftPower);
             }
 
             //If the left trigger is pushed, turn left at that power
-            if (leftTurnPower > 0) {
+            if (leftTurnPower > STOP_POWER)
+            {
               chassis.leftTurnTeleop(leftTurnPower);
             }
 
             //If the right trigger is pushed, turn right at that power
-            if (rightTurnPower > 0) {
+            if (rightTurnPower > STOP_POWER)
+            {
                 chassis.rightTurnTeleop(rightTurnPower);
             }
 
-            if (gamepad1.dpad_left){
+            if (gamepad1.dpad_left)
+            {
                 stacker.stoneShiftLeft();
             }
 
-            if (gamepad1.dpad_right){
+            if (gamepad1.dpad_right)
+            {
                 stacker.stoneShiftRight();
             }
 
-            if (gamepad1.dpad_down){
-                stacker.stoneReverse();
+            if (gamepad1.dpad_down)
+            {
+                stacker.platformReverse();
             }
 
-            if (gamepad2.right_bumper) {
-                slides.spoolEncoder(0.8, 420);
+            if (gamepad2.right_bumper)
+            {
+                slides.spoolEncoder(MAX_POWER, LIFT_DISTANCE);
             }
 
-            if (gamepad2.left_bumper) {
-                slides.spoolEncoder(-0.8, -420);
+            if (gamepad2.left_bumper)
+            {
+                slides.spoolEncoder(-MAX_POWER, -LIFT_DISTANCE);
             }
 
             //Eject
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper)
+            {
                 intake.eject();
-                chassis.setDriveMotorPowers(-0.5, -0.5,-0.5, -0.5);
+                chassis.setDriveMotorPowers(- CHASSIS_POWER, - CHASSIS_POWER, - CHASSIS_POWER, - CHASSIS_POWER);
                 Thread.sleep(500);
                 chassis.stopDriving();
             }
-            else{
-                //Intake
+            //Intake
+            else
+            {
                 intake.intake();
             }
 
             telemetry.addData("Intake: ", intake.getIntakeState());
 
             //Killswitch
-            if (gamepad1.b || gamepad2.b){
+            if (gamepad1.b)
+            {
                 chassis.stopDriving();
                 slides.stop();
                 intake.stop();
             }
 
-
-
             //Stacker System
-            if (gamepad2.dpad_right) {
+            if (gamepad2.dpad_right)
+            {
                 stacker.extend();
                 intake.stop();
             }
 
-            if (gamepad2.dpad_left) {
+            if (gamepad2.dpad_left)
+            {
                 stacker.retract();
                 intake.intake();
             }
 
-            if (gamepad2.x) { stacker.drop(); }
+            if (gamepad2.x)
+            {
+                stacker.grab();
+            }
 
-
-
-            if (gamepad2.b){
+            if (gamepad2.b)
+            {
                 chassis.stopDriving();
                 intake.stop();
             }
 
+            if(gamepad2.back)
+            {
+                //                stacker.capDrop();
 
+                platform.grab();
+                rightArm.releaseAuto();
+                leftArm.releaseAuto();
+                Thread.sleep(1000);
 
-            if(gamepad2.back){
-                stacker.capDrop();
+                //Do not open arms
+                leftArm.up();
+                rightArm.up();
+
+                platform.up();
             }
 
-
-
-
-
-
-
-            telemetry.addData("Runtime", runtime);
             //Update the data
             telemetry.update();
 

@@ -16,11 +16,11 @@ public class platformArms implements Platform{
     private double RIGHT_DOWN = 0.0;
 
     //Servo positions when latched onto platform
-    private double LEFT_UP = 0.5;
-    private double RIGHT_UP = 0.5;
+    private double LEFT_UP = 0.12;
+    private double RIGHT_UP = 0.88;
 
-    private double LEFT_MIDDLE = 0.5;
-    private double RIGHT_MIDDLE = 0.5;
+    private double LEFT_TELE = 0.2;
+    private double RIGHT_TELE = 0.8;
 
     public platformArms(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
@@ -28,25 +28,25 @@ public class platformArms implements Platform{
         platformLeft = hardwareMap.servo.get("platLeft");
         platformRight = hardwareMap.servo.get("platRight");
 
-        init();
     }
 
-    public void init(){
-        platformLeft.setPosition(LEFT_DOWN);
-        platformRight.setPosition(RIGHT_DOWN);
+    @Override
+    public void autoInit(){
+        platformLeft.setPosition(LEFT_UP);
+        platformRight.setPosition(RIGHT_UP);
+    }
+
+    @Override
+    public void teleInit()
+    {
+        platformLeft.setPosition(LEFT_TELE);
+        platformRight.setPosition(RIGHT_TELE);
     }
 
     public void grab() throws InterruptedException{
         platformLeft.setPosition(LEFT_DOWN);
         platformRight.setPosition(RIGHT_DOWN);
         Thread.sleep(400);
-    }
-
-    @Override
-    public void middle() throws InterruptedException {
-        platformLeft.setPosition(LEFT_MIDDLE);
-        platformRight.setPosition(RIGHT_MIDDLE);
-
     }
 
     public void up() throws InterruptedException{

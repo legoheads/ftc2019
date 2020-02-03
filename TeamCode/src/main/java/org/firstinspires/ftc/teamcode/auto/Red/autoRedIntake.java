@@ -3,30 +3,18 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 
 //Import necessary items
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
-import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
-import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
-import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
-import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
-import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
-import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
-import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
+@Disabled
 @Autonomous(name="AUTO NEW TEST", group = "Red") //Name the class
 public class autoRedIntake extends LinearOpMode {
 
@@ -82,8 +70,8 @@ public class autoRedIntake extends LinearOpMode {
         intake = new intake(hardwareMap);
 //        slides = new slides(hardwareMap);
 //        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-//        arm = new redArm(hardwareMap);
-//        arm2 = new blueArm(hardwareMap);
+//        arm = new rightArm(hardwareMap);
+//        arm2 = new leftArm(hardwareMap);
 //        detector = new skystoneDetector(hardwareMap, telemetry);
 //        platform = new platformArms(hardwareMap);
         imu = new BoschIMU(hardwareMap);

@@ -3,35 +3,37 @@ package org.firstinspires.ftc.teamcode.auto.Blue;
 
 //Import necessary items
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
-import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
-@Autonomous(name="Real AutoBlue Short", group = "Red") //Name the class
+@Autonomous(name="AutoBlue Short", group = "Blue") //Name the class
 public class autoBlueShort extends LinearOpMode {
 
-    private float DRIVE_POWER = (float) 0.4;
-    private float TURN_POWER = (float) 0.2;
-    private float SHIFT_POWER = (float) 0.3;
+    private float DRIVE_POWER = (float) 0.5;
+    private float TURN_POWER = (float) 0.3;
+    private float SHIFT_POWER = (float) 0.4;
+
+    private float DRIFT_POWER = (float) 0.3;
 
     private DistanceSensor distRight;
 
@@ -40,18 +42,16 @@ public class autoBlueShort extends LinearOpMode {
     //Skystone location variable
     private CV.location skystoneLocation = CV.location.MID;
 
+
     private Arm arm;
     private Arm arm2;
-    private IntakeWheels intake;
-    private LinearSlides slides;
     private skystoneChassis chassis;
     private skystoneDetector detector;
     private Platform platform;
     private IIMU imu;
-    private stacker stacker;
+    private Distance distanceSensor;
 
-    private int STONE_SPACE = 300;
-
+    private Servo shortSaber;
 
     //***********************************************************************************************************
     //MAIN BELOW
@@ -59,33 +59,19 @@ public class autoBlueShort extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
 
-        detector = new skystoneDetector(hardwareMap, telemetry);
+        shortSaber = hardwareMap.servo.get("shortSaber");
 
+        detector = new skystoneDetector(hardwareMap, telemetry);
         distRight = hardwareMap.get(DistanceSensor.class, "distRight");
 
-        intake = new intake(hardwareMap);
-        slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new blueArm(hardwareMap);
-        arm2 = new redArm(hardwareMap);
+        arm = new rightArm(hardwareMap);
+        arm2 = new leftArm(hardwareMap);
         platform = new platformArms(hardwareMap);
+        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
         imu = new BoschIMU(hardwareMap);
-        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) distRight;
-
-        imu.calibrate();
-        imu.init();
-
-        //Initialize sidearm servos
-//        arm.twist();
-        arm.up();
-        arm.grab();
-        arm2.up();
-        arm2.grab();
-
-
-
+        platform.autoInit();
         //Look for Skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
 
@@ -102,97 +88,63 @@ public class autoBlueShort extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            platform.middle();
+            arm.releaseAuto();
 
-            arm.down();
+            distanceSensor.distRightShift(SHIFT_POWER, 11);
 
-            arm.open();
-
-            chassis.shiftTeleop(-0.5);
-
-            double startAngle = imu.getZAngle();
-            double COEFF = 0.94;
-
-//            while((!(distRight.getDistance(DistanceUnit.INCH)<10)))
-//            {
-//                telemetry.addData("distance", distRight.getDistance(DistanceUnit.INCH));
-//                chassis.shiftTeleop(-0.5);
-//                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-//                {
-//                    if (imu.getZAngle() > startAngle) {
-//                        chassis.setDriveMotorPowers(COEFF * 0.5, -0.5, -COEFF * 0.5, 0.5);
-//                    }
-//
-//                    if (imu.getZAngle() < startAngle) {
-//                        chassis.setDriveMotorPowers(0.5, -COEFF * 0.5, -0.5, COEFF * 0.5);
-//                    }
-//                }
-//                telemetry.update();
-//            }
-
-            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
-
-
-            chassis.stopDriving();
-
-            Thread.sleep(200);
-
-            if (skystoneLocation== CV.location.LEFT) {
-                driveDistance = 470;
+            if (skystoneLocation == CV.location.LEFT)
+            {
+                driveDistance = 550;
             }
-            if (skystoneLocation== CV.location.MID) {
+            if (skystoneLocation == CV.location.MID)
+            {
                 driveDistance = 225;
             }
-            if (skystoneLocation== CV.location.RIGHT) {
+            if (skystoneLocation == CV.location.RIGHT)
+            {
                 driveDistance = 0;
             }
 
             chassis.driveAutonomous(DRIVE_POWER, driveDistance);
 
-
             arm.grabAuto();
 
-            Thread.sleep(500);
+            Thread.sleep(100);
 
             arm.lift();
 
-            chassis.leftShiftAutonomous(SHIFT_POWER, 220);
-
-            chassis.driveAutonomous(DRIVE_POWER, 2950 - driveDistance);
-
-            Thread.sleep(300);
-
-            stacker.platformRightShift();
-
-            arm.down();
-
-            Thread.sleep(200);
-            arm.open();
-            arm.up();
-            arm.grab();
-
-            chassis.leftShiftAutonomous(SHIFT_POWER,200);
-
-            Thread.sleep(300);
-
-            chassis.leftTurnIMU(TURN_POWER,90);
-
-            stacker.stoneReverseAuto();
-
-            platform.grab();
-
-            Thread.sleep(200);
-
-//                        chassis.driveAutonomous(DRIVE_POWER / 1.2, 1200);
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
-//            chassis.driveAutonomous(-DRIVE_POWER, 500);
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 500);
+            chassis.leftShiftAutonomous(SHIFT_POWER, 250);
 
             imu.init();
 
+            chassis.driveAutonomous(DRIVE_POWER, 3550 - driveDistance);
+
+            Thread.sleep(300);
+
+            distanceSensor.distRightShift(SHIFT_POWER, 6);
+
+            arm.releaseAuto();
+            arm.init();
+
+            chassis.leftShiftAutonomous(SHIFT_POWER,150);
+
+            chassis.leftTurnIMU(TURN_POWER,90);
+
+            imu.init();
+
+            distanceSensor.platformReverse();
+
+            Thread.sleep(100);
+
+            platform.grab();
+
+            Thread.sleep(500);
+
+
             while (imu.getZAngle() < 90)
             {
-                chassis.setDriveMotorPowers(DRIVE_POWER / 3,DRIVE_POWER / 3, DRIVE_POWER * 1.5, DRIVE_POWER * 1.5);
+                platform.grab();
+                chassis.setDriveMotorPowers(DRIFT_POWER / 4,DRIFT_POWER / 4, DRIFT_POWER * 1.5, DRIFT_POWER * 1.5);
             }
 
             chassis.stopDriving();
@@ -201,11 +153,15 @@ public class autoBlueShort extends LinearOpMode {
 
             platform.up();
 
-            chassis.driveAutonomous(-DRIVE_POWER, -650);
+            chassis.driveAutonomous(-DRIVE_POWER, -750);
 
-            chassis.rightShiftAutonomous(SHIFT_POWER,225);
+            chassis.leftShiftAutonomous(SHIFT_POWER,450);
 
-            chassis.driveAutonomous(DRIVE_POWER, 1200);
+            chassis.driveAutonomous(DRIVE_POWER, 1150);
+
+            shortSaber.setPosition(0.8);
+
+            Thread.sleep(2000);
 
             //Update the data
             telemetry.update();

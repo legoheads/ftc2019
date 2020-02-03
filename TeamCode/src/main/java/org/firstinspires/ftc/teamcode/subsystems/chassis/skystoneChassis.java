@@ -28,8 +28,8 @@ public class skystoneChassis implements DriveTrain {
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
      */
-    public skystoneChassis(HardwareMap hardwareMap, DcMotor.ZeroPowerBehavior type) {
-
+    public skystoneChassis(HardwareMap hardwareMap, DcMotor.ZeroPowerBehavior type)
+    {
         this.hardwareMap = hardwareMap;
 
         //Hardware mapping
@@ -51,7 +51,7 @@ public class skystoneChassis implements DriveTrain {
         this.RB.setZeroPowerBehavior(type);
 
         imu = new BoschIMU(hardwareMap);
-        imu.init();
+        slides = new slides(hardwareMap);
     }
 
     /**
@@ -144,19 +144,24 @@ public class skystoneChassis implements DriveTrain {
 
         int initial = LF.getCurrentPosition();
         double startAngle = 0;
-        double COEFF = 0.97;
+        double COEFF = 0.9;
 
         int target = initial + degrees;
         setDriveMotorPowers(power, power, power, power);
 
-        if (initial < target) {
-            while (LF.getCurrentPosition() < target) {
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
-                    if (imu.getZAngle() > startAngle) {
+        if (initial < target)
+        {
+            while (LF.getCurrentPosition() < target)
+            {
+                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+                {
+                    if (imu.getZAngle() > startAngle)
+                    {
                         setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
                     }
 
-                    if (imu.getZAngle() < startAngle) {
+                    if (imu.getZAngle() < startAngle)
+                    {
                         setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
                     }
                 }
@@ -256,7 +261,7 @@ public class skystoneChassis implements DriveTrain {
                     }
 
                     if (imu.getZAngle() < startAngle) {
-                        setDriveMotorPowers(power, COEFF * power, power, -COEFF * power);
+                        setDriveMotorPowers(-power, COEFF * power, power, -COEFF * power);
                     }
                 }
             }
@@ -295,25 +300,31 @@ public class skystoneChassis implements DriveTrain {
     }
 
 
-    public void rightTurnIMU(double power, double target) throws InterruptedException {
-        while (imu.getZAngle() > target) {
+    public void rightTurnIMU(double power, double target) throws InterruptedException
+    {
+        while (imu.getZAngle() > target)
+        {
             rightTurnTeleop(power);
         }
         stopDriving();
-        while (imu.getZAngle() < target) {
-            leftTurnTeleop(0.3);
+        while (imu.getZAngle() < target)
+        {
+            leftTurnTeleop(power / 2);
         }
         stopDriving();
     }
 
-    public void leftTurnIMU(double power, double target) throws InterruptedException {
-        while (imu.getZAngle() < target) {
+    public void leftTurnIMU(double power, double target) throws InterruptedException
+    {
+        while (imu.getZAngle() < target)
+        {
             leftTurnTeleop(power);
         }
 
         stopDriving();
-        while (imu.getZAngle() > target) {
-            rightTurnTeleop(0.3);
+        while (imu.getZAngle() > target)
+        {
+            rightTurnTeleop(power / 2);
         }
         stopDriving();
 
@@ -376,7 +387,7 @@ public class skystoneChassis implements DriveTrain {
     }
 
 
-    public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
+    public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2, double startPower) throws InterruptedException {
         float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.5;
         float shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x)*(float)0.5;
         float leftTurnPower = (float) ((gamepad1.left_trigger) * 0.5);
@@ -413,7 +424,7 @@ public class skystoneChassis implements DriveTrain {
         }
 
         //If the joysticks are not pushed significantly shut off the wheels
-        if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < 0.15) {
+        if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) + Math.abs(startPower) < 0.15) {
             stopDriving();
         }
 
@@ -454,35 +465,6 @@ public class skystoneChassis implements DriveTrain {
                 break;
             }
         }
-
-        //Stop the motor
-        motor.setPower(0.0);
-
-        //Use the encoder in the future
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void omeWithDriveMotors(DcMotor motor, double power, int degrees, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
-        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        runTime.reset();
-
-        //Use the encoder
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //Set up the motor to run to the given position
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //Set the target position as the value entered
-        motor.setTargetPosition(motor.getCurrentPosition() + degrees);
-
-        //Turn the motor on at the corresponding power
-        motor.setPower((float) power);
-
-        //Empty while loop while the motor is moving
-        while ((motor.isBusy()) && runTime.time() < 3000) {
-            chassisTeleOp(gamepad1, gamepad2);
-        }
-        stopDriving();
 
         //Stop the motor
         motor.setPower(0.0);

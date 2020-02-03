@@ -8,14 +8,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.blueArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.redArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
+import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
@@ -29,11 +32,11 @@ import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 @Autonomous(name="AutoRed Short", group = "Red") //Name the class
 public class autoRedShort extends LinearOpMode {
 
-    private float DRIVE_POWER = (float) 0.4;
-    private float TURN_POWER = (float) 0.2;
-    private float SHIFT_POWER = (float) 0.3;
+    private float DRIVE_POWER = (float) 0.5;
+    private float TURN_POWER = (float) 0.3;
+    private float SHIFT_POWER = (float) 0.5;
 
-    private DistanceSensor distLeft;
+    private float DRIFT_POWER = (float) 0.3;
 
     int driveDistance;
 
@@ -42,16 +45,14 @@ public class autoRedShort extends LinearOpMode {
 
     private Arm arm;
     private Arm arm2;
-    private IntakeWheels intake;
-    private LinearSlides slides;
     private skystoneChassis chassis;
     private skystoneDetector detector;
     private Platform platform;
     private IIMU imu;
-    private stacker stacker;
 
-    private int STONE_SPACE = 300;
+    private Distance distanceSensor;
 
+    private Servo shortSaber;
 
     //***********************************************************************************************************
     //MAIN BELOW
@@ -59,31 +60,18 @@ public class autoRedShort extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
 
-        distLeft = hardwareMap.get(DistanceSensor.class, "distLeft");
+        shortSaber = hardwareMap.servo.get("shortSaber");
 
-        intake = new intake(hardwareMap);
-        slides = new slides(hardwareMap);
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new redArm(hardwareMap);
-        arm2 = new blueArm(hardwareMap);
         detector = new skystoneDetector(hardwareMap, telemetry);
+
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
+        arm = new leftArm(hardwareMap);
+        arm2 = new rightArm(hardwareMap);
         platform = new platformArms(hardwareMap);
+        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
         imu = new BoschIMU(hardwareMap);
-        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) distLeft;
-
-        imu.calibrate();
-        imu.init();
-
-        //Initialize sidearm servos
-//        arm.twist();
-        arm.up();
-        arm.grab();
-        arm2.up();
-        arm2.grab();
-
-
+        shortSaber.setPosition(0.45);
 
         //Look for Skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
@@ -93,102 +81,74 @@ public class autoRedShort extends LinearOpMode {
 
         telemetry.addData("Skystone", skystoneLocation);
 
-
-
 //***********************************************************************************************************
         //LOOP BELOW
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            platform.middle();
+            arm.releaseAuto();
 
-            arm.down();
 
-            arm.open();
-
-            chassis.shiftTeleop(0.5);
-
-            double startAngle = imu.getZAngle();
-            double COEFF = 0.94;
-
-            while((!(distLeft.getDistance(DistanceUnit.INCH)<8.75)))
+            if (skystoneLocation == CV.location.LEFT)
             {
-                chassis.shiftTeleop(0.5);
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-                {
-                    if (imu.getZAngle() > startAngle) {
-                        chassis.setDriveMotorPowers(-COEFF * 0.5, 0.5, COEFF * 0.5, - 0.5);
-                    }
-
-                    if (imu.getZAngle() < startAngle) {
-                        chassis.setDriveMotorPowers(-0.5, COEFF * 0.5, 0.5, -COEFF * 0.5);
-                    }
-                }
-            }
-            chassis.stopDriving();
-
-            Thread.sleep(200);
-
-            if (skystoneLocation== CV.location.LEFT) {
                 driveDistance = 0;
+                distanceSensor.distLeftShift(SHIFT_POWER, 8.5);
             }
-            if (skystoneLocation== CV.location.MID) {
+            if (skystoneLocation == CV.location.MID)
+            {
                 driveDistance = 225;
+                distanceSensor.distLeftShift(SHIFT_POWER, 9);
+
             }
-            if (skystoneLocation== CV.location.RIGHT) {
-                driveDistance = 470;
+            if (skystoneLocation == CV.location.RIGHT)
+            {
+                driveDistance = 550;
+                distanceSensor.distLeftShift(SHIFT_POWER, 9);
             }
 
             chassis.driveAutonomous(DRIVE_POWER, driveDistance);
 
-
             arm.grabAuto();
 
-            Thread.sleep(500);
+            Thread.sleep(100);
 
             arm.lift();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
-
-
-            chassis.driveAutonomous(DRIVE_POWER, 2950 - driveDistance);
-
-            Thread.sleep(300);
-
-            stacker.platformLeftShift();
-
-            arm.down();
-
-            Thread.sleep(200);
-            arm.open();
-            arm.up();
-            arm.grab();
-
-            chassis.rightShiftAutonomous(SHIFT_POWER,200);
-
-            Thread.sleep(300);
-
-            chassis.rightTurnIMU(0.5,-90);
-
-//            chassis.driveAutonomous(-DRIVE_POWER, -200);
-
-            stacker.stoneReverseAuto();
-
-            platform.grab();
-
-            Thread.sleep(200);
-
-//                        chassis.driveAutonomous(DRIVE_POWER / 1.2, 1200);
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
-//            chassis.driveAutonomous(-DRIVE_POWER, 500);
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 500);
+            chassis.rightShiftAutonomous(SHIFT_POWER / 2, 250);
 
             imu.init();
 
+            chassis.driveAutonomous(DRIVE_POWER, 3550 - driveDistance);
+
+            Thread.sleep(300);
+
+            distanceSensor.distLeftShift(SHIFT_POWER, 6);
+
+            arm.releaseAuto();
+            arm.init();
+
+            chassis.rightShiftAutonomous(SHIFT_POWER,150);
+
+            chassis.rightTurnIMU(TURN_POWER,-90);
+
+            imu.init();
+
+            distanceSensor.platformReverse();
+
+            chassis.driveAutonomous(-DRIFT_POWER/2, -20);
+
+            Thread.sleep(100);
+
+            platform.grab();
+
+            Thread.sleep(500);
+
+
             while (imu.getZAngle() > -90)
             {
-                chassis.setDriveMotorPowers(DRIVE_POWER* 1.5, DRIVE_POWER * 1.5, DRIVE_POWER / 3, DRIVE_POWER / 3);
+                platform.grab();
+                chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
             }
 
             chassis.stopDriving();
@@ -197,15 +157,15 @@ public class autoRedShort extends LinearOpMode {
 
             platform.up();
 
-            chassis.rightShiftAutonomous(SHIFT_POWER,225);
+            chassis.driveAutonomous(-DRIVE_POWER, -750);
 
+            chassis.rightShiftAutonomous(SHIFT_POWER,400);
 
-            chassis.driveAutonomous(-DRIVE_POWER, -650);
+            chassis.driveAutonomous(DRIVE_POWER, 1100);
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 250);
+            shortSaber.setPosition(0.8);
 
-            chassis.driveAutonomous(DRIVE_POWER, 1200);
-
+            Thread.sleep(2000);
             //Update the data
             telemetry.update();
 

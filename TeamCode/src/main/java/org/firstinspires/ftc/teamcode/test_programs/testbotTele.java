@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
+@Disabled
 @TeleOp(name="PushBot") //Name the class
 public class testbotTele extends LinearOpMode {
     //Drivetrain

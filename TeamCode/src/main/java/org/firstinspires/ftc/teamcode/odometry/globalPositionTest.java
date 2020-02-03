@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 /**
  * Created by Samedh on 10/4/2019.
  */
+@Disabled
 @TeleOp(name = "Global Position Test")
 public class globalPositionTest extends LinearOpMode
 {

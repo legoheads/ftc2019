@@ -26,7 +26,7 @@ public class BoschIMU implements IIMU {
         this.hardwareMap = hardwareMap;
 
         imu = hardwareMap.get(BNO055IMU.class, "boschIMU");
-
+        init();
         offset = 0;
     }
 
