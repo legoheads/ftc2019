@@ -70,9 +70,6 @@ public class teleOp extends LinearOpMode {
         platform.teleInit();
         shortSaber.setPosition(0.45);
 
-        leftArm.tele();
-        rightArm.tele();
-
         telemetry.addData("init complete", two);
         telemetry.update();
 
@@ -85,8 +82,7 @@ public class teleOp extends LinearOpMode {
         //LOOP BELOWF
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             //DRIVE MOTOR CONTROLS
             drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y) * CHASSIS_POWER;
             shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
@@ -106,14 +102,23 @@ public class teleOp extends LinearOpMode {
                 chassis.stopDriving();
             }
 
-//            if (spoolPower > ERROR_MARGIN)
-//            {
-//                slides.moveSpool(spoolPower);
-//            }
-//            if (spoolPower < ERROR_MARGIN)
-//            {
-//                slides.moveSpool(spoolPower);
-//            }
+            //Shift if the joystick is pushed more on X than Y
+            if (Math.abs(shiftPower) > Math.abs(drivePower))
+            {
+                chassis.shiftTeleop(shiftPower);
+            }
+
+            //If the left trigger is pushed, turn left at that power
+            if (leftTurnPower > STOP_POWER)
+            {
+                chassis.leftTurnTeleop(leftTurnPower);
+            }
+
+            //If the right trigger is pushed, turn right at that power
+            if (rightTurnPower > STOP_POWER)
+            {
+                chassis.rightTurnTeleop(rightTurnPower);
+            }
 
             if (Math.abs(spoolPower) > ERROR_MARGIN)
             {
@@ -150,23 +155,12 @@ public class teleOp extends LinearOpMode {
                 saber.setPosition(0.9);
             }
 
-            //Shift if the joystick is pushed more on X than Y
-            if (Math.abs(shiftPower) > Math.abs(drivePower))
+            if (gamepad1.dpad_up)
             {
-              chassis.shiftTeleop(shiftPower);
+                chassis.setDriveMotorPowers(0.3, 0.3, 0.3, 0.3);
             }
 
-            //If the left trigger is pushed, turn left at that power
-            if (leftTurnPower > STOP_POWER)
-            {
-              chassis.leftTurnTeleop(leftTurnPower);
-            }
 
-            //If the right trigger is pushed, turn right at that power
-            if (rightTurnPower > STOP_POWER)
-            {
-                chassis.rightTurnTeleop(rightTurnPower);
-            }
 
             if (gamepad1.dpad_left)
             {

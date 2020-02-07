@@ -23,14 +23,14 @@ public class skystoneDetector implements CV {
 
     //Camera
     private OpenCvInternalCamera.CameraDirection CAMERA_DIRECTION = OpenCvInternalCamera.CameraDirection.FRONT;
-    private OpenCvCameraRotation ROTATION = OpenCvCameraRotation.UPRIGHT;
+    private OpenCvCameraRotation ROTATION = OpenCvCameraRotation.SIDEWAYS_RIGHT;
 
-    private static float rectHeight = 0.7f/8f;
-    private static float rectWidth = 1.75f/8f;
+    private static float rectHeight = 1.0f/8f;
+    private static float rectWidth = 1.5f/8f;
 
-    private float[] leftPos = {1.5f/8f, 6f/8f};//0 = col, 1 = row
-    private float[] midPos = {4f/8f, 6f/8f};
-    private float[] rightPos = {6.5f/8f, 6f/8f};
+    private float[] leftPos = {1.5f/8f, 7.2f/8f};//0 = col, 1 = row
+    private float[] midPos = {3.5f/8f, 7.2f/8f};
+    private float[] rightPos = {5.5f/8f, 7.2f/8f};
     //moves all rectangles right or left by amount. units are in ratio to monitor
 
     private final int rows = 640;

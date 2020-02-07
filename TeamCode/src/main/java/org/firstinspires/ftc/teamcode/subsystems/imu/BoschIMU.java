@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.subsystems.imu;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.io.File;
 

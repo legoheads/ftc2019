@@ -5,14 +5,14 @@ package org.firstinspires.ftc.teamcode.subsystems.chassis;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.imu.*;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
-
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class skystoneChassis implements DriveTrain {
     //Define drive motors
@@ -136,15 +136,37 @@ public class skystoneChassis implements DriveTrain {
      * Takes in powers for 4 drive motors, as well as 4 encoder distances
      * Allows us to run at the entered power, for the entered distance
      */
-    public void driveAutonomous(double power, int degrees) throws InterruptedException {
+    public void driveAutonomous(double power, int degrees) throws InterruptedException
+    {
+        //        stopResetWithoutEncoders();
+//        double startAngle = imu.getZAngle();
+//        double COEFF = 0.95;
+//
+//        setDriveMotorPowers(power, power, power, power);
+//
+//        if (degrees > 0)
+//        {
+//            while (LF.getCurrentPosition() < degrees)
+//            {
+//                COEFF = 1 - ((Math.abs(imu.getZAngle() - startAngle)/100));
+//                if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
+//                    if (imu.getZAngle() > startAngle) {
+//                        setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
+//                    }
+//
+//                    if (imu.getZAngle() < startAngle) {
+//                        setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
+//                    }
+//                }
+//            }
+//        }
         LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         int initial = LF.getCurrentPosition();
-        double startAngle = 0;
-        double COEFF = 0.9;
+        double startAngle = imu.getZAngle();
 
         int target = initial + degrees;
         setDriveMotorPowers(power, power, power, power);
@@ -153,35 +175,19 @@ public class skystoneChassis implements DriveTrain {
         {
             while (LF.getCurrentPosition() < target)
             {
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-                {
-                    if (imu.getZAngle() > startAngle)
-                    {
-                        setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
-                    }
-
-                    if (imu.getZAngle() < startAngle)
-                    {
-                        setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
-                    }
-                }
+                setDriveMotorPowers(power, power, power, power);
             }
         }
-        if (initial > target){
-            while (LF.getCurrentPosition() > target) {
-                if (Math.abs(imu.getZAngle() - startAngle) > 2.0) {
-                    if (imu.getZAngle() > startAngle) {
-                        setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
-                    }
-
-                    if (imu.getZAngle() < startAngle) {
-                        setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
-                    }
-                }
+        if (initial > target)
+        {
+            while (LF.getCurrentPosition() > target)
+            {
+                setDriveMotorPowers(power, power, power, power);
             }
         }
         goToIMU(SLOW_POWER, startAngle);
         stopDriving();
+        Thread.sleep(5);
     }
 
 
@@ -198,8 +204,8 @@ public class skystoneChassis implements DriveTrain {
         RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         int initial = LF.getCurrentPosition();
-        double startAngle = 0;
-        double COEFF = 0.97;
+        double startAngle = imu.getZAngle();
+        double COEFF = 1.0;
 
         int target = initial + degrees;
         setDriveMotorPowers(power, -power, -power, power);
@@ -232,6 +238,8 @@ public class skystoneChassis implements DriveTrain {
         }
         goToIMU(SLOW_POWER, startAngle);
         stopDriving();
+        Thread.sleep(5);
+
     }
 
     /**
@@ -247,8 +255,8 @@ public class skystoneChassis implements DriveTrain {
         RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         int initial = RF.getCurrentPosition();
-        double startAngle = 0;
-        double COEFF = 0.94;
+        double startAngle = imu.getZAngle();
+        double COEFF = 1.0;
 
         int target = initial + degrees;
         setDriveMotorPowers(-power, power, power, -power);
@@ -281,6 +289,7 @@ public class skystoneChassis implements DriveTrain {
         }
         goToIMU(SLOW_POWER, startAngle);
         stopDriving();
+        Thread.sleep(5);
     }
 
     public void goToIMU(double power, double degrees) throws InterruptedException

@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.auto.Red;
+package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
 
@@ -16,9 +16,9 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
 
-
-@Autonomous(name="AUTO NEW ENCODER RED", group = "Red") //Name the class
-public class autoRedIntakeEncodr extends LinearOpMode {
+@Disabled
+@Autonomous(name="Auto Red Drift", group = "Red") //Name the class
+public class autoRedDrift extends LinearOpMode {
 
     private float DRIVE_POWER = (float) 0.4;
     private float TURN_POWER = (float) 0.2;

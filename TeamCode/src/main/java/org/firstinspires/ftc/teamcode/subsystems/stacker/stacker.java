@@ -6,13 +6,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
+import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
-import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 
 public class stacker {
 
@@ -23,15 +21,17 @@ public class stacker {
     private double CLOSED_POS = 0.55;
 //    private double CAP_POS = 0.05;
 
-    //Cantilever
-    private Servo cantiliver;
-    private double EXTEND_POS = 0.0;
-    private double INTAKE_POS = 0.75;
-    private double GRAB_POS = 0.85;
+    //Cantilever left
+    private Servo cantiliverLeft;
+    private double EXTEND_POS_LEFT = 0.0;
+    private double INTAKE_POS_LEFT = 0.75;
+    private double GRAB_POS_LEFT = 0.85;
 
-    //Spool
-    private double STOP_POWER = 0.0;
-    private double SPOOL_POWER = 0.3;
+    //Cantilever right
+    private Servo cantiliverRight;
+    private double EXTEND_POS_RIGHT = 1.0;
+    private double INTAKE_POS_RIGHT = 0.25;
+    private double GRAB_POS_RIGHT = 0.15;
 
     //Color Sensor V2s
     private DistanceSensor stoneDistLeft;
@@ -51,7 +51,9 @@ public class stacker {
         this.hardwareMap = hardwareMap;
 
         gripper = hardwareMap.servo.get("gripper");
-        cantiliver = hardwareMap.servo.get("cantilever");
+        cantiliverLeft = hardwareMap.servo.get("cantileverLeft");
+        cantiliverRight = hardwareMap.servo.get("cantileverRight");
+
 
         //Back distance sensors
         stoneDistLeft = hardwareMap.get(DistanceSensor.class, "stoneDistLeft");
@@ -70,13 +72,15 @@ public class stacker {
 
     public void init() throws InterruptedException
     {
-        cantiliver.setPosition(INTAKE_POS);
+        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
+        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
         gripper.setPosition(OPEN_POS);
     }
 
     public void grab() throws InterruptedException
     {
-        cantiliver.setPosition(GRAB_POS);
+        cantiliverLeft.setPosition(GRAB_POS_LEFT);
+        cantiliverRight.setPosition(GRAB_POS_RIGHT);
         Thread.sleep(200);
         gripper.setPosition(CLOSED_POS);
 
@@ -84,14 +88,16 @@ public class stacker {
 
     public void extend() throws InterruptedException
     {
-        cantiliver.setPosition(EXTEND_POS);
+        cantiliverLeft.setPosition(EXTEND_POS_LEFT);
+        cantiliverRight.setPosition(EXTEND_POS_RIGHT);
     }
 
     public void retract() throws InterruptedException
     {
         gripper.setPosition(HALF_POS);
         Thread.sleep(100);
-        cantiliver.setPosition(INTAKE_POS);
+        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
+        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
         gripper.setPosition(OPEN_POS);
     }
 
