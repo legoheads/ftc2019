@@ -3,14 +3,11 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 
 //Import necessary items
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
@@ -21,13 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
 import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
-import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
-import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
-import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
-import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
-import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @Autonomous(name="AutoRed Short", group = "Red") //Name the class
 public class autoRedShort extends LinearOpMode {
@@ -89,7 +81,6 @@ public class autoRedShort extends LinearOpMode {
         {
             arm.releaseAuto();
 
-
             if (skystoneLocation == CV.location.LEFT)
             {
                 driveDistance = 0;
@@ -107,7 +98,7 @@ public class autoRedShort extends LinearOpMode {
                 distanceSensor.distLeftShift(SHIFT_POWER, 9);
             }
 
-            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, driveDistance);
 
             arm.grabAuto();
 
@@ -119,7 +110,7 @@ public class autoRedShort extends LinearOpMode {
 
             imu.init();
 
-            chassis.driveAutonomous(DRIVE_POWER, 3550 - driveDistance);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 3550 - driveDistance);
 
             Thread.sleep(300);
 
@@ -136,7 +127,7 @@ public class autoRedShort extends LinearOpMode {
 
             distanceSensor.platformReverse();
 
-            chassis.driveAutonomous(-DRIFT_POWER/2, -20);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER/2, -20);
 
             Thread.sleep(100);
 
@@ -157,11 +148,11 @@ public class autoRedShort extends LinearOpMode {
 
             platform.up();
 
-            chassis.driveAutonomous(-DRIVE_POWER, -750);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -750);
 
             chassis.rightShiftAutonomous(SHIFT_POWER,400);
 
-            chassis.driveAutonomous(DRIVE_POWER, 1100);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 1100);
 
             shortSaber.setPosition(0.8);
 

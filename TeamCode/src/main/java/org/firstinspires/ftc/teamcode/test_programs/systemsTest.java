@@ -83,11 +83,11 @@ public class systemsTest extends LinearOpMode {
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            chassis.driveAutonomous(MOTOR_POWER, DRIVE_DISTANCE);
+            chassis.driveForwardsAutonomous(MOTOR_POWER, DRIVE_DISTANCE);
 
             waitAndPrint("Drive forward");
 
-            chassis.driveAutonomous(-MOTOR_POWER, -DRIVE_DISTANCE);
+            chassis.driveForwardsAutonomous(-MOTOR_POWER, -DRIVE_DISTANCE);
 
             waitAndPrint("Drive backwards");
 

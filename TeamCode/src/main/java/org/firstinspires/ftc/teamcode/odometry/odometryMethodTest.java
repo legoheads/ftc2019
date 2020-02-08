@@ -60,34 +60,34 @@ public class odometryMethodTest extends LinearOpMode
         stopDriving();
     }
 
-    public void goToPosition(DcMotor yMotor, DcMotor xMotor, double targetYPos, double targetXPos, double power, Telemetry telemetry) throws InterruptedException {
+    public void goToPosition(DcMotor yMotor, DcMotor xMotor, double targetYPos, double targetXPos, double power, Telemetry telemetry) throws InterruptedException
+    {
         double distanceToY = targetYPos - yMotor.getCurrentPosition();
         double distanceToX = targetXPos - xMotor.getCurrentPosition();
-        double coeff;
+        double COEFF;
         while ((distanceToY > 20) || (distanceToX > 20))
         {
             distanceToY = targetYPos - yMotor.getCurrentPosition();
             distanceToX = targetXPos - xMotor.getCurrentPosition();
-            coeff = distanceToX / (distanceToX + distanceToY);
+            COEFF = distanceToX / (distanceToX + distanceToY);
 
             if (targetYPos > yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
             {
-                setDriveMotorPowers(-power, -power, -coeff * power, -coeff * power);
+                setDriveMotorPowers(-power, -power, -COEFF * power, -COEFF * power);
             }
             if (targetYPos > yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
             {
-                setDriveMotorPowers(-coeff * power, -coeff * power, -power, -power);
+                setDriveMotorPowers(-COEFF * power, -COEFF * power, -power, -power);
             }
             if (targetYPos < yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
             {
-                setDriveMotorPowers(coeff * power, coeff * power, power, power);
+                setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
             }
             if (targetYPos < yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
             {
-                setDriveMotorPowers(power, power, coeff * power, coeff * power);
+                setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
 
             }
-
 
             telemetry.addData("Y encoder position: ", yMotor.getCurrentPosition());
             telemetry.addData("X encoder position: ", xMotor.getCurrentPosition());
@@ -101,6 +101,36 @@ public class odometryMethodTest extends LinearOpMode
         goToIMU(power, 170, telemetry);
     }
 
+    public void odometryMotion(DcMotor motor1, DcMotor motor2, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry)
+    {
+        //Empty while loop while the motors are moving
+        while ((Math.abs(motor1.getCurrentPosition() - degrees) > 20) && (Math.abs(motor2.getCurrentPosition() - degrees) > 20))
+        {
+            telemetry.addData("enc 1", motor1.getCurrentPosition());
+            telemetry.addData("enc 2", motor2.getCurrentPosition());
+            setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
+            telemetry.update();
+        }
+
+        //Stop driving
+        stopDriving();
+    }
+
+    public void odometryDrive(DcMotor motor1, DcMotor motor2, double power, int degrees, Telemetry telemetry) throws InterruptedException
+    {
+        odometryMotion(motor1, motor2, power, power, power, power, -degrees, telemetry);
+    }
+
+    public void odometryLeftShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException
+    {
+        odometryMotion(motor, motor, -power, power, power, -power, -degrees, telemetry);
+    }
+
+    public void odometryRightShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException
+    {
+        odometryMotion(motor, motor, power, -power, -power, power, degrees, telemetry);
+    }
+
     //***********************************************************************************************************
     //MAIN BELOW
     @Override
@@ -112,7 +142,7 @@ public class odometryMethodTest extends LinearOpMode
         RB = hardwareMap.dcMotor.get("RB");
         backOdometer = hardwareMap.dcMotor.get("backOdometer");
 
-        //Reverse right side motors
+        //Reverse left side motors
         LF.setDirection(DcMotorSimple.Direction.REVERSE);
         LB.setDirection(DcMotorSimple.Direction.REVERSE);
         RF.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -124,11 +154,6 @@ public class odometryMethodTest extends LinearOpMode
         RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         imu = new BoschIMU(hardwareMap);
-
-        imu.calibrate();
-        imu.init();
-
-
 
         //Wait for start button to be clicked
         waitForStart();

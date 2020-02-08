@@ -19,12 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
 import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
-import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
-import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
-import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
-import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @Autonomous(name="AutoBlue Short", group = "Blue") //Name the class
 public class autoBlueShort extends LinearOpMode {
@@ -105,7 +101,7 @@ public class autoBlueShort extends LinearOpMode {
                 driveDistance = 0;
             }
 
-            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, driveDistance);
 
             arm.grabAuto();
 
@@ -117,7 +113,7 @@ public class autoBlueShort extends LinearOpMode {
 
             imu.init();
 
-            chassis.driveAutonomous(DRIVE_POWER, 3550 - driveDistance);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 3550 - driveDistance);
 
             Thread.sleep(300);
 
@@ -153,11 +149,11 @@ public class autoBlueShort extends LinearOpMode {
 
             platform.up();
 
-            chassis.driveAutonomous(-DRIVE_POWER, -750);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -750);
 
             chassis.leftShiftAutonomous(SHIFT_POWER,450);
 
-            chassis.driveAutonomous(DRIVE_POWER, 1150);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 1150);
 
             shortSaber.setPosition(0.8);
 

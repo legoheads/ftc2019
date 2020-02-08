@@ -288,7 +288,7 @@ public class autoRedDrift extends LinearOpMode {
 
 
 
-//            chassis.driveAutonomous(0.5, 1000);
+//            chassis.driveForwardsAutonomous(0.5, 1000);
 
 
 
@@ -326,7 +326,7 @@ public class autoRedDrift extends LinearOpMode {
 //                driveDistance = 470;
 //            }
 //
-//            chassis.driveAutonomous(DRIVE_POWER, driveDistance);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, driveDistance);
 //
 //
 //            arm.grabAuto();
@@ -338,7 +338,7 @@ public class autoRedDrift extends LinearOpMode {
 //            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
 //
 //
-//            chassis.driveAutonomous(DRIVE_POWER, 2950 - driveDistance);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, 2950 - driveDistance);
 //
 //            Thread.sleep(300);
 //
@@ -357,7 +357,7 @@ public class autoRedDrift extends LinearOpMode {
 //
 //            chassis.rightTurnIMU(0.5,-90);
 //
-////            chassis.driveAutonomous(-DRIVE_POWER, -200);
+////            chassis.driveForwardsAutonomous(-DRIVE_POWER, -200);
 //
 //            stacker.stoneReverseAuto();
 //
@@ -365,9 +365,9 @@ public class autoRedDrift extends LinearOpMode {
 //
 //            Thread.sleep(200);
 //
-////                        chassis.driveAutonomous(DRIVE_POWER / 1.2, 1200);
+////                        chassis.driveForwardsAutonomous(DRIVE_POWER / 1.2, 1200);
 ////            chassis.rightShiftAutonomous(SHIFT_POWER, 1000);
-////            chassis.driveAutonomous(-DRIVE_POWER, 500);
+////            chassis.driveForwardsAutonomous(-DRIVE_POWER, 500);
 ////            chassis.rightShiftAutonomous(SHIFT_POWER, 500);
 //
 //            imu.init();
@@ -386,11 +386,11 @@ public class autoRedDrift extends LinearOpMode {
 //            chassis.rightShiftAutonomous(SHIFT_POWER,225);
 //
 //
-//            chassis.driveAutonomous(-DRIVE_POWER, -650);
+//            chassis.driveForwardsAutonomous(-DRIVE_POWER, -650);
 //
 //            chassis.rightShiftAutonomous(SHIFT_POWER, 250);
 //
-//            chassis.driveAutonomous(DRIVE_POWER, 1200);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, 1200);
 
             //Update the data
             telemetry.update();

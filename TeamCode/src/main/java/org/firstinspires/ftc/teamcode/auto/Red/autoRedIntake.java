@@ -83,54 +83,45 @@ public class autoRedIntake extends LinearOpMode {
         while (opModeIsActive()) {
             intake.intake();
 
-            chassis.driveAutonomous(DRIVE_POWER, 800);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 800);
 
             //CV
             chassis.leftShiftAutonomous(SHIFT_POWER, 500);
 
             chassis.useEncoder(false);
-
             while (imu.getZAngle() < 45)
             {
                 chassis.setDriveMotorPowers(0, 0, TURN_POWER, TURN_POWER);
             }
             chassis.stopDriving();
 
-            chassis.driveAutonomous(-DRIVE_POWER, -400);
-
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -400);
 
             chassis.useEncoder(false);
-
             while (imu.getZAngle() < 90)
             {
                 chassis.setDriveMotorPowers(-TURN_POWER, -TURN_POWER, 0, 0);
             }
-
             intake.stop();
-
             chassis.stopDriving();
 
-            while (imu.getZAngle()>90){
-                chassis.rightTurnTeleop(TURN_POWER/2);
-            }
+            chassis.rightTurnIMU(TURN_POWER/2, 90);
 
-//            chassis.rightTurnIMU(TURN_POWER/2, 90);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2800);
 
 
-            chassis.driveAutonomous(-DRIVE_POWER, -2800);
+//            while(imu.getZAngle()>0){
+//                chassis.leftTurnTeleop(TURN_POWER);
+//            }
+//
+//            chassis.stopDriving();
+//
+//            while(imu.getZAngle()<0){
+//                chassis.rightTurnTeleop(TURN_POWER/2);
+//            }
 
-
-            while(imu.getZAngle()>0){
-                chassis.leftTurnTeleop(TURN_POWER);
-            }
-
-            chassis.stopDriving();
-
-            while(imu.getZAngle()<0){
-                chassis.rightTurnTeleop(TURN_POWER/2);
-            }
-
-            chassis.stopDriving();
+            //target is actually 180, bring back commented out code above if below line doesn't work
+            chassis.leftTurnIMU(TURN_POWER, 0);
 
             imu.init();
 
@@ -142,34 +133,35 @@ public class autoRedIntake extends LinearOpMode {
 
             Thread.sleep(500);
 
-
-            while (imu.getZAngle() > -90) {
+            //drift turn
+            while (imu.getZAngle() > -90)
+            {
 //                platform.grab();
                 chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
             }
 
             platform.up();
 
-            chassis.driveAutonomous(DRIVE_POWER, 300);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 300);
 //
 //            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
 //
 //            //CV
-//            chassis.driveAutonomous(DRIVE_POWER, 500);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
 //
 //            intake.intake();
 //
-//            chassis.rightTurnIMU(TURN_POWER, 45);
+//            chassis.rightTurnIMU(TURN_POWER, -45);
 //
-//            chassis.driveAutonomous(DRIVE_POWER, 500);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
 //
-//            chassis.driveAutonomous(-DRIVE_POWER, -500);
+//            chassis.driveForwardsAutonomous(-DRIVE_POWER, -500);
 //
 //            chassis.rightTurnIMU(TURN_POWER, 90);
 //
-//            chassis.driveAutonomous(-DRIVE_POWER, 2000);
+//            chassis.driveForwardsAutonomous(-DRIVE_POWER, 2000);
 //
-//            chassis.driveAutonomous(DRIVE_POWER, 1000);
+//            chassis.driveForwardsAutonomous(DRIVE_POWER, 1000);
 //
 //            shortSaber.setPosition(0.8);
 //
