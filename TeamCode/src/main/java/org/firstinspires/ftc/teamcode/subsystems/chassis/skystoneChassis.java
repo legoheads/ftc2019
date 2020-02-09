@@ -612,7 +612,7 @@ public class skystoneChassis implements DriveTrain
             telemetry.addData("deltaTime: ", deltaTime);
             telemetry.addData("timer", runTime.seconds());
             telemetry.addData("integral: ", integral);
-            telemetry.addData("derivative:", derivative);
+            telemetry.addData("derivative: ", derivative);
             telemetry.update();
 
             error = targetAngle - imu.getZAngle();
@@ -623,7 +623,7 @@ public class skystoneChassis implements DriveTrain
             {
                 integral = 0;
             }
-            if (Math.abs(error) > 200)
+            if (Math.abs(error) > 40)
             {
                 integral = 0;
             }

@@ -13,6 +13,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 @Disabled
 @TeleOp(name="Odometry method test") //Name the class
 public class odometryMethodTest extends LinearOpMode
@@ -26,13 +30,13 @@ public class odometryMethodTest extends LinearOpMode
 
 
     //Define a function to use to set motor powers
-    public void setDriveMotorPowers(double leftFrontPower, double leftBackPower, double rightFrontPower, double rightBackPower)
+    public void setDriveMotorPowers(double LFPower, double LBPower, double RFPower, double RBPower)
     {
         //Use the entered powers and feed them to the motors
-        LF.setPower(leftFrontPower);
-        LB.setPower(leftBackPower);
-        RF.setPower(rightFrontPower);
-        RB.setPower(rightBackPower);
+        LF.setPower(LFPower);
+        LB.setPower(LBPower);
+        RF.setPower(RFPower);
+        RB.setPower(RBPower);
     }
 
     public void stopDriving()
@@ -42,7 +46,7 @@ public class odometryMethodTest extends LinearOpMode
 
     public void goToIMU(double power, double degrees, Telemetry telemetry) throws InterruptedException
     {
-        if (Math.abs(imu.getZAngle() - degrees) > 2.0)
+        if (abs(imu.getZAngle() - degrees) > 2.0)
         {
             while (imu.getZAngle() < degrees)
             {
@@ -62,6 +66,7 @@ public class odometryMethodTest extends LinearOpMode
 
     public void goToPosition(DcMotor yMotor, DcMotor xMotor, double targetYPos, double targetXPos, double power, Telemetry telemetry) throws InterruptedException
     {
+        double startAngle = imu.getZAngle();
         double distanceToY = targetYPos - yMotor.getCurrentPosition();
         double distanceToX = targetXPos - xMotor.getCurrentPosition();
         double COEFF;
@@ -69,24 +74,26 @@ public class odometryMethodTest extends LinearOpMode
         {
             distanceToY = targetYPos - yMotor.getCurrentPosition();
             distanceToX = targetXPos - xMotor.getCurrentPosition();
-            COEFF = distanceToX / (distanceToX + distanceToY);
+            COEFF = 1 - (distanceToX / sqrt(pow(distanceToX, 2) + pow(distanceToY, 2)));
 
-            if (targetYPos > yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
+            if (abs(targetYPos) > abs(targetXPos))
             {
-                setDriveMotorPowers(-power, -power, -COEFF * power, -COEFF * power);
-            }
-            if (targetYPos > yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
-            {
-                setDriveMotorPowers(-COEFF * power, -COEFF * power, -power, -power);
-            }
-            if (targetYPos < yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
-            {
-                setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
-            }
-            if (targetYPos < yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
-            {
-                setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
-
+                if (targetYPos > yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
+                {
+                    setDriveMotorPowers(-power, -power, -COEFF * power, -COEFF * power);
+                }
+                if (targetYPos > yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
+                {
+                    setDriveMotorPowers(-COEFF * power, -COEFF * power, -power, -power);
+                }
+                if (targetYPos < yMotor.getCurrentPosition() && targetXPos < xMotor.getCurrentPosition())
+                {
+                    setDriveMotorPowers(COEFF * power, COEFF * power, power, power);
+                }
+                if (targetYPos < yMotor.getCurrentPosition() && targetXPos > xMotor.getCurrentPosition())
+                {
+                    setDriveMotorPowers(power, power, COEFF * power, COEFF * power);
+                }
             }
 
             telemetry.addData("Y encoder position: ", yMotor.getCurrentPosition());
@@ -98,13 +105,13 @@ public class odometryMethodTest extends LinearOpMode
         stopDriving();
         Thread.sleep(5000);
 
-        goToIMU(power, 170, telemetry);
+        goToIMU(power, startAngle, telemetry);
     }
 
     public void odometryMotion(DcMotor motor1, DcMotor motor2, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry)
     {
         //Empty while loop while the motors are moving
-        while ((Math.abs(motor1.getCurrentPosition() - degrees) > 20) && (Math.abs(motor2.getCurrentPosition() - degrees) > 20))
+        while ((abs(motor1.getCurrentPosition() - degrees) > 20) && (abs(motor2.getCurrentPosition() - degrees) > 20))
         {
             telemetry.addData("enc 1", motor1.getCurrentPosition());
             telemetry.addData("enc 2", motor2.getCurrentPosition());
