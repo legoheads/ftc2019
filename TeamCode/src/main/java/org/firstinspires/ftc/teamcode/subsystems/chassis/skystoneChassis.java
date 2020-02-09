@@ -452,7 +452,6 @@ public class skystoneChassis implements DriveTrain
         }
 
         if (spoolPower>0.1){
-
             slides.moveSpool(spoolPower*(float)0.8);
         }
         if (spoolPower<0.1){
@@ -553,6 +552,7 @@ public class skystoneChassis implements DriveTrain
             telemetry.addData("oldError: ", oldError);
             telemetry.addData("currentTime: ", currentTime);
             telemetry.addData("deltaTime: ", deltaTime);
+            telemetry.addData("timer", runTime.seconds());
             telemetry.addData("integral: ", integral);
             telemetry.addData("derivative:", derivative);
             telemetry.update();
@@ -576,18 +576,65 @@ public class skystoneChassis implements DriveTrain
 
             currentTime = runTime.seconds();
             oldError = error;
-
-            telemetry.addData("error: ", error);
-            telemetry.addData("oldError: ", oldError);
-            telemetry.addData("currentTime: ", currentTime);
-            telemetry.addData("deltaTime: ", deltaTime);
-            telemetry.addData("integral: ", integral);
-            telemetry.addData("derivative:", derivative);
-            telemetry.update();
         }
         stopDriving();
 
         leftTurnIMU(SLOW_POWER, startAngle);
+        stopDriving();
+        Thread.sleep(5);
+    }
+
+    public void leftTurnIMUPID(double targetAngle, Telemetry telemetry) throws InterruptedException
+    {
+        targetAngle = Math.abs(targetAngle);
+
+        //Need to tune constants
+        double KP = 0.5, KI = 0.2, KD = 0.1;
+        double movementPower = MAX_POWER;
+
+        stopResetEncoders();
+        useEncoder(false);
+
+        error = 0.0;
+        oldError = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        leftTurnTeleop(movementPower);
+        while (imu.getZAngle() < targetAngle)
+        {
+            telemetry.addData("error: ", error);
+            telemetry.addData("oldError: ", oldError);
+            telemetry.addData("currentTime: ", currentTime);
+            telemetry.addData("deltaTime: ", deltaTime);
+            telemetry.addData("timer", runTime.seconds());
+            telemetry.addData("integral: ", integral);
+            telemetry.addData("derivative:", derivative);
+            telemetry.update();
+
+            error = targetAngle - imu.getZAngle();
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            derivative = (error - oldError) / deltaTime;
+            if (Math.abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (Math.abs(error) > 200)
+            {
+                integral = 0;
+            }
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            leftTurnTeleop(movementPower);
+
+            currentTime = runTime.seconds();
+            oldError = error;
+        }
         stopDriving();
         Thread.sleep(5);
     }
