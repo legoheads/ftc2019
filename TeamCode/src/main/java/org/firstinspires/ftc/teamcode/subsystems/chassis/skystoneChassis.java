@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
@@ -23,12 +24,24 @@ public class skystoneChassis implements DriveTrain
     private HardwareMap hardwareMap;
 
     private LinearSlides slides;
+
+    private double MAX_POWER = 1.0;
     private double SLOW_POWER = 0.2;
 
-    private int initial;
+    private double initial;
     private double target;
     private double startAngle;
     private double COEFF;
+
+    //PID variables
+    private double error = 0.0;
+    private double oldError = 0.0;
+    private double currentTime = 0.0;
+    private double deltaTime = 0.0;
+    private double integral = 0.0;
+    private double derivative = 0.0;
+
+
 
     /**
      * Initialize all the hardware
@@ -425,34 +438,6 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void odometryMotion(DcMotor motor1, DcMotor motor2, double LFPower, double LBPower, double RFPower, double RBPower, int degrees, Telemetry telemetry)
-    {
-        //Empty while loop while the motors are moving
-        while ((Math.abs(motor1.getCurrentPosition() - degrees) > 20) && (Math.abs(motor2.getCurrentPosition() - degrees) > 20))
-        {
-            telemetry.addData("enc 1", motor1.getCurrentPosition());
-            telemetry.addData("enc 2", motor2.getCurrentPosition());
-            setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
-            telemetry.update();
-        }
-
-        //Stop driving
-        stopDriving();
-    }
-
-    public void odometryDrive(DcMotor motor1, DcMotor motor2, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor1, motor2, power, power, power, power, -degrees, telemetry);
-    }
-
-    public void odometryLeftShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor, motor, -power, power, power, -power, -degrees, telemetry);
-    }
-
-    public void odometryRightShift(DcMotor motor, double power, int degrees, Telemetry telemetry) throws InterruptedException {
-        odometryMotion(motor, motor, power, -power, -power, power, degrees, telemetry);
-    }
-
-
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2, double startPower) throws InterruptedException
     {
         float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.7;
@@ -538,6 +523,73 @@ public class skystoneChassis implements DriveTrain
 
         //Use the encoder in the future
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void driveForwardsAutonomousPID(double degrees, Telemetry telemetry) throws InterruptedException
+    {
+        degrees = Math.abs(degrees);
+
+        //Need to tune constants
+        double KP = 0.5, KI = 0.2, KD = 0.1;
+        double movementPower = MAX_POWER;
+
+        stopResetEncoders();
+        useEncoder(false);
+
+        startAngle = imu.getZAngle();
+
+        error = 0.0;
+        oldError = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        driveTeleop(movementPower);
+        while (LF.getCurrentPosition() < degrees)
+        {
+            telemetry.addData("error: ", error);
+            telemetry.addData("oldError: ", oldError);
+            telemetry.addData("currentTime: ", currentTime);
+            telemetry.addData("deltaTime: ", deltaTime);
+            telemetry.addData("integral: ", integral);
+            telemetry.addData("derivative:", derivative);
+            telemetry.update();
+
+            error = degrees - LF.getCurrentPosition();
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            derivative = (error - oldError) / deltaTime;
+            if (Math.abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (Math.abs(error) > 200)
+            {
+                integral = 0;
+            }
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            driveTeleop(movementPower);
+
+            currentTime = runTime.seconds();
+            oldError = error;
+
+            telemetry.addData("error: ", error);
+            telemetry.addData("oldError: ", oldError);
+            telemetry.addData("currentTime: ", currentTime);
+            telemetry.addData("deltaTime: ", deltaTime);
+            telemetry.addData("integral: ", integral);
+            telemetry.addData("derivative:", derivative);
+            telemetry.update();
+        }
+        stopDriving();
+
+        leftTurnIMU(SLOW_POWER, startAngle);
+        stopDriving();
+        Thread.sleep(5);
     }
 }
 

@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
@@ -113,26 +112,6 @@ public class testbotTele extends LinearOpMode {
                 LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 backOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-
-            if (gamepad1.dpad_up)
-            {
-                chassis.odometryDrive(LF, RB, slowPower, 500, telemetry);
-            }
-
-            if (gamepad1.dpad_down)
-            {
-                chassis.odometryDrive(LF, RB, -slowPower, -500, telemetry);
-            }
-
-            if (gamepad1.dpad_left)
-            {
-                chassis.odometryLeftShift(backOdometer, slowPower, 500, telemetry);
-            }
-
-            if (gamepad1.dpad_right)
-            {
-                chassis.odometryRightShift(backOdometer, slowPower, 500, telemetry);
             }
 
 

@@ -155,11 +155,11 @@ public class autoRedIntake extends LinearOpMode {
 //
 //            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
 //
-//            chassis.driveForwardsAutonomous(-DRIVE_POWER, -500);
+//            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -500);
 //
 //            chassis.rightTurnIMU(TURN_POWER, 90);
 //
-//            chassis.driveForwardsAutonomous(-DRIVE_POWER, 2000);
+//            chassis.driveBackwardsAutonomous(-DRIVE_POWER, 2000);
 //
 //            chassis.driveForwardsAutonomous(DRIVE_POWER, 1000);
 //
