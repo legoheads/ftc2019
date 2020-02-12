@@ -16,22 +16,19 @@ public class stacker {
 
     //Gripper
     private Servo gripper;
-    private double OPEN_POS = 0.45;
-    private double HALF_POS = 0.52;
-    private double CLOSED_POS = 0.55;
+    private double OPEN_POS = 0.35;
+    private double CLOSED_POS = 0.0;
 //    private double CAP_POS = 0.05;
 
     //Cantilever left
     private Servo cantiliverLeft;
     private double EXTEND_POS_LEFT = 0.0;
-    private double INTAKE_POS_LEFT = 0.75;
-    private double GRAB_POS_LEFT = 0.85;
+    private double INTAKE_POS_LEFT = 1.0;
 
     //Cantilever right
     private Servo cantiliverRight;
-    private double EXTEND_POS_RIGHT = 1.0;
-    private double INTAKE_POS_RIGHT = 0.25;
-    private double GRAB_POS_RIGHT = 0.15;
+    private double EXTEND_POS_RIGHT = 0.95;
+    private double INTAKE_POS_RIGHT = 0.2;
 
     //Color Sensor V2s
     private DistanceSensor stoneDistLeft;
@@ -79,8 +76,8 @@ public class stacker {
 
     public void grab() throws InterruptedException
     {
-        cantiliverLeft.setPosition(GRAB_POS_LEFT);
-        cantiliverRight.setPosition(GRAB_POS_RIGHT);
+        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
+        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
         Thread.sleep(200);
         gripper.setPosition(CLOSED_POS);
 
@@ -94,11 +91,10 @@ public class stacker {
 
     public void retract() throws InterruptedException
     {
-        gripper.setPosition(HALF_POS);
+        gripper.setPosition(OPEN_POS);
         Thread.sleep(100);
         cantiliverLeft.setPosition(INTAKE_POS_LEFT);
         cantiliverRight.setPosition(INTAKE_POS_RIGHT);
-        gripper.setPosition(OPEN_POS);
     }
 
 //    public void capDrop() throws InterruptedException

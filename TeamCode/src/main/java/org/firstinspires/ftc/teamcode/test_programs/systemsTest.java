@@ -69,7 +69,7 @@ public class systemsTest extends LinearOpMode {
         rightArm = new rightArm(hardwareMap);
         imu = new BoschIMU(hardwareMap);
 
-        platform.teleInit();
+        platform.up();
         shortSaber.setPosition(0.45);
 
         telemetry.addData("init complete", two);

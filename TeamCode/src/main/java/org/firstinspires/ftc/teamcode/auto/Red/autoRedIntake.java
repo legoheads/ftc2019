@@ -105,25 +105,15 @@ public class autoRedIntake extends LinearOpMode {
             intake.stop();
             chassis.stopDriving();
 
-            chassis.rightTurnIMU(TURN_POWER/2, 90);
+            chassis.rightTurnIMU(TURN_POWER/2, 88);
 
             chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2800);
 
-
-//            while(imu.getZAngle()>0){
-//                chassis.leftTurnTeleop(TURN_POWER);
-//            }
-//
-//            chassis.stopDriving();
-//
-//            while(imu.getZAngle()<0){
-//                chassis.rightTurnTeleop(TURN_POWER/2);
-//            }
+            imu.init();
 
             //target is actually 180, bring back commented out code above if below line doesn't work
-            chassis.leftTurnIMU(TURN_POWER, 0);
+            chassis.leftTurnIMU(TURN_POWER, 90);
 
-            imu.init();
 
             distanceSensor.platformReverse();
 
@@ -131,14 +121,13 @@ public class autoRedIntake extends LinearOpMode {
 
             platform.grab();
 
-            Thread.sleep(500);
-
             //drift turn
-            while (imu.getZAngle() > -90)
+            while (imu.getZAngle() > 0)
             {
-//                platform.grab();
                 chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
             }
+
+            chassis.leftTurnIMU(TURN_POWER, 0);
 
             platform.up();
 

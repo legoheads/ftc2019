@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 //Import necessary items
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
 
+@Disabled
 @Autonomous(name="AutoRed Short", group = "Red") //Name the class
 public class autoRedShort extends LinearOpMode {
 

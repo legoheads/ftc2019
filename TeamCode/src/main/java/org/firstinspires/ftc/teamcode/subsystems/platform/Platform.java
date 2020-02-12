@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public interface Platform
 {
-    void autoInit();
-    void teleInit();
     void up() throws InterruptedException;
     void grab() throws InterruptedException;
 

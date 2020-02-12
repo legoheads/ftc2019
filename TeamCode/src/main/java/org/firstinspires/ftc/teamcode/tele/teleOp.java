@@ -8,15 +8,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
-import org.firstinspires.ftc.teamcode.subsystems.chassis.*;
+import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
-import org.firstinspires.ftc.teamcode.subsystems.slides.*;
-import org.firstinspires.ftc.teamcode.subsystems.intake.*;
-import org.firstinspires.ftc.teamcode.subsystems.platform.*;
+import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
+import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
+import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
+import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
+import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
+import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @TeleOp(name="teleOp") //Name the class
@@ -43,8 +43,6 @@ public class teleOp extends LinearOpMode {
     private IntakeWheels intake;
     private LinearSlides slides;
     private stacker stacker;
-    private Arm leftArm;
-    private Arm rightArm;
     private IIMU imu;
 
     private Servo saber;
@@ -63,11 +61,9 @@ public class teleOp extends LinearOpMode {
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         platform = new platformArms(hardwareMap);
         stacker = new stacker(hardwareMap, gamepad1, gamepad2);
-        leftArm = new leftArm(hardwareMap);
-        rightArm = new rightArm(hardwareMap);
         imu = new BoschIMU(hardwareMap);
 
-        platform.teleInit();
+        platform.up();
         shortSaber.setPosition(0.45);
 
         telemetry.addData("init complete", two);
@@ -86,8 +82,8 @@ public class teleOp extends LinearOpMode {
             //DRIVE MOTOR CONTROLS
             drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y) * CHASSIS_POWER;
             shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
-            leftTurnPower = (gamepad1.left_trigger) * CHASSIS_POWER;
-            rightTurnPower = (gamepad1.right_trigger) * CHASSIS_POWER;
+            leftTurnPower = (gamepad1.left_trigger + gamepad1.right_trigger) * CHASSIS_POWER;
+            rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger) * CHASSIS_POWER;
             spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
 
 
@@ -138,29 +134,22 @@ public class teleOp extends LinearOpMode {
                 platform.grab();
             }
 
-            //Saber red
+            //Saber forward
             if (gamepad2.y)
             {
-                leftArm.open();
-                rightArm.open();
-                saber.setPosition(0.0);
-//                saberRight.setPosition(0.0);
+                saber.setPosition(0.25);
             }
 
-            //Saber blue
+            //Saber backwards
             if (gamepad2.a)
             {
-                leftArm.open();
-                rightArm.open();
-                saber.setPosition(0.9);
+                saber.setPosition(1.0);
             }
 
             if (gamepad1.dpad_up)
             {
                 chassis.setDriveMotorPowers(0.3, 0.3, 0.3, 0.3);
             }
-
-
 
             if (gamepad1.dpad_left)
             {
@@ -226,6 +215,7 @@ public class teleOp extends LinearOpMode {
 
             if (gamepad2.x)
             {
+                intake.stop();
                 stacker.grab();
             }
 
@@ -235,20 +225,11 @@ public class teleOp extends LinearOpMode {
                 intake.stop();
             }
 
+
+            //Add cap here
             if(gamepad2.back)
             {
-                //                stacker.capDrop();
 
-                platform.grab();
-                rightArm.releaseAuto();
-                leftArm.releaseAuto();
-                Thread.sleep(1000);
-
-                //Do not open arms
-                leftArm.up();
-                rightArm.up();
-
-                platform.up();
             }
 
             //Update the data

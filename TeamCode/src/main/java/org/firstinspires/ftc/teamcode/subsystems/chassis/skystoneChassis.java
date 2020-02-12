@@ -15,6 +15,9 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+
 public class skystoneChassis implements DriveTrain
 {
     //Define drive motors
@@ -26,6 +29,7 @@ public class skystoneChassis implements DriveTrain
     private LinearSlides slides;
 
     private double MAX_POWER = 1.0;
+    private double PID_POWER = 0.7;
     private double SLOW_POWER = 0.2;
 
     private double initial;
@@ -34,12 +38,12 @@ public class skystoneChassis implements DriveTrain
     private double COEFF;
 
     //PID variables
-    private double error = 0.0;
-    private double oldError = 0.0;
-    private double currentTime = 0.0;
-    private double deltaTime = 0.0;
-    private double integral = 0.0;
-    private double derivative = 0.0;
+    private double error;
+    private double oldError;
+    private double currentTime;
+    private double deltaTime;
+    private double integral;
+    private double derivative;
 
 
 
@@ -170,8 +174,8 @@ public class skystoneChassis implements DriveTrain
     public void driveForwardsAutonomous(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -191,8 +195,8 @@ public class skystoneChassis implements DriveTrain
     public void driveBackwardsAutonomous(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = -Math.abs(power);
-        degrees = -Math.abs(degrees);
+        power = - abs(power);
+        degrees = - abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -217,8 +221,8 @@ public class skystoneChassis implements DriveTrain
     public void leftShiftAutonomous(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = RF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -243,8 +247,8 @@ public class skystoneChassis implements DriveTrain
     public void rightShiftAutonomous(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -266,8 +270,8 @@ public class skystoneChassis implements DriveTrain
     public void driveForwardsAutonomousIMU(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -278,8 +282,8 @@ public class skystoneChassis implements DriveTrain
         while (LF.getCurrentPosition() < degrees)
         {
             driveTeleop(power);
-            COEFF = 1 - ((Math.abs(imu.getZAngle() - startAngle)/100));
-            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            COEFF = 1 - ((abs(imu.getZAngle() - startAngle)/100));
+            if (abs(imu.getZAngle() - startAngle) > 2.0)
             {
                 if (imu.getZAngle() > startAngle)
                 {
@@ -302,8 +306,8 @@ public class skystoneChassis implements DriveTrain
     public void driveBackwardsAutonomousIMU(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = -Math.abs(power);
-        degrees = -Math.abs(degrees);
+        power = - abs(power);
+        degrees = - abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -314,8 +318,8 @@ public class skystoneChassis implements DriveTrain
         while (LF.getCurrentPosition() < degrees)
         {
             driveTeleop(power);
-            COEFF = 1 - ((Math.abs(imu.getZAngle() - startAngle)/100));
-            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            COEFF = 1 - ((abs(imu.getZAngle() - startAngle)/100));
+            if (abs(imu.getZAngle() - startAngle) > 2.0)
             {
                 if (imu.getZAngle() > startAngle)
                 {
@@ -338,8 +342,8 @@ public class skystoneChassis implements DriveTrain
     public void leftShiftAutonomousIMU(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = RF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -350,9 +354,9 @@ public class skystoneChassis implements DriveTrain
         while (RF.getCurrentPosition() < target)
         {
             shiftTeleop(power);
-            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            if (abs(imu.getZAngle() - startAngle) > 2.0)
             {
-                COEFF = 1 - ((Math.abs(imu.getZAngle() - startAngle)/100));
+                COEFF = 1 - ((abs(imu.getZAngle() - startAngle)/100));
                 if (imu.getZAngle() > startAngle)
                 {
                     setDriveMotorPowers(-COEFF * power, power, power, -COEFF * power);
@@ -374,8 +378,8 @@ public class skystoneChassis implements DriveTrain
     public void rightShiftAutonomousIMU(double power, double degrees) throws InterruptedException
     {
         useEncoder(false);
-        power = Math.abs(power);
-        degrees = Math.abs(degrees);
+        power = abs(power);
+        degrees = abs(degrees);
 
         initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
@@ -386,9 +390,9 @@ public class skystoneChassis implements DriveTrain
         while (LF.getCurrentPosition() < target)
         {
             shiftTeleop(-power);
-            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+            if (abs(imu.getZAngle() - startAngle) > 2.0)
             {
-                COEFF = 1 - ((Math.abs(imu.getZAngle() - startAngle)/100));
+                COEFF = 1 - ((abs(imu.getZAngle() - startAngle)/100));
                 if (imu.getZAngle() > startAngle)
                 {
                     setDriveMotorPowers(-power, COEFF * power, COEFF * power, -power);
@@ -447,7 +451,7 @@ public class skystoneChassis implements DriveTrain
         float spoolPower = -(gamepad2.right_stick_y);
 
         //Drive if joystick pushed more Y than X on gamepad1 (fast)
-        if (Math.abs(drivePower) > Math.abs(shiftPower)) {
+        if (abs(drivePower) > abs(shiftPower)) {
             driveTeleop(drivePower);
         }
 
@@ -460,7 +464,7 @@ public class skystoneChassis implements DriveTrain
         }
 
         //Shift if pushed more on X than Y on gamepad1 (fast)
-        if (Math.abs(shiftPower) > Math.abs(drivePower)) {
+        if (abs(shiftPower) > abs(drivePower)) {
             shiftTeleop(shiftPower);
         }
 
@@ -475,7 +479,7 @@ public class skystoneChassis implements DriveTrain
         }
 
         //If the joysticks are not pushed significantly shut off the wheels
-        if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) + Math.abs(startPower) < 0.15) {
+        if (abs(drivePower) + abs(shiftPower) + abs(leftTurnPower) + abs(rightTurnPower) + abs(startPower) < 0.15) {
             stopDriving();
         }
 
@@ -512,7 +516,7 @@ public class skystoneChassis implements DriveTrain
             Thread.sleep(75);
             secondPos = motor.getCurrentPosition();
 
-            if (Math.abs(firstPos - secondPos) < 5) {
+            if (abs(firstPos - secondPos) < 5) {
                 break;
             }
         }
@@ -526,11 +530,11 @@ public class skystoneChassis implements DriveTrain
 
     public void driveForwardsAutonomousPID(double degrees, Telemetry telemetry) throws InterruptedException
     {
-        degrees = Math.abs(degrees);
+        degrees = abs(degrees);
 
         //Need to tune constants
         double KP = 0.5, KI = 0.2, KD = 0.1;
-        double movementPower = MAX_POWER;
+        double movementPower = PID_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -561,16 +565,16 @@ public class skystoneChassis implements DriveTrain
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
-            if (Math.abs(error) < 10)
+            if (abs(error) < 10)
             {
                 integral = 0;
             }
-            if (Math.abs(error) > 200)
+            if (abs(error) > 200)
             {
                 integral = 0;
             }
 
-            movementPower = KP * error + KI * integral + KD * derivative;
+            movementPower = PID_POWER * (KP * error + KI * integral + KD * derivative);
 
             driveTeleop(movementPower);
 
@@ -586,17 +590,18 @@ public class skystoneChassis implements DriveTrain
 
     public void leftTurnIMUPID(double targetAngle, Telemetry telemetry) throws InterruptedException
     {
-        targetAngle = Math.abs(targetAngle);
+        targetAngle = abs(targetAngle);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.1;
-        double movementPower = MAX_POWER;
+        double KP = 0.5 * PI / 180, KI = 0.2 * PI / 180, KD = 0.1 * PI / 180;
+        double movementPower = PID_POWER;
 
         stopResetEncoders();
         useEncoder(false);
 
         error = 0.0;
         oldError = 0.0;
+        currentTime = 0.0;
         integral = 0.0;
         derivative = 0.0;
 
@@ -619,11 +624,11 @@ public class skystoneChassis implements DriveTrain
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
-            if (Math.abs(error) < 10)
+            if (abs(error) < 10)
             {
                 integral = 0;
             }
-            if (Math.abs(error) > 40)
+            if (abs(error) > 40)
             {
                 integral = 0;
             }

@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.auto.Blue;
 //Import necessary items
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
 
+@Disabled
 @Autonomous(name="AutoBlue Short", group = "Blue") //Name the class
 public class autoBlueShort extends LinearOpMode {
 
@@ -67,7 +69,6 @@ public class autoBlueShort extends LinearOpMode {
         distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
         imu = new BoschIMU(hardwareMap);
 
-        platform.autoInit();
         //Look for Skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
 
