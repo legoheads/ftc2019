@@ -64,7 +64,7 @@ public class systemsTest extends LinearOpMode {
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         platform = new platformArms(hardwareMap);
-        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
+        stacker = new stacker(hardwareMap);
         leftArm = new leftArm(hardwareMap);
         rightArm = new rightArm(hardwareMap);
         imu = new BoschIMU(hardwareMap);

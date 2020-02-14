@@ -9,7 +9,7 @@ public class intake implements IntakeWheels{
 
     private DcMotor intakeLeft, intakeRight;
 
-    private double INTAKE_POWER = 0.6;
+    private double INTAKE_POWER = 0.7;
     private double EJECT_POWER = 0.4;
 
     private String intakeState = "Stop";
@@ -21,6 +21,9 @@ public class intake implements IntakeWheels{
         //Hardware map
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
+
+        intakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intakeRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         //Reverse left intake motor
         intakeLeft.setDirection(DcMotor.Direction.REVERSE);

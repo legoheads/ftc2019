@@ -68,14 +68,14 @@ public class slides implements LinearSlides{
         runTime.reset();
 
         if (target > initial){
-            while ((spoolLeft.getCurrentPosition() < target) && runTime.seconds() < 1.5)
+            while ((spoolLeft.getCurrentPosition() < target) && runTime.seconds() < 0.75)
             {
                 moveSpool(power);
             }
         }
 
         if (initial > target){
-            while ((spoolLeft.getCurrentPosition() > target) && runTime.seconds() < 1.5){
+            while ((spoolLeft.getCurrentPosition() > target) && runTime.seconds() < 0.75){
                 moveSpool(power);
             }
         }

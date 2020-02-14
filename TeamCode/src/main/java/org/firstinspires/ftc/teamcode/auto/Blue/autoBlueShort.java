@@ -66,7 +66,7 @@ public class autoBlueShort extends LinearOpMode {
         arm = new rightArm(hardwareMap);
         arm2 = new leftArm(hardwareMap);
         platform = new platformArms(hardwareMap);
-        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
+        distanceSensor = new distanceSensor(hardwareMap);
         imu = new BoschIMU(hardwareMap);
 
         //Look for Skystone until play is pressed

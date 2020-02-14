@@ -26,10 +26,7 @@ public class distanceSensor implements Distance
 
     double power = 0.3;
 
-    Gamepad gamepad1, gamepad2;
-
-    public distanceSensor(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2)
-    {
+    public distanceSensor(HardwareMap hardwareMap) {
         distLeft = hardwareMap.get(DistanceSensor.class, "distLeft");
         distRight = hardwareMap.get(DistanceSensor.class, "distRight");
 
@@ -37,11 +34,8 @@ public class distanceSensor implements Distance
         stoneDistRight = hardwareMap.get(DistanceSensor.class, "stoneDistRight");
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
 
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         imu = new BoschIMU(hardwareMap);
-
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
     }
 
     @Override

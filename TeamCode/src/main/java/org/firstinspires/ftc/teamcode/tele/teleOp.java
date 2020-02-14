@@ -64,8 +64,8 @@ public class teleOp extends LinearOpMode {
         slides = new slides(hardwareMap);
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         platform = new platformArms(hardwareMap);
-        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
-        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
+        stacker = new stacker(hardwareMap);
+        distanceSensor = new distanceSensor(hardwareMap);
 
         imu = new BoschIMU(hardwareMap);
 
@@ -226,8 +226,7 @@ public class teleOp extends LinearOpMode {
 
             if (gamepad2.b)
             {
-                chassis.stopDriving();
-                intake.stop();
+                stacker.ungrab();
             }
 
 

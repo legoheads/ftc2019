@@ -66,9 +66,9 @@ public class autoRedIntake extends LinearOpMode {
         arm = new leftArm(hardwareMap);
         arm2 = new rightArm(hardwareMap);
         platform = new platformArms(hardwareMap);
-        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
+        distanceSensor = new distanceSensor(hardwareMap);
         imu = new BoschIMU(hardwareMap);
-        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
+        stacker = new stacker(hardwareMap);
 
         shortSaber.setPosition(0.45);
 
@@ -87,13 +87,13 @@ public class autoRedIntake extends LinearOpMode {
         while (opModeIsActive()) {
             intake.intake();
 
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 950);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 900);
 
             //CV
-            chassis.leftShiftAutonomous(SHIFT_POWER, 450);
+            chassis.leftShiftAutonomous(SHIFT_POWER, 525);
 
             chassis.useEncoder(false);
-            while (imu.getZAngle() < 45)
+            while (imu.getZAngle() < 35)
             {
                 platform.up();
                 chassis.setDriveMotorPowers(0, 0, TURN_POWER, TURN_POWER);
@@ -102,34 +102,44 @@ public class autoRedIntake extends LinearOpMode {
 
             chassis.driveBackwardsAutonomous(-DRIVE_POWER, -600);
 
-            chassis.useEncoder(false);
-            while (imu.getZAngle() < 90)
-            {
-                chassis.setDriveMotorPowers(-TURN_POWER, -TURN_POWER, 0, 0);
-                stacker.grab();
-            }
             intake.stop();
+
+            stacker.grab();
+
+//            chassis.leftTurnIMU(TURN_POWER, 85.5);
+
+            while (imu.getZAngle() < 40)
+            {
+//                stacker.grab();
+//                stacker.ungrab();
+//                stacker.grab();
+                chassis.leftTurnTeleop(TURN_POWER);
+            }
+
+            while (imu.getZAngle() < 85.5)
+            {
+//                stacker.grab();
+//                stacker.ungrab();
+//                stacker.grab();
+                chassis.leftTurnTeleop(TURN_POWER/2);
+            }
             chassis.stopDriving();
 
-            chassis.rightTurnIMU(TURN_POWER, 85.5);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -3500);
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2700);
-
-            while (imu.getZAngle() > 0)
+            while (imu.getZAngle() < 150)
             {
                 chassis.leftTurnTeleop(TURN_POWER);
             }
-            chassis.stopDriving();
 
-            while (imu.getZAngle() < 0)
+            while (imu.getZAngle() > 0)
             {
-                chassis.rightTurnTeleop(TURN_POWER / 2);
+                chassis.leftTurnTeleop(TURN_POWER/2);
             }
             chassis.stopDriving();
 
             //ADD PLATS INTO HERE
             distanceSensor.platformReverse();
-//            chassis.driveBackwardsAutonomous(-DRIVE_POWER/2, 250);
 
             Thread.sleep(200);
 
@@ -137,40 +147,61 @@ public class autoRedIntake extends LinearOpMode {
 
             Thread.sleep(200);
 
+            chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
+
+            telemetry.addData("angle: ", imu.getZAngle());
+            telemetry.update();
+
+            Thread.sleep(1000);
+
+            telemetry.addData("angle: ", imu.getZAngle());
+            telemetry.update();
+
             //drift turn
-            while (imu.getZAngle() > 90 || imu.getZAngle() < 0)
+            while (imu.getZAngle() > 90)
             {
+                telemetry.addData("angle: ", imu.getZAngle());
+                telemetry.update();
                 stacker.extend();
-                chassis.setDriveMotorPowers(DRIFT_POWER * 1.8,DRIFT_POWER * 1.8, DRIFT_POWER / 4, DRIFT_POWER / 4);
+                chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
             }
+            chassis.stopDriving();
+
+            platform.up();
+
+//            chassis.leftTurnIMU(TURN_POWER, 90);
+
+            while (imu.getZAngle() < 90)
+            {
+                chassis.leftTurnTeleop(TURN_POWER/2);
+            }
+            chassis.stopDriving();
+
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -800);
+
+            stacker.retract();
+
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 2500);
+
+            intake.intake();
+
+            chassis.rightTurnIMU(TURN_POWER, 35);
+
+            chassis.driveForwardsAutonomous(DRIVE_POWER / 1.5, 900);
+
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -900);
+
+            stacker.grab();
 
             chassis.leftTurnIMU(TURN_POWER, 90);
 
             chassis.driveBackwardsAutonomous(-DRIVE_POWER, -500);
 
-            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
+            stacker.extend();
 
-            platform.up();
+            stacker.ungrab();
 
-            stacker.retract();
-
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 1500);
-
-            intake.intake();
-
-            chassis.rightTurnIMU(TURN_POWER, 45);
-
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 900);
-
-            Thread.sleep(1000);
-
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -900);
-
-            chassis.leftTurnIMU(TURN_POWER, 90);
-
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2000);
-
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 1000);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 600);
 
             shortSaber.setPosition(0.8);
 

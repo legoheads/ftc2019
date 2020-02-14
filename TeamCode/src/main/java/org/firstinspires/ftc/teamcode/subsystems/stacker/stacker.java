@@ -36,12 +36,11 @@ public class stacker {
     private HardwareMap hardwareMap;
 
     private LinearSlides slides;
-    private skystoneChassis chassis;
 
     Gamepad gamepad1, gamepad2;
 
 
-    public stacker(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
+    public stacker(HardwareMap hardwareMap) throws InterruptedException {
 
         this.hardwareMap = hardwareMap;
 
@@ -56,10 +55,6 @@ public class stacker {
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
 
         slides = new slides(hardwareMap);
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
 
         init();
 
@@ -79,6 +74,11 @@ public class stacker {
         gripper.setPosition(CLOSED_POS);
     }
 
+    public void ungrab()
+    {
+        gripper.setPosition(OPEN_POS);
+    }
+
     public void extend() throws InterruptedException
     {
         cantileverLeft.setPosition(EXTEND_POS_LEFT);
@@ -89,9 +89,9 @@ public class stacker {
     {
         gripper.setPosition(OPEN_POS);
         Thread.sleep(100);
-        slides.spoolEncoder(0.8, 40);
+//        slides.spoolEncoder(0.8, 40);
         cantileverLeft.setPosition(INTAKE_POS_LEFT);
         cantileverRight.setPosition(INTAKE_POS_RIGHT);
-        slides.spoolEncoder(-0.8, -40);
+//        slides.spoolEncoder(-0.8, -40);
     }
 }
