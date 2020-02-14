@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
 import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
 import org.firstinspires.ftc.teamcode.subsystems.intake.intake;
 import org.firstinspires.ftc.teamcode.subsystems.platform.Platform;
 import org.firstinspires.ftc.teamcode.subsystems.platform.platformArms;
+import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
 @Autonomous(name="AutoRed Intake", group = "Red") //Name the class
 public class autoRedIntake extends LinearOpMode {
@@ -29,7 +31,7 @@ public class autoRedIntake extends LinearOpMode {
     private float TURN_POWER = (float) 0.3;
     private float SHIFT_POWER = (float) 0.5;
 
-    private float DRIFT_POWER = (float) 0.3;
+    private float DRIFT_POWER = (float) 0.5;
 
     int driveDistance;
 
@@ -43,6 +45,7 @@ public class autoRedIntake extends LinearOpMode {
     private Platform platform;
     private IIMU imu;
     private IntakeWheels intake;
+    private stacker stacker;
 
     private Distance distanceSensor;
 
@@ -65,6 +68,7 @@ public class autoRedIntake extends LinearOpMode {
         platform = new platformArms(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
         imu = new BoschIMU(hardwareMap);
+        stacker = new stacker(hardwareMap, gamepad1, gamepad2);
 
         shortSaber.setPosition(0.45);
 
@@ -83,78 +87,94 @@ public class autoRedIntake extends LinearOpMode {
         while (opModeIsActive()) {
             intake.intake();
 
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 800);
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 950);
 
             //CV
-            chassis.leftShiftAutonomous(SHIFT_POWER, 500);
+            chassis.leftShiftAutonomous(SHIFT_POWER, 450);
 
             chassis.useEncoder(false);
             while (imu.getZAngle() < 45)
             {
+                platform.up();
                 chassis.setDriveMotorPowers(0, 0, TURN_POWER, TURN_POWER);
             }
             chassis.stopDriving();
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -400);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -600);
 
             chassis.useEncoder(false);
             while (imu.getZAngle() < 90)
             {
                 chassis.setDriveMotorPowers(-TURN_POWER, -TURN_POWER, 0, 0);
+                stacker.grab();
             }
             intake.stop();
             chassis.stopDriving();
 
-            chassis.rightTurnIMU(TURN_POWER/2, 88);
+            chassis.rightTurnIMU(TURN_POWER, 85.5);
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2800);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2700);
 
-            imu.init();
+            while (imu.getZAngle() > 0)
+            {
+                chassis.leftTurnTeleop(TURN_POWER);
+            }
+            chassis.stopDriving();
 
-            //target is actually 180, bring back commented out code above if below line doesn't work
-            chassis.leftTurnIMU(TURN_POWER, 90);
+            while (imu.getZAngle() < 0)
+            {
+                chassis.rightTurnTeleop(TURN_POWER / 2);
+            }
+            chassis.stopDriving();
 
-
+            //ADD PLATS INTO HERE
             distanceSensor.platformReverse();
+//            chassis.driveBackwardsAutonomous(-DRIVE_POWER/2, 250);
 
             Thread.sleep(200);
 
             platform.grab();
 
+            Thread.sleep(200);
+
             //drift turn
-            while (imu.getZAngle() > 0)
+            while (imu.getZAngle() > 90 || imu.getZAngle() < 0)
             {
-                chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
+                stacker.extend();
+                chassis.setDriveMotorPowers(DRIFT_POWER * 1.8,DRIFT_POWER * 1.8, DRIFT_POWER / 4, DRIFT_POWER / 4);
             }
 
-            chassis.leftTurnIMU(TURN_POWER, 0);
+            chassis.leftTurnIMU(TURN_POWER, 90);
+
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -500);
+
+            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
 
             platform.up();
 
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 300);
-//
-//            chassis.rightShiftAutonomous(SHIFT_POWER, 200);
-//
-//            //CV
-//            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
-//
-//            intake.intake();
-//
-//            chassis.rightTurnIMU(TURN_POWER, -45);
-//
-//            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
-//
-//            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -500);
-//
-//            chassis.rightTurnIMU(TURN_POWER, 90);
-//
-//            chassis.driveBackwardsAutonomous(-DRIVE_POWER, 2000);
-//
-//            chassis.driveForwardsAutonomous(DRIVE_POWER, 1000);
-//
-//            shortSaber.setPosition(0.8);
-//
-//            Thread.sleep(2000);
+            stacker.retract();
+
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 1500);
+
+            intake.intake();
+
+            chassis.rightTurnIMU(TURN_POWER, 45);
+
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 900);
+
+            Thread.sleep(1000);
+
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -900);
+
+            chassis.leftTurnIMU(TURN_POWER, 90);
+
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -2000);
+
+            chassis.driveForwardsAutonomous(DRIVE_POWER, 1000);
+
+            shortSaber.setPosition(0.8);
+
+            Thread.sleep(2000);
             //Update the data
             telemetry.update();
 

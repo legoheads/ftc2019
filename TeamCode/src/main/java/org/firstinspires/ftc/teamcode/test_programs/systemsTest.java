@@ -117,7 +117,7 @@ public class systemsTest extends LinearOpMode {
 
             slides.moveSpool(-MOTOR_POWER);
 
-            waitAndPrint("Slides down");
+            waitAndPrint("Slides init");
 
 
 

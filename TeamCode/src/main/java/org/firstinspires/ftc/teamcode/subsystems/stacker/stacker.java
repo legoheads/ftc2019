@@ -5,9 +5,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
@@ -16,18 +14,18 @@ public class stacker {
 
     //Gripper
     private Servo gripper;
-    private double OPEN_POS = 0.35;
-    private double CLOSED_POS = 0.0;
+    private double OPEN_POS = 0.5;
+    private double CLOSED_POS = 0.1;
 //    private double CAP_POS = 0.05;
 
     //Cantilever left
-    private Servo cantiliverLeft;
+    private Servo cantileverLeft;
     private double EXTEND_POS_LEFT = 0.0;
-    private double INTAKE_POS_LEFT = 1.0;
+    private double INTAKE_POS_LEFT = 0.95;
 
     //Cantilever right
-    private Servo cantiliverRight;
-    private double EXTEND_POS_RIGHT = 0.95;
+    private Servo cantileverRight;
+    private double EXTEND_POS_RIGHT = 0.9;
     private double INTAKE_POS_RIGHT = 0.2;
 
     //Color Sensor V2s
@@ -48,8 +46,8 @@ public class stacker {
         this.hardwareMap = hardwareMap;
 
         gripper = hardwareMap.servo.get("gripper");
-        cantiliverLeft = hardwareMap.servo.get("cantileverLeft");
-        cantiliverRight = hardwareMap.servo.get("cantileverRight");
+        cantileverLeft = hardwareMap.servo.get("cantileverLeft");
+        cantileverRight = hardwareMap.servo.get("cantileverRight");
 
 
         //Back distance sensors
@@ -69,78 +67,31 @@ public class stacker {
 
     public void init() throws InterruptedException
     {
-        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
-        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
+        cantileverLeft.setPosition(INTAKE_POS_LEFT);
+        cantileverRight.setPosition(INTAKE_POS_RIGHT);
         gripper.setPosition(OPEN_POS);
     }
 
-    public void grab() throws InterruptedException
-    {
-        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
-        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
+    public void grab() throws InterruptedException {
+        cantileverLeft.setPosition(INTAKE_POS_LEFT);
+        cantileverRight.setPosition(INTAKE_POS_RIGHT);
         Thread.sleep(200);
         gripper.setPosition(CLOSED_POS);
-
     }
 
     public void extend() throws InterruptedException
     {
-        cantiliverLeft.setPosition(EXTEND_POS_LEFT);
-        cantiliverRight.setPosition(EXTEND_POS_RIGHT);
+        cantileverLeft.setPosition(EXTEND_POS_LEFT);
+        cantileverRight.setPosition(EXTEND_POS_RIGHT);
     }
 
     public void retract() throws InterruptedException
     {
         gripper.setPosition(OPEN_POS);
         Thread.sleep(100);
-        cantiliverLeft.setPosition(INTAKE_POS_LEFT);
-        cantiliverRight.setPosition(INTAKE_POS_RIGHT);
-    }
-
-//    public void capDrop() throws InterruptedException
-//    {
-//        gripper.setPosition(CAP_POS);
-//    }
-
-    public void stoneShiftLeft() throws InterruptedException{
-
-        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        double SHIFT_POWER = 0.3;
-        runTime.reset();
-
-        while (!(stoneDistRight.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
-            chassis.chassisTeleOp(gamepad1, gamepad2, SHIFT_POWER);
-            chassis.shiftTeleop(SHIFT_POWER);
-        }
-        chassis.stopDriving();
-    }
-
-    public void stoneShiftRight() throws InterruptedException{
-
-        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-
-        double SHIFT_POWER = -0.3;
-        runTime.reset();
-
-        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH)<5) && runTime.time()<4 || gamepad1.back){
-            chassis.chassisTeleOp(gamepad1, gamepad2, SHIFT_POWER);
-            chassis.shiftTeleop(SHIFT_POWER);
-        }
-        chassis.stopDriving();
-    }
-
-    public void platformReverse() throws InterruptedException{
-
-        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-
-        runTime.reset();
-
-        double drivePower = -0.2;
-
-        while (!(stoneDistLow.getDistance(DistanceUnit.INCH)<2.5) && runTime.time()<4 || gamepad1.back){
-            chassis.chassisTeleOp(gamepad1, gamepad2, -drivePower);
-            chassis.driveTeleop(-drivePower);
-        }
-        chassis.stopDriving();
+        slides.spoolEncoder(0.8, 40);
+        cantileverLeft.setPosition(INTAKE_POS_LEFT);
+        cantileverRight.setPosition(INTAKE_POS_RIGHT);
+        slides.spoolEncoder(-0.8, -40);
     }
 }

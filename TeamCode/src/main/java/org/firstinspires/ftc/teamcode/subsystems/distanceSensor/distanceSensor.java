@@ -132,7 +132,7 @@ public class distanceSensor implements Distance
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         runTime.reset();
 
-        while (!(stoneDistLow.getDistance(DistanceUnit.INCH) < 2.5) && (runTime.time() < 4))
+        while (!(stoneDistLow.getDistance(DistanceUnit.INCH) < 7) && (runTime.seconds() < 3 ))
         {
             chassis.driveTeleop(-power);
         }

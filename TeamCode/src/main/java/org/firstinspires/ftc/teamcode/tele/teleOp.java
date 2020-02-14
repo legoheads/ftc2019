@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
+import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.intake.IntakeWheels;
@@ -48,6 +50,8 @@ public class teleOp extends LinearOpMode {
     private Servo saber;
     private Servo shortSaber;
 
+    private Distance distanceSensor;
+
 //***********************************************************************************************************
     //MAIN BELOW
     @Override
@@ -61,9 +65,10 @@ public class teleOp extends LinearOpMode {
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         platform = new platformArms(hardwareMap);
         stacker = new stacker(hardwareMap, gamepad1, gamepad2);
+        distanceSensor = new distanceSensor(hardwareMap, gamepad1, gamepad2);
+
         imu = new BoschIMU(hardwareMap);
 
-        platform.up();
         shortSaber.setPosition(0.45);
 
         telemetry.addData("init complete", two);
@@ -82,7 +87,7 @@ public class teleOp extends LinearOpMode {
             //DRIVE MOTOR CONTROLS
             drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y) * CHASSIS_POWER;
             shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
-            leftTurnPower = (gamepad1.left_trigger + gamepad1.right_trigger) * CHASSIS_POWER;
+            leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger) * CHASSIS_POWER;
             rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger) * CHASSIS_POWER;
             spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
 
@@ -153,17 +158,17 @@ public class teleOp extends LinearOpMode {
 
             if (gamepad1.dpad_left)
             {
-                stacker.stoneShiftLeft();
+                distanceSensor.stoneShiftLeft();
             }
 
             if (gamepad1.dpad_right)
             {
-                stacker.stoneShiftRight();
+                distanceSensor.stoneShiftRight();
             }
 
             if (gamepad1.dpad_down)
             {
-                stacker.platformReverse();
+                distanceSensor.platformReverse();
             }
 
             if (gamepad2.right_bumper)

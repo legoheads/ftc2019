@@ -5,9 +5,9 @@ public interface Arm
 
     //Put the arm up
     void up() throws InterruptedException;
-    //Put the arm down
+    //Put the arm init
     void down() throws InterruptedException;
-    //Put the arm between up and down
+    //Put the arm between up and init
     void lift() throws InterruptedException;
 
     //Grab the block

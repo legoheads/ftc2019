@@ -344,7 +344,7 @@ public class autoRedDrift extends LinearOpMode {
 //
 //            stacker.platformLeftShift();
 //
-//            arm.down();
+//            arm.init();
 //
 //            Thread.sleep(200);
 //            arm.open();
