@@ -35,9 +35,6 @@ public class teleOp extends LinearOpMode {
 
     private final int LIFT_DISTANCE = 420;
 
-//    private String team = "red";
-    private String team = "blue";
-
     int two = 2;
 
     private skystoneChassis chassis;
@@ -48,7 +45,6 @@ public class teleOp extends LinearOpMode {
     private IIMU imu;
 
     private Servo saber;
-    private Servo shortSaber;
 
     private Distance distanceSensor;
 
@@ -58,7 +54,6 @@ public class teleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException
     {
         saber = hardwareMap.servo.get("saber");
-        shortSaber = hardwareMap.servo.get("shortSaber");
 
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
@@ -69,8 +64,6 @@ public class teleOp extends LinearOpMode {
 
         imu = new BoschIMU(hardwareMap);
 
-        shortSaber.setPosition(0.45);
-
         telemetry.addData("init complete", two);
         telemetry.update();
 
@@ -80,7 +73,7 @@ public class teleOp extends LinearOpMode {
         intake.intake();
 
     //***********************************************************************************************************
-        //LOOP BELOWF
+        //LOOP BELOW
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
@@ -126,8 +119,6 @@ public class teleOp extends LinearOpMode {
                 slides.moveSpool(spoolPower);
             }
 
-            slides.stop();
-
             if(gamepad1.y)
             {
                 platform.up();
@@ -135,17 +126,16 @@ public class teleOp extends LinearOpMode {
 
             if(gamepad1.a)
             {
-//                stacker.platformReverse();
                 platform.grab();
             }
 
-            //Saber forward
+            //Saber red
             if (gamepad2.y)
             {
                 saber.setPosition(0.25);
             }
 
-            //Saber backwards
+            //Saber blue
             if (gamepad2.a)
             {
                 saber.setPosition(1.0);

@@ -6,13 +6,9 @@ package org.firstinspires.ftc.teamcode.auto.Red;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.CV.CV;
 import org.firstinspires.ftc.teamcode.subsystems.CV.skystoneDetector;
-import org.firstinspires.ftc.teamcode.subsystems.arm.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.leftArm;
-import org.firstinspires.ftc.teamcode.subsystems.arm.rightArm;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.Distance;
 import org.firstinspires.ftc.teamcode.subsystems.distanceSensor.distanceSensor;
@@ -34,43 +30,32 @@ public class autoRedIntake extends LinearOpMode {
     private float DRIFT_POWER = (float) 0.5;
 
     int driveDistance;
+    int shiftDistance;
 
     //Skystone location variable
     private CV.location skystoneLocation = CV.location.MID;
 
-    private Arm arm;
-    private Arm arm2;
     private skystoneChassis chassis;
     private skystoneDetector detector;
     private Platform platform;
     private IIMU imu;
     private IntakeWheels intake;
     private stacker stacker;
-
     private Distance distanceSensor;
-
-    private Servo shortSaber;
 
     //***********************************************************************************************************
     //MAIN BELOW
     @Override
-    public void runOpMode() throws InterruptedException {
-        //Intialize subsystems
-
-        shortSaber = hardwareMap.servo.get("shortSaber");
-
+    public void runOpMode() throws InterruptedException
+    {
         detector = new skystoneDetector(hardwareMap, telemetry);
         intake = new intake(hardwareMap);
 
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
-        arm = new leftArm(hardwareMap);
-        arm2 = new rightArm(hardwareMap);
         platform = new platformArms(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap);
         imu = new BoschIMU(hardwareMap);
         stacker = new stacker(hardwareMap);
-
-        shortSaber.setPosition(0.45);
 
         //Look for Skystone until play is pressed
         while(!isStarted()){ skystoneLocation = detector.getSkystoneInfinite(); }
@@ -84,13 +69,32 @@ public class autoRedIntake extends LinearOpMode {
         //LOOP BELOW
         //While the op mode is active, do anything within the loop
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
+            if (skystoneLocation == CV.location.LEFT)
+            {
+                shiftDistance = 1025;
+                driveDistance = 4100;
+            }
+
+            if (skystoneLocation == CV.location.MID)
+            {
+                shiftDistance = 775;
+                driveDistance = 3800;
+            }
+
+            if (skystoneLocation == CV.location.RIGHT)
+            {
+                shiftDistance = 525;
+                driveDistance = 3500;
+            }
+
             intake.intake();
 
             chassis.driveForwardsAutonomous(DRIVE_POWER, 900);
 
             //CV
-            chassis.leftShiftAutonomous(SHIFT_POWER, 525);
+            chassis.leftShiftAutonomous(SHIFT_POWER, shiftDistance);
 
             chassis.useEncoder(false);
             while (imu.getZAngle() < 35)
@@ -108,24 +112,24 @@ public class autoRedIntake extends LinearOpMode {
 
 //            chassis.leftTurnIMU(TURN_POWER, 85.5);
 
-            while (imu.getZAngle() < 40)
+            while (imu.getZAngle() < 50)
             {
-//                stacker.grab();
-//                stacker.ungrab();
-//                stacker.grab();
+                stacker.grab();
+                stacker.ungrab();
+                stacker.grab();
                 chassis.leftTurnTeleop(TURN_POWER);
             }
 
             while (imu.getZAngle() < 85.5)
             {
-//                stacker.grab();
-//                stacker.ungrab();
-//                stacker.grab();
+                stacker.grab();
+                stacker.ungrab();
+                stacker.grab();
                 chassis.leftTurnTeleop(TURN_POWER/2);
             }
             chassis.stopDriving();
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -3500);
+            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -driveDistance);
 
             while (imu.getZAngle() < 150)
             {
@@ -203,9 +207,6 @@ public class autoRedIntake extends LinearOpMode {
 
             chassis.driveForwardsAutonomous(DRIVE_POWER, 600);
 
-            shortSaber.setPosition(0.8);
-
-            Thread.sleep(2000);
             //Update the data
             telemetry.update();
 

@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems.stacker;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
@@ -28,6 +26,11 @@ public class stacker {
     private double EXTEND_POS_RIGHT = 0.9;
     private double INTAKE_POS_RIGHT = 0.2;
 
+    //Capstone
+    private Servo capstone;
+    private double INIT_POS = 0.45;
+    private double CAP_POS = 0.1;
+
     //Color Sensor V2s
     private DistanceSensor stoneDistLeft;
     private DistanceSensor stoneDistRight;
@@ -47,6 +50,7 @@ public class stacker {
         gripper = hardwareMap.servo.get("gripper");
         cantileverLeft = hardwareMap.servo.get("cantileverLeft");
         cantileverRight = hardwareMap.servo.get("cantileverRight");
+        capstone = hardwareMap.servo.get("capstone");
 
 
         //Back distance sensors
@@ -62,9 +66,10 @@ public class stacker {
 
     public void init() throws InterruptedException
     {
+        gripper.setPosition(OPEN_POS);
         cantileverLeft.setPosition(INTAKE_POS_LEFT);
         cantileverRight.setPosition(INTAKE_POS_RIGHT);
-        gripper.setPosition(OPEN_POS);
+        capstone.setPosition(INIT_POS);
     }
 
     public void grab() throws InterruptedException {
@@ -89,9 +94,15 @@ public class stacker {
     {
         gripper.setPosition(OPEN_POS);
         Thread.sleep(100);
-//        slides.spoolEncoder(0.8, 40);
+        slides.spoolEncoder(0.8, 40);
         cantileverLeft.setPosition(INTAKE_POS_LEFT);
         cantileverRight.setPosition(INTAKE_POS_RIGHT);
-//        slides.spoolEncoder(-0.8, -40);
+        slides.spoolEncoder(-0.8, -40);
+    }
+
+    public void cap() throws InterruptedException
+    {
+        grab();
+        capstone.setPosition(CAP_POS);
     }
 }
