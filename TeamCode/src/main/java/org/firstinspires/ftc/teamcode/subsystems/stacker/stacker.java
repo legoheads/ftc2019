@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems.stacker;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 
@@ -12,7 +14,7 @@ public class stacker {
 
     //Gripper
     private Servo gripper;
-    private double OPEN_POS = 0.5;
+    private double OPEN_POS = 0.55;
     private double CLOSED_POS = 0.1;
 //    private double CAP_POS = 0.05;
 
@@ -29,7 +31,7 @@ public class stacker {
     //Capstone
     private Servo capstone;
     private double INIT_POS = 0.45;
-    private double CAP_POS = 0.1;
+    private double CAP_POS = 0.0;
 
     //Color Sensor V2s
     private DistanceSensor stoneDistLeft;
@@ -39,6 +41,7 @@ public class stacker {
     private HardwareMap hardwareMap;
 
     private LinearSlides slides;
+    private skystoneChassis chassis;
 
     Gamepad gamepad1, gamepad2;
 
@@ -59,6 +62,7 @@ public class stacker {
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
 
         slides = new slides(hardwareMap);
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
 
         init();
 
@@ -95,6 +99,7 @@ public class stacker {
         gripper.setPosition(OPEN_POS);
         Thread.sleep(100);
         slides.spoolEncoder(0.8, 40);
+        chassis.driveForwardsAutonomous(0.4, 400);
         cantileverLeft.setPosition(INTAKE_POS_LEFT);
         cantileverRight.setPosition(INTAKE_POS_RIGHT);
         slides.spoolEncoder(-0.8, -40);

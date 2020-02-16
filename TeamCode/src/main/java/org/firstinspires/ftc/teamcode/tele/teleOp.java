@@ -57,10 +57,11 @@ public class teleOp extends LinearOpMode {
 
         intake = new intake(hardwareMap);
         slides = new slides(hardwareMap);
-        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         platform = new platformArms(hardwareMap);
         stacker = new stacker(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap);
+
+        chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
 
         imu = new BoschIMU(hardwareMap);
 
@@ -114,14 +115,32 @@ public class teleOp extends LinearOpMode {
                 chassis.rightTurnTeleop(rightTurnPower);
             }
 
-            if (Math.abs(spoolPower) > ERROR_MARGIN)
+            if (spoolPower > ERROR_MARGIN)
             {
+                intake.stop();
                 slides.moveSpool(spoolPower);
+            }
+            else if (spoolPower < -ERROR_MARGIN)
+            {
+                intake.stop();
+                slides.moveSpool(spoolPower * 0.6);
+            }
+            else
+            {
+                if (!gamepad2.left_bumper || !gamepad2.right_bumper)
+                {
+                    slides.stop();
+                }
             }
 
             if(gamepad1.y)
             {
                 platform.up();
+            }
+
+            if (gamepad1.x)
+            {
+                platform.init();
             }
 
             if(gamepad1.a)
@@ -219,11 +238,10 @@ public class teleOp extends LinearOpMode {
                 stacker.ungrab();
             }
 
-
             //Add cap here
             if(gamepad2.back)
             {
-
+                stacker.cap();
             }
 
             //Update the data

@@ -59,7 +59,7 @@ public class autoBlueShort extends LinearOpMode {
 
         shortSaber = hardwareMap.servo.get("shortSaber");
 
-        detector = new skystoneDetector(hardwareMap, telemetry);
+        detector = new skystoneDetector(hardwareMap, telemetry, false);
         distRight = hardwareMap.get(DistanceSensor.class, "distRight");
 
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);

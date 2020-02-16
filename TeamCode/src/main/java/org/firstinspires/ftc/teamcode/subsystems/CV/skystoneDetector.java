@@ -41,6 +41,8 @@ public class skystoneDetector implements CV {
     private stone mid = stone.UNKNOWN;
     private stone right = stone.UNKNOWN;
 
+    private Boolean isRed;
+
     private location skystoneLocation = location.MID;
 
     public Boolean isFound = false;
@@ -50,11 +52,25 @@ public class skystoneDetector implements CV {
     OpenCvCamera phoneCam;
 
 
-    public skystoneDetector(HardwareMap myHardwareMap, Telemetry myTelemetry) {
+    public skystoneDetector(HardwareMap myHardwareMap, Telemetry myTelemetry, Boolean myIsRed) {
         hardwareMap = myHardwareMap;
         telemetry = myTelemetry;
 
+        isRed = myIsRed;
+
+        if (!isRed){
+            leftPos[0] = 2.0f/8f;//0 = col, 1 = row
+            midPos[0] = 4.0f/8f;
+            rightPos[0] = 6.0f/8f;
+        }
+
         camSetup();
+        
+
+
+
+
+
     }
 
     public void setOffset(float offsetX, float offsetY) {
@@ -98,6 +114,9 @@ public class skystoneDetector implements CV {
 
         //Skystone found at Left
         if (left.equals(stone.SKY) && mid.equals(stone.STONE) && right.equals(stone.STONE)){
+            if(isRed){
+                skystoneLocation = location.LEFT;
+            }
             skystoneLocation = location.LEFT;
             isFound = true;
         }
@@ -108,6 +127,9 @@ public class skystoneDetector implements CV {
         }
         //Skystone found at Right
         if (left.equals(stone.STONE) && mid.equals(stone.STONE) && right.equals(stone.SKY)){
+            if(isRed){
+                skystoneLocation = location.RIGHT;
+            }
             skystoneLocation = location.RIGHT;
             isFound = true;
         }

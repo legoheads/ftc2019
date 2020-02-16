@@ -10,7 +10,7 @@ public class intake implements IntakeWheels{
     private DcMotor intakeLeft, intakeRight;
 
     private double INTAKE_POWER = 0.7;
-    private double EJECT_POWER = 0.4;
+    private double EJECT_POWER = 0.7;
 
     private String intakeState = "Stop";
 

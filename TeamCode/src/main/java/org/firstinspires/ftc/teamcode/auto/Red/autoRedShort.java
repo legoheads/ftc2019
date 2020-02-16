@@ -56,7 +56,7 @@ public class autoRedShort extends LinearOpMode {
 
         shortSaber = hardwareMap.servo.get("shortSaber");
 
-        detector = new skystoneDetector(hardwareMap, telemetry);
+        detector = new skystoneDetector(hardwareMap, telemetry, true);
 
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
         arm = new leftArm(hardwareMap);

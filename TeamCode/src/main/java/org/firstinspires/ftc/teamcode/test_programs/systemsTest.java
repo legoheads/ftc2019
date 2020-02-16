@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test_programs;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
 import org.firstinspires.ftc.teamcode.subsystems.slides.slides;
 import org.firstinspires.ftc.teamcode.subsystems.stacker.stacker;
 
+@Disabled
 @Autonomous(name="Systems Test") //Name the class
 public class systemsTest extends LinearOpMode {
 
