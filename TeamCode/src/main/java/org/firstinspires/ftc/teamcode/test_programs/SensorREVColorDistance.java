@@ -29,14 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.test_programs;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -89,6 +83,7 @@ public class SensorREVColorDistance extends LinearOpMode {
     DistanceSensor stoneDistLeft;
     DistanceSensor stoneDistRight;
     DistanceSensor stoneDistLow;
+    DistanceSensor stoneIntake;
 
 
     @Override
@@ -101,6 +96,7 @@ public class SensorREVColorDistance extends LinearOpMode {
         stoneDistLeft = hardwareMap.get(DistanceSensor.class, "stoneDistLeft");
         stoneDistRight = hardwareMap.get(DistanceSensor.class, "stoneDistRight");
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
+        stoneIntake = hardwareMap.get(DistanceSensor.class, "stoneIntake");
 
 
         // get a reference to the RelativeLayout so we can change the background
@@ -123,6 +119,8 @@ public class SensorREVColorDistance extends LinearOpMode {
             telemetry.addData("LEFT Distance (in)", String.format(Locale.US, "%.02f", stoneDistLeft.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RIGHT Distance (in)", String.format(Locale.US, "%.02f", stoneDistRight.getDistance(DistanceUnit.INCH)));
             telemetry.addData("LOW Distance (in)", String.format(Locale.US, "%.02f", stoneDistLow.getDistance(DistanceUnit.INCH)));
+
+            telemetry.addData("Intake Distance (in)",  String.format(Locale.US, "%.02f", stoneIntake.getDistance(DistanceUnit.INCH)));
 
 
             // change the background color to match the color detected by the RGB sensor.

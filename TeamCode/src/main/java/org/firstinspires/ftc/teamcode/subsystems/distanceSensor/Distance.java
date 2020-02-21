@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems.distanceSensor;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 public interface Distance
 {
     void distLeftShift(double power, double distance) throws InterruptedException;
@@ -12,4 +8,7 @@ public interface Distance
     void stoneShiftLeft() throws InterruptedException;
     void stoneShiftRight() throws InterruptedException;
     void platformReverse() throws InterruptedException;
+
+    boolean intakeStone();
+
 }

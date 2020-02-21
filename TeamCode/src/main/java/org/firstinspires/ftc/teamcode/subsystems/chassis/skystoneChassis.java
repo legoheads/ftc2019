@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 import org.firstinspires.ftc.teamcode.subsystems.slides.LinearSlides;
@@ -28,9 +27,8 @@ public class skystoneChassis implements DriveTrain
 
     private LinearSlides slides;
 
-    private double MAX_POWER = 1.0;
-    private double PID_POWER = 0.7;
-    private double SLOW_POWER = 0.2;
+    private double MAX_POWER = 0.7;
+    private double SLOW_POWER = 0.15;
 
     private double initial;
     private double target;
@@ -186,10 +184,6 @@ public class skystoneChassis implements DriveTrain
             driveTeleop(power);
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     public void driveBackwardsAutonomous(double power, double degrees) throws InterruptedException
@@ -207,10 +201,6 @@ public class skystoneChassis implements DriveTrain
             driveTeleop(power);
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     /**
@@ -233,10 +223,6 @@ public class skystoneChassis implements DriveTrain
             shiftTeleop(power);
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     /**
@@ -259,10 +245,6 @@ public class skystoneChassis implements DriveTrain
             shiftTeleop(-power);
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     //START HERE
@@ -297,10 +279,6 @@ public class skystoneChassis implements DriveTrain
             }
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     public void driveBackwardsAutonomousIMU(double power, double degrees) throws InterruptedException
@@ -333,10 +311,6 @@ public class skystoneChassis implements DriveTrain
             }
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     public void leftShiftAutonomousIMU(double power, double degrees) throws InterruptedException
@@ -369,10 +343,6 @@ public class skystoneChassis implements DriveTrain
             }
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     public void rightShiftAutonomousIMU(double power, double degrees) throws InterruptedException
@@ -405,10 +375,6 @@ public class skystoneChassis implements DriveTrain
             }
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
     public void leftTurnIMU(double power, double targetAngle) throws InterruptedException
@@ -444,8 +410,8 @@ public class skystoneChassis implements DriveTrain
 
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2, double startPower) throws InterruptedException
     {
-        float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y)*(float)0.7;
-        float shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x)*(float)0.7;
+        float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
+        float shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x);
         float leftTurnPower = (float) ((gamepad1.left_trigger) * 0.7);
         float rightTurnPower = (float) ((gamepad1.right_trigger) * 0.7);
         float spoolPower = -(gamepad2.right_stick_y);
@@ -479,7 +445,7 @@ public class skystoneChassis implements DriveTrain
         }
 
         //If the joysticks are not pushed significantly shut off the wheels
-        if (abs(drivePower) + abs(shiftPower) + abs(leftTurnPower) + abs(rightTurnPower) + abs(startPower) < 0.15) {
+        if (abs(drivePower) + abs(shiftPower) + abs(leftTurnPower) + abs(rightTurnPower) + abs(startPower) < SLOW_POWER) {
             stopDriving();
         }
 
@@ -528,13 +494,13 @@ public class skystoneChassis implements DriveTrain
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void driveForwardsAutonomousPID(double degrees, Telemetry telemetry) throws InterruptedException
+    public void driveForwardsAutonomousPID(double degrees) throws InterruptedException
     {
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.1;
-        double movementPower = PID_POWER;
+        double KP = 0.5, KI = 0.2, KD = 0.3;
+        double movementPower = MAX_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -552,16 +518,7 @@ public class skystoneChassis implements DriveTrain
         driveTeleop(movementPower);
         while (LF.getCurrentPosition() < degrees)
         {
-            telemetry.addData("error: ", error);
-            telemetry.addData("oldError: ", oldError);
-            telemetry.addData("currentTime: ", currentTime);
-            telemetry.addData("deltaTime: ", deltaTime);
-            telemetry.addData("timer", runTime.seconds());
-            telemetry.addData("integral: ", integral);
-            telemetry.addData("derivative:", derivative);
-            telemetry.update();
-
-            error = degrees - LF.getCurrentPosition();
+            error = abs(degrees - LF.getCurrentPosition());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -574,7 +531,12 @@ public class skystoneChassis implements DriveTrain
                 integral = 0;
             }
 
-            movementPower = PID_POWER * (KP * error + KI * integral + KD * derivative);
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
 
             driveTeleop(movementPower);
 
@@ -582,21 +544,172 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
-
-        leftTurnIMU(SLOW_POWER, startAngle);
-        stopDriving();
-        Thread.sleep(5);
     }
 
-    public void leftTurnIMUPID(double targetAngle, Telemetry telemetry) throws InterruptedException
+    public void driveBackwardsAutonomousPID(double degrees) throws InterruptedException
+    {
+        degrees = -abs(degrees);
+
+        //Need to tune constants
+        double KP = 0.5, KI = 0.2, KD = 0.3;
+        double movementPower = MAX_POWER;
+
+        stopResetEncoders();
+        useEncoder(false);
+
+        startAngle = imu.getZAngle();
+
+        error = 0.0;
+        oldError = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        driveTeleop(-movementPower);
+        while (LF.getCurrentPosition() > degrees)
+        {
+            error = abs(degrees - LF.getCurrentPosition());
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            derivative = (error - oldError) / deltaTime;
+            if (abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (abs(error) > 200)
+            {
+                integral = 0;
+            }
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
+
+            driveTeleop(-movementPower);
+
+            currentTime = runTime.seconds();
+            oldError = error;
+        }
+        stopDriving();
+    }
+
+    public void leftShiftAutonomousPID(double degrees) throws InterruptedException
+    {
+        degrees = abs(degrees);
+
+        //Need to tune constants
+        double KP = 0.5, KI = 0.2, KD = 0.3;
+        double movementPower = MAX_POWER;
+
+        stopResetEncoders();
+        useEncoder(false);
+
+        startAngle = imu.getZAngle();
+
+        error = 0.0;
+        oldError = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        shiftTeleop(movementPower);
+        while (RF.getCurrentPosition() < degrees)
+        {
+            error = abs(degrees - RF.getCurrentPosition());
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            derivative = (error - oldError) / deltaTime;
+            if (abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (abs(error) > 200)
+            {
+                integral = 0;
+            }
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
+
+            shiftTeleop(movementPower);
+
+            currentTime = runTime.seconds();
+            oldError = error;
+        }
+        stopDriving();
+    }
+
+    public void rightShiftAutonomousPID(double degrees) throws InterruptedException
+    {
+        degrees = abs(degrees);
+
+        //Need to tune constants
+        double KP = 0.5, KI = 0.2, KD = 0.3;
+        double movementPower = MAX_POWER;
+
+        stopResetEncoders();
+        useEncoder(false);
+
+        startAngle = imu.getZAngle();
+
+        error = 0.0;
+        oldError = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        shiftTeleop(-movementPower);
+        while (LF.getCurrentPosition() < degrees)
+        {
+            error = abs(degrees - LF.getCurrentPosition());
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            derivative = (error - oldError) / deltaTime;
+            if (abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (abs(error) > 200)
+            {
+                integral = 0;
+            }
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
+
+            shiftTeleop(-movementPower);
+
+            currentTime = runTime.seconds();
+            oldError = error;
+        }
+        stopDriving();
+    }
+
+    public void leftTurnIMUPID(double targetAngle) throws InterruptedException
     {
         targetAngle = abs(targetAngle);
 
         //Need to tune constants
-        double KP = 0.5 * PI / 180, KI = 0.2 * PI / 180, KD = 0.1 * PI / 180;
-        double movementPower = PID_POWER;
+        double KP = 1.8 * PI / 180, KI = 0.8 * PI / 180, KD = 0.8 * PI / 180;
+        double movementPower = MAX_POWER;
 
-        stopResetEncoders();
         useEncoder(false);
 
         error = 0.0;
@@ -611,37 +724,83 @@ public class skystoneChassis implements DriveTrain
         leftTurnTeleop(movementPower);
         while (imu.getZAngle() < targetAngle)
         {
-            telemetry.addData("error: ", error);
-            telemetry.addData("oldError: ", oldError);
-            telemetry.addData("currentTime: ", currentTime);
-            telemetry.addData("deltaTime: ", deltaTime);
-            telemetry.addData("timer", runTime.seconds());
-            telemetry.addData("integral: ", integral);
-            telemetry.addData("derivative: ", derivative);
-            telemetry.update();
-
-            error = targetAngle - imu.getZAngle();
+            error = abs(targetAngle - imu.getZAngle());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
-            derivative = (error - oldError) / deltaTime;
             if (abs(error) < 10)
             {
                 integral = 0;
             }
-            if (abs(error) > 40)
+            if (abs(error) > 20)
             {
                 integral = 0;
             }
 
+            derivative = (error - oldError) / deltaTime;
+            oldError = error;
+
             movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
 
             leftTurnTeleop(movementPower);
 
             currentTime = runTime.seconds();
-            oldError = error;
         }
         stopDriving();
-        Thread.sleep(5);
+    }
+
+    public void rightTurnIMUPID(double targetAngle) throws InterruptedException
+    {
+        targetAngle = -abs(targetAngle);
+
+        //Need to tune constants
+        double KP = 1.8 * PI / 180, KI = 0.8 * PI / 180, KD = 0.8 * PI / 180;
+        double movementPower = MAX_POWER;
+
+        useEncoder(false);
+
+        error = 0.0;
+        oldError = 0.0;
+        currentTime = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        rightTurnTeleop(movementPower);
+        while (imu.getZAngle() > targetAngle)
+        {
+            error = abs(targetAngle - imu.getZAngle());
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            if (abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (abs(error) > 20)
+            {
+                integral = 0;
+            }
+
+            derivative = (error - oldError) / deltaTime;
+            oldError = error;
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
+            rightTurnTeleop(movementPower);
+
+            currentTime = runTime.seconds();
+        }
+        stopDriving();
     }
 }
 

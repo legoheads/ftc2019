@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.auto;
 
 //Import necessary items
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
 
-@Autonomous(name="Auto Park") //Name the class
+@TeleOp(name="PID Test") //Name the class
 public class autoPark extends LinearOpMode
 {
     private skystoneChassis chassis;
@@ -31,12 +31,36 @@ public class autoPark extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            chassis.driveForwardsAutonomous(0.3, 200);
+            if (gamepad1.dpad_up)
+            {
+                chassis.driveForwardsAutonomousPID(2000);
+            }
+            if (gamepad1.dpad_down)
+            {
+                chassis.driveBackwardsAutonomousPID(2000);
+            }
+            if (gamepad1.dpad_left)
+            {
+                chassis.leftShiftAutonomousPID(2000);
+            }
+            if (gamepad1.dpad_right)
+            {
+                chassis.rightShiftAutonomousPID(2000);
+            }
+
+            if (gamepad1.left_bumper)
+            {
+                chassis.leftTurnIMUPID(90);
+            }
+
+            if (gamepad1.right_bumper)
+            {
+                chassis.rightTurnIMUPID(-90);
+            }
+
 
             //Always call idle() at the bottom of your while(opModeIsActive()) loop
             idle();
-
-            break;
         } //Close "while (opModeIsActive())" loop
     } //Close main
 } //Close class and end program

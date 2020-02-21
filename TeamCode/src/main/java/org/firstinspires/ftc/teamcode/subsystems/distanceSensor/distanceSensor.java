@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems.distanceSensor;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,11 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
 public class distanceSensor implements Distance
 {
-    private DistanceSensor distLeft;
     private DistanceSensor distRight;
     private DistanceSensor stoneDistLeft;
     private DistanceSensor stoneDistRight;
     private DistanceSensor stoneDistLow;
+    private DistanceSensor stoneIntake;
 
     private HardwareMap hardwareMap;
 
@@ -26,13 +25,14 @@ public class distanceSensor implements Distance
 
     double power = 0.3;
 
-    public distanceSensor(HardwareMap hardwareMap) {
-        distLeft = hardwareMap.get(DistanceSensor.class, "distLeft");
+    public distanceSensor(HardwareMap hardwareMap)
+    {
         distRight = hardwareMap.get(DistanceSensor.class, "distRight");
 
         stoneDistLeft = hardwareMap.get(DistanceSensor.class, "stoneDistLeft");
         stoneDistRight = hardwareMap.get(DistanceSensor.class, "stoneDistRight");
         stoneDistLow = hardwareMap.get(DistanceSensor.class, "stoneDistLow");
+        stoneIntake = hardwareMap.get(DistanceSensor.class, "stoneIntake");
 
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.FLOAT);
         imu = new BoschIMU(hardwareMap);
@@ -40,30 +40,30 @@ public class distanceSensor implements Distance
 
     @Override
     public void distLeftShift(double power, double distance) throws InterruptedException{
-        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-
-        runTime.reset();
-
-        double timeOut = distance / 2;
-        double startAngle = 0;
-        double COEFF = 0.94;
-        while (!(distLeft.getDistance(DistanceUnit.INCH)<distance) && (runTime.time()<timeOut))
-        {
-            chassis.shiftTeleop(power);
-            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
-            {
-                if (imu.getZAngle() > startAngle)
-                {
-                    chassis.setDriveMotorPowers(-COEFF * power, power, COEFF * power, -power);
-                }
-
-                if (imu.getZAngle() < startAngle)
-                {
-                    chassis.setDriveMotorPowers(-power, COEFF * power, power, -COEFF * power);
-                }
-            }
-        }
-        chassis.stopDriving();
+//        ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+//
+//        runTime.reset();
+//
+//        double timeOut = distance / 2;
+//        double startAngle = 0;
+//        double COEFF = 0.94;
+//        while (!(distLeft.getDistance(DistanceUnit.INCH)<distance) && (runTime.time()<timeOut))
+//        {
+//            chassis.shiftTeleop(power);
+//            if (Math.abs(imu.getZAngle() - startAngle) > 2.0)
+//            {
+//                if (imu.getZAngle() > startAngle)
+//                {
+//                    chassis.setDriveMotorPowers(-COEFF * power, power, COEFF * power, -power);
+//                }
+//
+//                if (imu.getZAngle() < startAngle)
+//                {
+//                    chassis.setDriveMotorPowers(-power, COEFF * power, power, -COEFF * power);
+//                }
+//            }
+//        }
+//        chassis.stopDriving();
     }
 
     @Override
@@ -100,10 +100,11 @@ public class distanceSensor implements Distance
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         runTime.reset();
 
-        while (!(stoneDistRight.getDistance(DistanceUnit.INCH) < 5) && (runTime.time() < 4))
+        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 4))
         {
             chassis.shiftTeleop(power);
         }
+        chassis.leftShiftAutonomous(power, 50);
         chassis.stopDriving();
     }
 
@@ -113,10 +114,11 @@ public class distanceSensor implements Distance
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         runTime.reset();
 
-        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH) < 5) && (runTime.time() < 4))
+        while (!(stoneDistRight.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 4))
         {
             chassis.shiftTeleop(-power);
         }
+        chassis.rightShiftAutonomous(power, 50);
         chassis.stopDriving();
     }
 
@@ -131,5 +133,18 @@ public class distanceSensor implements Distance
             chassis.driveTeleop(-power);
         }
         chassis.stopDriving();
+    }
+
+    @Override
+    public boolean intakeStone()
+    {
+        if (stoneIntake.getDistance(DistanceUnit.INCH) < 3)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
