@@ -79,7 +79,7 @@ public class teleOp extends LinearOpMode
         {
             //DRIVE MOTOR CONTROLS
             drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
-            shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
+            shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
             leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger) * CHASSIS_POWER;
             rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger) * CHASSIS_POWER;
             spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);

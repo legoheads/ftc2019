@@ -1,5 +1,5 @@
 //Run from the necessary package
-package org.firstinspires.ftc.teamcode.odometry;
+package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
 
@@ -18,8 +18,8 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
 @Disabled
-@TeleOp(name="Odometry method test") //Name the class
-public class odometryMethodTest extends LinearOpMode
+@TeleOp(name="My odometry method test") //Name the class
+public class myOdometryMethodTest extends LinearOpMode
 {
     //Drivetrain
     private DcMotor LF, RF, LB, RB, backOdometer;

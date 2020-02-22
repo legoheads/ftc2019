@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * Created by Samedh on 6/1/2019.
  */
-public class OdometryGlobalCoordinatePosition implements Runnable{
+public class odometryGlobalCoordinatePosition implements Runnable{
     //Odometry wheels
     private DcMotor verticalEncoderLeft, verticalEncoderRight, horizontalEncoder;
 
@@ -51,7 +51,7 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
      * @param horizontalEncoder horizontal odometry encoder, perpendicular to the other two odometry encoder wheels
      * @param threadSleepDelay delay in milliseconds for the GlobalPositionUpdate thread (50-75 milliseconds is suggested)
      */
-    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
+    public odometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
         this.verticalEncoderLeft = verticalEncoderLeft;
         this.verticalEncoderRight = verticalEncoderRight;
         this.horizontalEncoder = horizontalEncoder;

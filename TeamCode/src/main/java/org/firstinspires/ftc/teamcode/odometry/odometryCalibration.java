@@ -23,7 +23,7 @@ import java.io.File;
  */
 @Disabled
 @TeleOp(name = "Odometry System Calibration", group = "Calibration")
-public class OdometryCalibration extends LinearOpMode
+public class odometryCalibration extends LinearOpMode
 {
     DcMotor LF;
     DcMotor LB;
@@ -38,7 +38,7 @@ public class OdometryCalibration extends LinearOpMode
     final float PIVOT_SPEED = (float) 0.2;
 
     //NEED TO UPDATE THIS VALUE
-    final double COUNTS_PER_INCH = 158;
+    final double COUNTS_PER_INCH = 307.699557;
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -62,10 +62,10 @@ public class OdometryCalibration extends LinearOpMode
         imu = new BoschIMU(hardwareMap);
 
         //Reverse left side motors
-        LF.setDirection(DcMotorSimple.Direction.REVERSE);
-        LB.setDirection(DcMotorSimple.Direction.REVERSE);
-        RF.setDirection(DcMotorSimple.Direction.FORWARD);
-        RB.setDirection(DcMotorSimple.Direction.FORWARD);
+        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.FORWARD);
+        RF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
@@ -90,14 +90,20 @@ public class OdometryCalibration extends LinearOpMode
 
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
         while(imu.getZAngle() < 90 && opModeIsActive()){
-            LF.setPower(PIVOT_SPEED);
-            LB.setPower(PIVOT_SPEED);
-            RF.setPower(-PIVOT_SPEED);
-            RB.setPower(-PIVOT_SPEED);
+            LF.setPower(-PIVOT_SPEED);
+            LB.setPower(-PIVOT_SPEED);
+            RF.setPower(PIVOT_SPEED);
+            RB.setPower(PIVOT_SPEED);
             if(imu.getZAngle() < 60) {
-                setDriveMotorPowers(PIVOT_SPEED, PIVOT_SPEED, -PIVOT_SPEED, -PIVOT_SPEED);
+                LF.setPower(-PIVOT_SPEED);
+                LB.setPower(-PIVOT_SPEED);
+                RF.setPower(PIVOT_SPEED);
+                RB.setPower(PIVOT_SPEED);
             }else{
-                setDriveMotorPowers(PIVOT_SPEED/2, PIVOT_SPEED/2, -PIVOT_SPEED/2, -PIVOT_SPEED/2);
+                LF.setPower(-PIVOT_SPEED / 2);
+                LB.setPower(-PIVOT_SPEED / 2);
+                RF.setPower(PIVOT_SPEED / 2);
+                RB.setPower(PIVOT_SPEED / 2);
             }
 
             telemetry.addData("IMU Angle", imu.getZAngle());
@@ -105,7 +111,10 @@ public class OdometryCalibration extends LinearOpMode
         }
 
         //Stop the robot
-        setDriveMotorPowers(0, 0, 0, 0);
+        LF.setPower(0);
+        LB.setPower(0);
+        RF.setPower(0);
+        RB.setPower(0);
         timer.reset();
         while(timer.milliseconds() < 1000 && opModeIsActive()){
             telemetry.addData("IMU Angle", imu.getZAngle());
@@ -140,7 +149,7 @@ public class OdometryCalibration extends LinearOpMode
 
             //Display raw values
             telemetry.addData("IMU Angle", imu.getZAngle());
-            telemetry.addData("Vertical Left Position", -LF.getCurrentPosition());
+            telemetry.addData("Vertical Left Position", LF.getCurrentPosition());
             telemetry.addData("Vertical Right Position", RB.getCurrentPosition());
             telemetry.addData("Horizontal Position", backOdometer.getCurrentPosition());
             telemetry.addData("Vertical Encoder Offset", verticalEncoderTickOffsetPerDegree);
@@ -149,15 +158,4 @@ public class OdometryCalibration extends LinearOpMode
             telemetry.update();
         }
     }
-
-    //Define a function to use to set motor powers
-    void setDriveMotorPowers(float lfPower, float lbPower, float rfPower, float rbPower)
-    {
-        //Use the entered powers and feed them to the motors
-        LF.setPower(lfPower);
-        LB.setPower(lbPower);
-        RF.setPower(rfPower);
-        RB.setPower(rbPower);
-    }
-
 }

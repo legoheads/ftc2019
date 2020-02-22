@@ -43,8 +43,6 @@ public class skystoneChassis implements DriveTrain
     private double integral;
     private double derivative;
 
-
-
     /**
      * Initialize all the hardware
      * This creates a data type DriveFunctions to store all the hardware devices
@@ -130,8 +128,8 @@ public class skystoneChassis implements DriveTrain
      */
     public void shiftTeleop(double power) throws InterruptedException
     {
-        //This sequence of backwards, forwards, forwards, backwards makes the robot shift
-        setDriveMotorPowers(-power, power, power, -power);
+        //This sequence of forwards, backwards, backwards, forwards makes the robot shift
+        setDriveMotorPowers(power, -power, -power, power);
     }
 
 
@@ -619,7 +617,7 @@ public class skystoneChassis implements DriveTrain
         ElapsedTime runTime = new ElapsedTime();
         runTime.reset();
 
-        shiftTeleop(movementPower);
+        shiftTeleop(-movementPower);
         while (RF.getCurrentPosition() < degrees)
         {
             error = abs(degrees - RF.getCurrentPosition());
@@ -642,7 +640,7 @@ public class skystoneChassis implements DriveTrain
                 movementPower =  SLOW_POWER;
             }
 
-            shiftTeleop(movementPower);
+            shiftTeleop(-movementPower);
 
             currentTime = runTime.seconds();
             oldError = error;
@@ -671,7 +669,7 @@ public class skystoneChassis implements DriveTrain
         ElapsedTime runTime = new ElapsedTime();
         runTime.reset();
 
-        shiftTeleop(-movementPower);
+        shiftTeleop(movementPower);
         while (LF.getCurrentPosition() < degrees)
         {
             error = abs(degrees - LF.getCurrentPosition());
@@ -694,7 +692,7 @@ public class skystoneChassis implements DriveTrain
                 movementPower =  SLOW_POWER;
             }
 
-            shiftTeleop(-movementPower);
+            shiftTeleop(movementPower);
 
             currentTime = runTime.seconds();
             oldError = error;
@@ -801,6 +799,24 @@ public class skystoneChassis implements DriveTrain
             currentTime = runTime.seconds();
         }
         stopDriving();
+    }
+
+    public void mecanumKinematics1(double xPower, double yPower, double turnPower)
+    {
+        double LFPower = yPower + xPower - turnPower;
+        double LBPower = yPower - xPower - turnPower;
+        double RFPower = yPower - xPower + turnPower;
+        double RBPower = yPower + xPower + turnPower;
+        setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
+    }
+
+    public void mecanumKinematics2(double xPower, double yPower, double turnPower)
+    {
+        double LFPower = yPower + xPower + turnPower;
+        double LBPower = yPower - xPower + turnPower;
+        double RFPower = yPower - xPower - turnPower;
+        double RBPower = yPower + xPower - turnPower;
+        setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
     }
 }
 

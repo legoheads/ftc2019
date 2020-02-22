@@ -1,22 +1,18 @@
 package org.firstinspires.ftc.teamcode.odometry;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
-import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
-
-//import org.firstinspires.ftc.teamcode.Robot.Drivetrain.Odometry.OdometryGlobalCoordinatePosition;
+//import org.firstinspires.ftc.teamcode.Robot.Drivetrain.Odometry.odometryGlobalCoordinatePosition;
 
 /**
  * Created by Samedh on 10/4/2019.
  */
 @Disabled
 @TeleOp(name = "Global Position Test")
-public class globalPositionTest extends LinearOpMode
+public class globalCoordinatePositionUpdateSample extends LinearOpMode
 {
     private DcMotor LF;
     private DcMotor LB;
@@ -25,12 +21,10 @@ public class globalPositionTest extends LinearOpMode
 
     private DcMotor backOdometer;
 
-    private IIMU imu;
-
     final double COUNTS_PER_INCH = 158;
 
 
-    OdometryGlobalCoordinatePosition globalPositionUpdate;
+    odometryGlobalCoordinatePosition globalPositionUpdate;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,8 +38,6 @@ public class globalPositionTest extends LinearOpMode
 
         //Get references to the boschIMU Motors from the hardware map
 
-        imu = new BoschIMU(hardwareMap);
-
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
         telemetry.addData("Status", "Init Complete");
@@ -53,7 +45,7 @@ public class globalPositionTest extends LinearOpMode
         waitForStart();
 
         //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions
-        globalPositionUpdate = new OdometryGlobalCoordinatePosition(LF, RB, backOdometer, COUNTS_PER_INCH, 75);
+        globalPositionUpdate = new odometryGlobalCoordinatePosition(LF, RB, backOdometer, COUNTS_PER_INCH, 75);
         Thread positionThread = new Thread(globalPositionUpdate);
         positionThread.start();
 
