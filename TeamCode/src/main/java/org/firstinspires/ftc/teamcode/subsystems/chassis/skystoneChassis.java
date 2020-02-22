@@ -212,11 +212,11 @@ public class skystoneChassis implements DriveTrain
         power = abs(power);
         degrees = abs(degrees);
 
-        initial = RF.getCurrentPosition();
+        initial = LF.getCurrentPosition();
         startAngle = imu.getZAngle();
         target = initial + degrees;
 
-        while (RF.getCurrentPosition() < target)
+        while (LF.getCurrentPosition() < target)
         {
             shiftTeleop(power);
         }
@@ -234,11 +234,11 @@ public class skystoneChassis implements DriveTrain
         power = abs(power);
         degrees = abs(degrees);
 
-        initial = LF.getCurrentPosition();
+        initial = RF.getCurrentPosition();
         startAngle = imu.getZAngle();
         target = initial + degrees;
 
-        while (LF.getCurrentPosition() < target)
+        while (RF.getCurrentPosition() < target)
         {
             shiftTeleop(-power);
         }
@@ -409,7 +409,7 @@ public class skystoneChassis implements DriveTrain
     public void chassisTeleOp(Gamepad gamepad1, Gamepad gamepad2, double startPower) throws InterruptedException
     {
         float drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
-        float shiftPower = -(gamepad1.left_stick_x + gamepad2.left_stick_x);
+        float shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x);
         float leftTurnPower = (float) ((gamepad1.left_trigger) * 0.7);
         float rightTurnPower = (float) ((gamepad1.right_trigger) * 0.7);
         float spoolPower = -(gamepad2.right_stick_y);
@@ -618,9 +618,9 @@ public class skystoneChassis implements DriveTrain
         runTime.reset();
 
         shiftTeleop(-movementPower);
-        while (RF.getCurrentPosition() < degrees)
+        while (LF.getCurrentPosition() < degrees)
         {
-            error = abs(degrees - RF.getCurrentPosition());
+            error = abs(degrees - LF.getCurrentPosition());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -670,9 +670,9 @@ public class skystoneChassis implements DriveTrain
         runTime.reset();
 
         shiftTeleop(movementPower);
-        while (LF.getCurrentPosition() < degrees)
+        while (RF.getCurrentPosition() < degrees)
         {
-            error = abs(degrees - LF.getCurrentPosition());
+            error = abs(degrees - RF.getCurrentPosition());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
