@@ -69,6 +69,9 @@ public class skystoneChassis implements DriveTrain
         this.RF.setZeroPowerBehavior(type);
         this.RB.setZeroPowerBehavior(type);
 
+        stopResetEncoders();
+        useEncoder(false);
+
         imu = new BoschIMU(hardwareMap);
         slides = new slides(hardwareMap);
     }
@@ -98,7 +101,7 @@ public class skystoneChassis implements DriveTrain
     /**
      * If this function is called, turn on the drive motors at the given powers to make it drive forward or backwards
      */
-    public void driveTeleop(double power) throws InterruptedException
+    public void driveTeleop(double power)
     {
         //Send all the motors in the same direction
         setDriveMotorPowers(power, power, power, power);
@@ -107,7 +110,7 @@ public class skystoneChassis implements DriveTrain
     /**
      * If this function is called, turn on the drive motors at the given powers, to make it tank turn left
      */
-    public void leftTurnTeleop(double power) throws InterruptedException
+    public void leftTurnTeleop(double power)
     {
         //Turn the left motors backwards and the right motors forward so that it turns left
         setDriveMotorPowers(-power, -power, power, power);
@@ -116,7 +119,7 @@ public class skystoneChassis implements DriveTrain
     /**
      * If this function is called, turn on the drive motors at the given powers, to make it tank turn right
      */
-    public void rightTurnTeleop(double power) throws InterruptedException
+    public void rightTurnTeleop(double power)
     {
         //Turn the right motors backwards and the left motors forward so that it turns right
         setDriveMotorPowers(power, power, -power, -power);
@@ -126,14 +129,14 @@ public class skystoneChassis implements DriveTrain
      * If this function is called, turn on the drive motors at the
      * given powers, to make it shift in the desired direction
      */
-    public void shiftTeleop(double power) throws InterruptedException
+    public void shiftTeleop(double power)
     {
         //This sequence of forwards, backwards, backwards, forwards makes the robot shift
         setDriveMotorPowers(power, -power, -power, power);
     }
 
 
-    public void stopResetEncoders() throws InterruptedException
+    public void stopResetEncoders()
     {
         //Reset the encoders
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -163,11 +166,32 @@ public class skystoneChassis implements DriveTrain
 
     //START FIXING HERE
 
+    public void goToIMU(double targetAngle)
+    {
+        while (imu.getZAngle() < targetAngle)
+        {
+            leftTurnTeleop(SLOW_POWER);
+        }
+        while (imu.getZAngle() > targetAngle)
+        {
+            rightTurnTeleop(SLOW_POWER);
+        }
+        while (imu.getZAngle() < targetAngle)
+        {
+            leftTurnTeleop(SLOW_POWER);
+        }
+        while (imu.getZAngle() > targetAngle)
+        {
+            rightTurnTeleop(SLOW_POWER);
+        }
+        stopDriving();
+    }
+
     /**
      * Takes in powers for 4 drive motors, as well as 4 encoder distances
      * Allows us to run at the entered power, for the entered distance
      */
-    public void driveForwardsAutonomous(double power, double degrees) throws InterruptedException
+    public void driveForwardsAutonomous(double power, double degrees)
     {
         useEncoder(false);
         power = abs(power);
@@ -184,7 +208,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void driveBackwardsAutonomous(double power, double degrees) throws InterruptedException
+    public void driveBackwardsAutonomous(double power, double degrees)
     {
         useEncoder(false);
         power = - abs(power);
@@ -206,29 +230,7 @@ public class skystoneChassis implements DriveTrain
      *
      * @param degrees distance
      */
-    public void leftShiftAutonomous(double power, double degrees) throws InterruptedException
-    {
-        useEncoder(false);
-        power = abs(power);
-        degrees = abs(degrees);
-
-        initial = LF.getCurrentPosition();
-        startAngle = imu.getZAngle();
-        target = initial + degrees;
-
-        while (LF.getCurrentPosition() < target)
-        {
-            shiftTeleop(power);
-        }
-        stopDriving();
-    }
-
-    /**
-     * Shift right for the given distance at the given power
-     *
-     * @param degrees distance
-     */
-    public void rightShiftAutonomous(double power, double degrees) throws InterruptedException
+    public void leftShiftAutonomous(double power, double degrees)
     {
         useEncoder(false);
         power = abs(power);
@@ -245,9 +247,31 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
+    /**
+     * Shift right for the given distance at the given power
+     *
+     * @param degrees distance
+     */
+    public void rightShiftAutonomous(double power, double degrees)
+    {
+        useEncoder(false);
+        power = abs(power);
+        degrees = abs(degrees);
+
+        initial = LF.getCurrentPosition();
+        startAngle = imu.getZAngle();
+        target = initial + degrees;
+
+        while (LF.getCurrentPosition() < target)
+        {
+            shiftTeleop(power);
+        }
+        stopDriving();
+    }
+
     //START HERE
 
-    public void driveForwardsAutonomousIMU(double power, double degrees) throws InterruptedException
+    public void driveForwardsAutonomousIMU(double power, double degrees)
     {
         useEncoder(false);
         power = abs(power);
@@ -279,7 +303,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void driveBackwardsAutonomousIMU(double power, double degrees) throws InterruptedException
+    public void driveBackwardsAutonomousIMU(double power, double degrees)
     {
         useEncoder(false);
         power = - abs(power);
@@ -311,7 +335,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void leftShiftAutonomousIMU(double power, double degrees) throws InterruptedException
+    public void leftShiftAutonomousIMU(double power, double degrees)
     {
         useEncoder(false);
         power = abs(power);
@@ -343,7 +367,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void rightShiftAutonomousIMU(double power, double degrees) throws InterruptedException
+    public void rightShiftAutonomousIMU(double power, double degrees)
     {
         useEncoder(false);
         power = abs(power);
@@ -375,7 +399,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void leftTurnIMU(double power, double targetAngle) throws InterruptedException
+    public void leftTurnIMU(double power, double targetAngle)
     {
         while (imu.getZAngle() < targetAngle)
         {
@@ -391,7 +415,7 @@ public class skystoneChassis implements DriveTrain
 
     }
 
-    public void rightTurnIMU(double power, double targetAngle) throws InterruptedException
+    public void rightTurnIMU(double power, double targetAngle)
     {
         while (imu.getZAngle() > targetAngle)
         {
@@ -492,13 +516,13 @@ public class skystoneChassis implements DriveTrain
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void driveForwardsAutonomousPID(double degrees) throws InterruptedException
+    public void driveForwardsAutonomousPID(double degrees)
     {
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.3;
-        double movementPower = MAX_POWER;
+        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double movementPower = SLOW_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -533,7 +557,7 @@ public class skystoneChassis implements DriveTrain
 
             if (movementPower < SLOW_POWER)
             {
-                movementPower =  SLOW_POWER;
+                movementPower = SLOW_POWER;
             }
 
             driveTeleop(movementPower);
@@ -542,15 +566,16 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
+        goToIMU(startAngle);
     }
 
-    public void driveBackwardsAutonomousPID(double degrees) throws InterruptedException
+    public void driveBackwardsAutonomousPID(double degrees)
     {
         degrees = -abs(degrees);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.3;
-        double movementPower = MAX_POWER;
+        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double movementPower = SLOW_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -594,15 +619,16 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
+        goToIMU(startAngle);
     }
 
-    public void leftShiftAutonomousPID(double degrees) throws InterruptedException
+    public void leftShiftAutonomousPID(double degrees)
     {
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.3;
-        double movementPower = MAX_POWER;
+        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double movementPower = SLOW_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -618,9 +644,9 @@ public class skystoneChassis implements DriveTrain
         runTime.reset();
 
         shiftTeleop(-movementPower);
-        while (LF.getCurrentPosition() < degrees)
+        while (RF.getCurrentPosition() < degrees)
         {
-            error = abs(degrees - LF.getCurrentPosition());
+            error = abs(degrees - RF.getCurrentPosition());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -646,15 +672,16 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
+        goToIMU(startAngle);
     }
 
-    public void rightShiftAutonomousPID(double degrees) throws InterruptedException
+    public void rightShiftAutonomousPID(double degrees)
     {
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.5, KI = 0.2, KD = 0.3;
-        double movementPower = MAX_POWER;
+        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double movementPower = SLOW_POWER;
 
         stopResetEncoders();
         useEncoder(false);
@@ -670,9 +697,9 @@ public class skystoneChassis implements DriveTrain
         runTime.reset();
 
         shiftTeleop(movementPower);
-        while (RF.getCurrentPosition() < degrees)
+        while (LF.getCurrentPosition() < degrees)
         {
-            error = abs(degrees - RF.getCurrentPosition());
+            error = abs(degrees - LF.getCurrentPosition());
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -698,14 +725,21 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
+        goToIMU(startAngle);
+
     }
 
-    public void leftTurnIMUPID(double targetAngle) throws InterruptedException
+    public void resetImu()
     {
-        targetAngle = abs(targetAngle);
+        imu = new BoschIMU(hardwareMap);
+    }
+
+    public void leftTurnIMUPID(double targetAngle)
+    {
+        targetAngle = abs(targetAngle) - 3;
 
         //Need to tune constants
-        double KP = 1.8 * PI / 180, KI = 0.8 * PI / 180, KD = 0.8 * PI / 180;
+        double KP = 1.8 * PI / 180, KI = 0.5 * PI / 180, KD = 0.8 * PI / 180;
         double movementPower = MAX_POWER;
 
         useEncoder(false);
@@ -751,12 +785,12 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void rightTurnIMUPID(double targetAngle) throws InterruptedException
+    public void rightTurnIMUPID(double targetAngle)
     {
-        targetAngle = -abs(targetAngle);
+        targetAngle = (-abs(targetAngle)) + 3;
 
         //Need to tune constants
-        double KP = 1.8 * PI / 180, KI = 0.8 * PI / 180, KD = 0.8 * PI / 180;
+        double KP = 1.8 * PI / 180, KI = 0.5 * PI / 180, KD = 0.8 * PI / 180;
         double movementPower = MAX_POWER;
 
         useEncoder(false);
@@ -801,7 +835,7 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
-    public void mecanumKinematics1(double xPower, double yPower, double turnPower)
+    public void mecanumKinematics1(double yPower, double xPower, double turnPower)
     {
         double LFPower = yPower + xPower - turnPower;
         double LBPower = yPower - xPower - turnPower;
@@ -810,7 +844,7 @@ public class skystoneChassis implements DriveTrain
         setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
     }
 
-    public void mecanumKinematics2(double xPower, double yPower, double turnPower)
+    public void mecanumKinematics2(double yPower, double xPower, double turnPower)
     {
         double LFPower = yPower + xPower + turnPower;
         double LBPower = yPower - xPower + turnPower;

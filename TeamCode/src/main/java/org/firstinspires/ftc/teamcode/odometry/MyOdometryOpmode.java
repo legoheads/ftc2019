@@ -41,7 +41,7 @@ public class MyOdometryOpmode extends LinearOpMode {
         globalPositionUpdate.reverseNormalEncoder();
 
         //Run this to test
-//        goToPosition(0 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 0.5, 0, 1 * COUNTS_PER_INCH);
+//        goToPosition(24 * COUNTS_PER_INCH, 0 * COUNTS_PER_INCH, 0.5, 0, 1 * COUNTS_PER_INCH);
 
         while(opModeIsActive()){
             //Display Global (x, y, theta) coordinates
@@ -62,7 +62,7 @@ public class MyOdometryOpmode extends LinearOpMode {
     }
 
     //Method to run after testing the above code
-    public void goToPosition(double targetXPosition, double targetYPosition, double robotPower, double desiredRobotOrientation, double allowableDistanceError)
+    public void goToPosition(double targetYPosition, double targetXPosition, double robotPower, double desiredRobotOrientation, double allowableDistanceError)
     {
         double distanceToXTarget = targetXPosition - globalPositionUpdate.returnXCoordinate();
         double distanceToYTarget = targetYPosition - globalPositionUpdate.returnYCoordinate();

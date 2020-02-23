@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.test_programs;
 
 //Import necessary items
 
@@ -7,11 +7,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.subsystems.chassis.skystoneChassis;
+import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
+import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
 
 @TeleOp(name="PID Test") //Name the class
-public class autoPark extends LinearOpMode
+public class pidTest extends LinearOpMode
 {
+    private DcMotor LF, LB, RF, RB;
     private skystoneChassis chassis;
+    private IIMU imu;
 
     //***********************************************************************************************************
     //MAIN BELOW
@@ -19,6 +23,11 @@ public class autoPark extends LinearOpMode
     public void runOpMode() throws InterruptedException {
         //Intialize subsystems
         chassis = new skystoneChassis(hardwareMap, DcMotor.ZeroPowerBehavior.BRAKE);
+        imu = new BoschIMU(hardwareMap);
+        LF = hardwareMap.dcMotor.get("LF");
+        LB = hardwareMap.dcMotor.get("LB");
+        RF = hardwareMap.dcMotor.get("RF");
+        RB = hardwareMap.dcMotor.get("RB");
 
 
         //Wait for start button to be clicked
@@ -57,6 +66,17 @@ public class autoPark extends LinearOpMode
             {
                 chassis.rightTurnIMUPID(-90);
             }
+
+            if (gamepad1.a)
+            {
+                chassis.goToIMU(0);
+            }
+
+            telemetry.addData("LFPos: ", LF.getCurrentPosition());
+            telemetry.addData("RFPos: ", RF.getCurrentPosition());
+            telemetry.addData("angle:", imu.getZAngle());
+            telemetry.update();
+
 
 
             //Always call idle() at the bottom of your while(opModeIsActive()) loop

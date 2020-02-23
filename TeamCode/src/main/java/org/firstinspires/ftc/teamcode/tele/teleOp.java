@@ -24,7 +24,7 @@ public class teleOp extends LinearOpMode
 {
 
     //Define floats to be used as joystick inputs and trigger inputs
-    private double drivePower, shiftPower, leftTurnPower, rightTurnPower, spoolPower;
+    private double drivePower, shiftPower, leftTurnPower, rightTurnPower, turnPower, spoolPower;
 
     private final double MAX_POWER = 1.0;
     private final double CHASSIS_POWER = 0.6;
@@ -77,113 +77,19 @@ public class teleOp extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
-            //DRIVE MOTOR CONTROLS
-            drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
-            shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x) * CHASSIS_POWER;
-            leftTurnPower = (gamepad1.left_trigger + gamepad2.left_trigger) * CHASSIS_POWER;
-            rightTurnPower = (gamepad1.right_trigger + gamepad2.right_trigger) * CHASSIS_POWER;
-            spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
-
-
-            //Drive if the joystick is pushed more Y than X
-            if (Math.abs(drivePower) > Math.abs(shiftPower))
+            if (gamepad1.guide)
             {
-               if (drivePower > 0)
-               {
-                   if (drivePower < SEGMENT_ONE)
-                   {
-                       drivePower = STOP_POWER;
-                   }
-                   else if (drivePower < SEGMENT_TWO)
-                   {
-                       drivePower = SEGMENT_TWO;
-                   }
-
-                   else if (drivePower < SEGMENT_THREE)
-                   {
-                       drivePower = CHASSIS_POWER;
-                   }
-                   else
-                   {
-                       drivePower = MAX_POWER;
-                   }
-               }
-               if (drivePower < 0)
-               {
-                   if (drivePower > -SEGMENT_ONE)
-                   {
-                       drivePower = -STOP_POWER;
-                   }
-                   else if (drivePower > -SEGMENT_TWO)
-                   {
-                       drivePower = -SEGMENT_TWO;
-                   }
-                   else if (drivePower > -SEGMENT_THREE)
-                   {
-                       drivePower = -CHASSIS_POWER;
-                   }
-                   else
-                   {
-                       drivePower = -MAX_POWER;
-                   }
-               }
-               chassis.driveTeleop(drivePower);
+                drivePower = gamepad1.right_trigger - gamepad1.left_trigger;
+                turnPower = gamepad1.left_stick_x;
+                chassis.mecanumKinematics2(drivePower, 0, turnPower);
             }
-
-            //Shift if the joystick is pushed more on X than Y
-            if (Math.abs(shiftPower) > Math.abs(drivePower))
+            else
             {
-//                if (shiftPower > 0)
-//                {
-//                    if (shiftPower < SEGMENT_FOUR)
-//                    {
-//                        shiftPower = MAX_POWER;
-//                    }
-//                    if (shiftPower < SEGMENT_THREE)
-//                    {
-//                        shiftPower = CHASSIS_POWER;
-//                    }
-//                    if (shiftPower < SEGMENT_TWO)
-//                    {
-//                        shiftPower = SEGMENT_TWO;
-//                    }
-//                    if (shiftPower < SEGMENT_ONE)
-//                    {
-//                        shiftPower = STOP_POWER;
-//                    }
-//                }
-//                if (shiftPower < 0)
-//                {
-//                    if (shiftPower > -SEGMENT_FOUR)
-//                    {
-//                        shiftPower = -MAX_POWER;
-//                    }
-//                    if (shiftPower > -SEGMENT_THREE)
-//                    {
-//                        shiftPower = -CHASSIS_POWER;
-//                    }
-//                    if (shiftPower > -SEGMENT_TWO)
-//                    {
-//                        shiftPower = -SEGMENT_TWO;
-//                    }
-//                    if (shiftPower > -SEGMENT_ONE)
-//                    {
-//                        shiftPower = -STOP_POWER;
-//                    }
-//                }
-                chassis.shiftTeleop(shiftPower);
-            }
+                drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
+                shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x);
+                turnPower = gamepad1.left_trigger + gamepad2.left_trigger - gamepad1.right_trigger - gamepad2.right_trigger;
+                chassis.mecanumKinematics1(drivePower, shiftPower, turnPower);
 
-            //If the left trigger is pushed, turn left at that power
-            if (leftTurnPower > STOP_POWER)
-            {
-                chassis.leftTurnTeleop(leftTurnPower);
-            }
-
-            //If the right trigger is pushed, turn right at that power
-            if (rightTurnPower > STOP_POWER)
-            {
-                chassis.rightTurnTeleop(rightTurnPower);
             }
 
             if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < ERROR_MARGIN)
