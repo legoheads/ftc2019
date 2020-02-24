@@ -74,40 +74,38 @@ public class autoRedIntake extends LinearOpMode {
         {
             if (skystoneLocation == CV.location.LEFT)
             {
-                shiftDistance = 1250;
-                driveDistance = 4050;
+                shiftDistance = 100;
+                chassis.leftShiftAutonomous(SHIFT_POWER, shiftDistance);
+                driveDistance = 3850;
             }
 
             if (skystoneLocation == CV.location.MID)
             {
-                shiftDistance = 925;
-                driveDistance = 3750;
+                shiftDistance = 0;
+                chassis.leftShiftAutonomous(SHIFT_POWER, shiftDistance);
+                driveDistance = 3550;
                 driveDistance2 = 500;
             }
 
             if (skystoneLocation == CV.location.RIGHT)
             {
-                shiftDistance = 525;
-                driveDistance = 3450;
+                shiftDistance = 150;
+                chassis.rightShiftAutonomous(SHIFT_POWER, shiftDistance);
+                driveDistance = 3250;
+            }
+
+            while (imu.getZAngle() < 35)
+            {
+                chassis.setDriveMotorPowers(0, 0, TURN_POWER, TURN_POWER);
             }
 
             intake.intake();
 
-            chassis.driveForwardsAutonomousPID(1050);
+            chassis.driveForwardsAutonomousPID(1450);
 
-            //CV
-//            chassis.leftShiftAutonomous(SHIFT_POWER, shiftDistance);
-            chassis.leftShiftAutonomousPID(shiftDistance);
+            platform.up();
 
-            while (imu.getZAngle() < 35)
-            {
-                platform.up();
-                chassis.setDriveMotorPowers(0, 0, TURN_POWER, TURN_POWER);
-            }
-
-            chassis.stopDriving();
-
-            chassis.driveBackwardsAutonomousPID(-650);
+            chassis.driveBackwardsAutonomousPID(-600);
 
             stacker.grab();
 
@@ -130,18 +128,16 @@ public class autoRedIntake extends LinearOpMode {
 
             Thread.sleep(200);
 
-            chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
+            chassis.setDriveMotorPowers(1.0,1.0, 0.1, 0.1);
             Thread.sleep(100);
 
             //drift turn
             while (imu.getZAngle() > 90)
             {
                 stacker.extend();
-                chassis.setDriveMotorPowers(DRIFT_POWER * 1.5,DRIFT_POWER * 1.5, DRIFT_POWER / 4, DRIFT_POWER / 4);
+                chassis.setDriveMotorPowers(1.0,1.0, 0.1, 0.1);
             }
             chassis.stopDriving();
-
-            platform.up();
 
             chassis.goToIMU(90);
 
@@ -151,26 +147,29 @@ public class autoRedIntake extends LinearOpMode {
 
             intake.intake();
 
+            chassis.driveForwardsAutonomousPID(500);
 
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 500);
+            platform.up();
 
-            chassis.rightTurnIMU(TURN_POWER, 35);
+            chassis.driveForwardsAutonomousPID(500);
+
+            chassis.rightTurnIMUPID(35);
 
             chassis.driveForwardsAutonomous(DRIVE_POWER / 1.5, 900);
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -900);
+            chassis.driveBackwardsAutonomousPID(-900);
 
             stacker.grab();
 
-            chassis.leftTurnIMU(TURN_POWER, 90);
+            chassis.leftTurnIMUPID(90);
 
-            chassis.driveBackwardsAutonomous(-DRIVE_POWER, -500);
+            chassis.driveBackwardsAutonomousPID(-500);
 
             stacker.extend();
 
             stacker.ungrab();
 
-            chassis.driveForwardsAutonomous(DRIVE_POWER, 600);
+            chassis.driveForwardsAutonomousPID(600);
 
             //Update the data
             telemetry.update();

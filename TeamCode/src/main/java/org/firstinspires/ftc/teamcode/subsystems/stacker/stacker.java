@@ -15,20 +15,20 @@ public class stacker
     //Gripper
     private Servo gripper;
     private double OPEN_POS = 0.5;
-    private double RELEASE_POS = 0.3;
+    private double RELEASE_POS = 0.1;
     private double CLOSED_POS = 0.0;
 
     //Cantilever left
     private Servo cantileverLeft;
-    private double EXTEND_POS_LEFT = 0.0;
-    private double INTAKE_POS_LEFT = 0.85;
-    private double GRAB_POS_LEFT = 0.95;
+    private double EXTEND_POS_LEFT = 0.05;
+    private double INTAKE_POS_LEFT = 0.75;
+    private double GRAB_POS_LEFT = 0.85;
 
     //Cantilever right
     private Servo cantileverRight;
-    private double EXTEND_POS_RIGHT = 0.9;
-    private double INTAKE_POS_RIGHT = 0.3;
-    private double GRAB_POS_RIGHT = 0.2;
+    private double EXTEND_POS_RIGHT = 0.95;
+    private double INTAKE_POS_RIGHT = 0.28;
+    private double GRAB_POS_RIGHT = 0.18;
 
 
     //Capstone

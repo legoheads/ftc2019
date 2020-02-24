@@ -77,6 +77,7 @@ public class teleOp extends LinearOpMode
         //Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive())
         {
+            spoolPower = -(gamepad1.right_stick_y + gamepad2.right_stick_y);
             if (gamepad1.guide)
             {
                 drivePower = gamepad1.right_trigger - gamepad1.left_trigger;
@@ -87,12 +88,12 @@ public class teleOp extends LinearOpMode
             {
                 drivePower = -(gamepad1.left_stick_y + gamepad2.left_stick_y);
                 shiftPower = (gamepad1.left_stick_x + gamepad2.left_stick_x);
-                turnPower = gamepad1.left_trigger + gamepad2.left_trigger - gamepad1.right_trigger - gamepad2.right_trigger;
+                turnPower = (gamepad1.left_trigger + gamepad2.left_trigger - gamepad1.right_trigger - gamepad2.right_trigger) * 0.6;
                 chassis.mecanumKinematics1(drivePower, shiftPower, turnPower);
 
             }
 
-            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) < ERROR_MARGIN)
+            if (Math.abs(drivePower) + Math.abs(shiftPower) + Math.abs(leftTurnPower) + Math.abs(rightTurnPower) + Math.abs(turnPower) < ERROR_MARGIN)
             {
                 chassis.stopDriving();
             }

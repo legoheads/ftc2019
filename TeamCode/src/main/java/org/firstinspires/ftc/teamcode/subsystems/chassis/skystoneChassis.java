@@ -835,6 +835,57 @@ public class skystoneChassis implements DriveTrain
         stopDriving();
     }
 
+    public void leftTurnPivotIMUPID(double targetAngle)
+    {
+        targetAngle = abs(targetAngle) - 3;
+
+        //Need to tune constants
+        double KP = 1.8 * PI / 180, KI = 0.5 * PI / 180, KD = 0.8 * PI / 180;
+        double movementPower = MAX_POWER;
+
+        useEncoder(false);
+
+        error = 0.0;
+        oldError = 0.0;
+        currentTime = 0.0;
+        integral = 0.0;
+        derivative = 0.0;
+
+        ElapsedTime runTime = new ElapsedTime();
+        runTime.reset();
+
+        setDriveMotorPowers(0, 0, movementPower, movementPower);
+        while (imu.getZAngle() < targetAngle)
+        {
+            error = abs(targetAngle - imu.getZAngle());
+            deltaTime = runTime.seconds() - currentTime;
+            integral = integral + (deltaTime * error);
+            if (abs(error) < 10)
+            {
+                integral = 0;
+            }
+            if (abs(error) > 20)
+            {
+                integral = 0;
+            }
+
+            derivative = (error - oldError) / deltaTime;
+            oldError = error;
+
+            movementPower = KP * error + KI * integral + KD * derivative;
+
+            if (movementPower < SLOW_POWER)
+            {
+                movementPower =  SLOW_POWER;
+            }
+
+            setDriveMotorPowers(0, 0, movementPower, movementPower);
+
+            currentTime = runTime.seconds();
+        }
+        stopDriving();
+    }
+
     public void mecanumKinematics1(double yPower, double xPower, double turnPower)
     {
         double LFPower = yPower + xPower - turnPower;
