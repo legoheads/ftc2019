@@ -35,10 +35,10 @@ public class odometryCalibration extends LinearOpMode
     //IMU Sensor
     IIMU imu;
 
-    final float PIVOT_SPEED = (float) 0.2;
+    final float PIVOT_SPEED = (float) 0.4;
 
     //NEED TO UPDATE THIS VALUE
-    final double COUNTS_PER_INCH = 307.699557;
+    final double COUNTS_PER_INCH = 158;
 
     ElapsedTime timer = new ElapsedTime();
 
