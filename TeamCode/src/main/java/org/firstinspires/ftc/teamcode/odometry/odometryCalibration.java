@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.odometry;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,7 +20,7 @@ import java.io.File;
  * Odometry system calibration. Run this OpMode to generate the necessary constants to calculate the robot's global position on the field.
  * The Global Positioning Algorithm will not function and will throw an error if this program is not run first
  */
-@Disabled
+//@Disabled
 @TeleOp(name = "Odometry System Calibration", group = "Calibration")
 public class odometryCalibration extends LinearOpMode
 {
@@ -38,7 +37,7 @@ public class odometryCalibration extends LinearOpMode
     final float PIVOT_SPEED = (float) 0.4;
 
     //NEED TO UPDATE THIS VALUE
-    final double COUNTS_PER_INCH = 158;
+    final double COUNTS_PER_INCH = 200;
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -61,11 +60,22 @@ public class odometryCalibration extends LinearOpMode
         //Get references to the boschIMU Motors from the hardware map
         imu = new BoschIMU(hardwareMap);
 
+        LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
         //Reverse left side motors
-        LF.setDirection(DcMotorSimple.Direction.FORWARD);
-        LB.setDirection(DcMotorSimple.Direction.FORWARD);
-        RF.setDirection(DcMotorSimple.Direction.REVERSE);
-        RB.setDirection(DcMotorSimple.Direction.REVERSE);
+        LF.setDirection(DcMotorSimple.Direction.REVERSE);
+        LB.setDirection(DcMotorSimple.Direction.REVERSE);
+        RF.setDirection(DcMotorSimple.Direction.FORWARD);
+        RB.setDirection(DcMotorSimple.Direction.FORWARD);
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
@@ -90,20 +100,20 @@ public class odometryCalibration extends LinearOpMode
 
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
         while(imu.getZAngle() < 90 && opModeIsActive()){
-            LF.setPower(-PIVOT_SPEED);
-            LB.setPower(-PIVOT_SPEED);
-            RF.setPower(PIVOT_SPEED);
-            RB.setPower(PIVOT_SPEED);
+            LF.setPower(PIVOT_SPEED);
+            LB.setPower(PIVOT_SPEED);
+            RF.setPower(-PIVOT_SPEED);
+            RB.setPower(-PIVOT_SPEED);
             if(imu.getZAngle() < 60) {
-                LF.setPower(-PIVOT_SPEED);
-                LB.setPower(-PIVOT_SPEED);
-                RF.setPower(PIVOT_SPEED);
-                RB.setPower(PIVOT_SPEED);
+                LF.setPower(PIVOT_SPEED);
+                LB.setPower(PIVOT_SPEED);
+                RF.setPower(-PIVOT_SPEED);
+                RB.setPower(-PIVOT_SPEED);
             }else{
-                LF.setPower(-PIVOT_SPEED / 2);
-                LB.setPower(-PIVOT_SPEED / 2);
-                RF.setPower(PIVOT_SPEED / 2);
-                RB.setPower(PIVOT_SPEED / 2);
+                LF.setPower(PIVOT_SPEED / 2);
+                LB.setPower(PIVOT_SPEED / 2);
+                RF.setPower(-PIVOT_SPEED / 2);
+                RB.setPower(-PIVOT_SPEED / 2);
             }
 
             telemetry.addData("IMU Angle", imu.getZAngle());
