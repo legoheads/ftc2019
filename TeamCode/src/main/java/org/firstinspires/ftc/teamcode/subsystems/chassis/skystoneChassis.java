@@ -566,7 +566,6 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
-        goToIMU(startAngle);
     }
 
     public void driveBackwardsAutonomousPID(double degrees)
@@ -619,7 +618,6 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
-        goToIMU(startAngle);
     }
 
     public void leftShiftAutonomousPID(double degrees)
@@ -627,7 +625,7 @@ public class skystoneChassis implements DriveTrain
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double KP = 0.4, KI = 0, KD = 0;
         double movementPower = SLOW_POWER;
 
         stopResetEncoders();
@@ -644,9 +642,9 @@ public class skystoneChassis implements DriveTrain
         runTime.reset();
 
         shiftTeleop(-movementPower);
-        while (RF.getCurrentPosition() < degrees)
+        while (Math.abs(RF.getCurrentPosition() - degrees) > 40)
         {
-            error = abs(degrees - RF.getCurrentPosition());
+            error = degrees - RF.getCurrentPosition();
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -672,7 +670,6 @@ public class skystoneChassis implements DriveTrain
             oldError = error;
         }
         stopDriving();
-        goToIMU(startAngle);
     }
 
     public void rightShiftAutonomousPID(double degrees)
@@ -680,7 +677,7 @@ public class skystoneChassis implements DriveTrain
         degrees = abs(degrees);
 
         //Need to tune constants
-        double KP = 0.04, KI = 0.00001, KD = 0.01;
+        double KP = 0.4, KI = 0, KD = 0;
         double movementPower = SLOW_POWER;
 
         stopResetEncoders();
@@ -699,7 +696,7 @@ public class skystoneChassis implements DriveTrain
         shiftTeleop(movementPower);
         while (LF.getCurrentPosition() < degrees)
         {
-            error = abs(degrees - LF.getCurrentPosition());
+            error = degrees - LF.getCurrentPosition();
             deltaTime = runTime.seconds() - currentTime;
             integral = integral + (deltaTime * error);
             derivative = (error - oldError) / deltaTime;
@@ -787,7 +784,7 @@ public class skystoneChassis implements DriveTrain
 
     public void rightTurnIMUPID(double targetAngle)
     {
-        targetAngle = (-abs(targetAngle)) + 3;
+        targetAngle = targetAngle + 3;
 
         //Need to tune constants
         double KP = 1.8 * PI / 180, KI = 0.5 * PI / 180, KD = 0.8 * PI / 180;

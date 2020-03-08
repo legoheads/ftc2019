@@ -16,8 +16,8 @@ public class platformArms implements Platform{
     private double RIGHT_INIT = 1.0;
 
     //Servo positions when up
-    private double LEFT_GRAB = 0.13;
-    private double RIGHT_GRAB = 0.89;
+    private double LEFT_GRAB = 0.11;
+    private double RIGHT_GRAB = 0.91;
 
     //Servo positions when latched onto platform
     private double LEFT_UP = 0.35;

@@ -6,8 +6,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.odometry.purePursuit.src.com.company.ComputerDebugging;
+import org.firstinspires.ftc.teamcode.odometry.purePursuit.src.com.company.FloatPoint;
+import org.firstinspires.ftc.teamcode.odometry.purePursuit.src.treamcode.CurvePoint;
 import org.firstinspires.ftc.teamcode.subsystems.imu.BoschIMU;
 import org.firstinspires.ftc.teamcode.subsystems.imu.IIMU;
+import org.opencv.core.Point;
+
+import java.util.ArrayList;
+
+import static org.firstinspires.ftc.teamcode.odometry.purePursuit.src.RobotUtilities.MovementVars.movement_turn;
+import static org.firstinspires.ftc.teamcode.odometry.purePursuit.src.RobotUtilities.MovementVars.movement_x;
+import static org.firstinspires.ftc.teamcode.odometry.purePursuit.src.RobotUtilities.MovementVars.movement_y;
+import static org.firstinspires.ftc.teamcode.odometry.purePursuit.src.treamcode.MathFunctions.lineCircleIntersection;
 
 /**
  * Created by Samedh on 6/1/2019.
@@ -19,6 +30,10 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
     //Odometry encoder wheels
     DcMotor LF, LB, RF, RB, backOdometer;
 
+    double ms = 0.8;
+    double ts = 0.8;
+    double fd = 50;
+    double sdta = 1.0;
 
     IIMU imu;
 
@@ -82,7 +97,15 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
         Thread positionThread = new Thread(globalPositionUpdate);
         positionThread.start();
 
-        goToPosition(20 * COUNTS_PER_INCH, 10 * COUNTS_PER_INCH, 0.4, -90, 4 * COUNTS_PER_INCH);
+//        goToPosition(20 * COUNTS_PER_INCH, 10 * COUNTS_PER_INCH, 0.4, -90, 1 * COUNTS_PER_INCH);
+
+//        ArrayList<CurvePoint> allPoints = new ArrayList<>();
+//        allPoints.add(new CurvePoint(0, 0, ms, ts, fd, Math.toRadians(50), sdta));
+//        allPoints.add(new CurvePoint(180, 180, ms, ts, fd, Math.toRadians(50), sdta));
+//        allPoints.add(new CurvePoint(220, 180, ms, ts, fd, Math.toRadians(50), sdta));
+//        allPoints.add(new CurvePoint(280, 50, ms, ts, fd, Math.toRadians(50), sdta));
+//
+//        followCurve(allPoints, 0);
 
         while(opModeIsActive())
         {
@@ -130,8 +153,6 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
             mecanumKinematics1(robotMovementYComponent, robotMovementXComponent, robotMovementTurnComponent);
         }
         setDriveMotorPowers(0,0,0,0);
-
-
     }
 
     /**
@@ -180,7 +201,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
         setDriveMotorPowers(LFPower, LBPower, RFPower, RBPower);
     }
 
-    public static double AngleWrap(double angle)
+    public double AngleWrap(double angle)
     {
         while (angle < -180)
         {
@@ -192,6 +213,76 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
             angle -= 360;
         }
         return angle;
+    }
+
+    public void followCurve(ArrayList<CurvePoint> allPoints, double followAngle)
+    {
+        for (int i = 0; i < allPoints.size() - 1; i++)
+        {
+            ComputerDebugging.sendLine(new FloatPoint(allPoints.get(i).x, allPoints.get(i).y), new FloatPoint(allPoints.get(i+1).x, allPoints.get(i+1).y));
+        }
+
+        CurvePoint followMe = getFollowPointPath(allPoints, new Point(globalPositionUpdate.returnXCoordinate(), globalPositionUpdate.returnYCoordinate()), allPoints.get(0).followDistance);
+
+        ComputerDebugging.sendKeyPoint(new FloatPoint(followMe.x, followMe.y));
+
+        goToPoint(followMe.x, followMe.y, followMe.moveSpeed, followAngle, followMe.turnSpeed);
+    }
+
+    public CurvePoint getFollowPointPath(ArrayList<CurvePoint> pathPoints, Point robotLocation, double followRadius)
+    {
+        CurvePoint followMe = new CurvePoint(pathPoints.get(0));
+        for (int i = 0; i < pathPoints.size() - 1; i++)
+        {
+            CurvePoint startLine = pathPoints.get(i);
+            CurvePoint endLine = pathPoints.get(i + 1);
+
+            ArrayList<Point> intersections = lineCircleIntersection(robotLocation, followRadius, startLine.toPoint(), endLine.toPoint());
+
+            double closestAngle = 1000000000;
+
+            for (Point thisIntersection : intersections)
+            {
+                double angle = Math.atan2(thisIntersection.y - globalPositionUpdate.returnYCoordinate(), thisIntersection.x - globalPositionUpdate.returnXCoordinate());
+                double deltaAngle = Math.abs(AngleWrap(angle - Math.toRadians(globalPositionUpdate.returnOrientation())));
+
+                if (deltaAngle < closestAngle)
+                {
+                    closestAngle = deltaAngle;
+                    followMe.setPoint(thisIntersection);
+                }
+            }
+        }
+        return followMe;
+    }
+
+    public void goToPoint(double x, double y, double movementSpeed, double preferredAngle, double turnSpeed)
+    {
+        double distanceToTarget = Math.hypot(x-globalPositionUpdate.returnXCoordinate(), y-globalPositionUpdate.returnYCoordinate());
+
+        double absoluteAngleToTarget = Math.atan2(y - globalPositionUpdate.returnYCoordinate(), x - globalPositionUpdate.returnYCoordinate());
+
+        double relativeAngleToPoint = AngleWrap(absoluteAngleToTarget - (Math.toRadians(globalPositionUpdate.returnOrientation()) - Math.toRadians(90)));
+
+        double relativeXToPoint = Math.cos(relativeAngleToPoint) * distanceToTarget;
+        double relativeYToPoint = Math.sin(relativeAngleToPoint) * distanceToTarget;
+
+        double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+        double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+
+        movement_x = movementXPower * movementSpeed;
+        movement_y = movementYPower * movementSpeed;
+
+        double relativeTurnAngle = relativeAngleToPoint - Math.toRadians(180) + preferredAngle;
+
+        movement_turn = Range.clip(relativeTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed;
+
+        if (distanceToTarget < 10)
+        {
+            movement_turn = 0;
+        }
+
+        mecanumKinematics1(movement_y, movement_x, movement_turn);
     }
 
 }

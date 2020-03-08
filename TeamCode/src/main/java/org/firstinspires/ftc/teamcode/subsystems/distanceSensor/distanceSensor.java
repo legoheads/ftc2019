@@ -100,12 +100,12 @@ public class distanceSensor implements Distance
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         runTime.reset();
 
-        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 4))
+        while (!(stoneDistLeft.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 2))
         {
-            chassis.shiftTeleop(power);
+            chassis.shiftTeleop(-power);
         }
-        chassis.leftShiftAutonomous(power, 50);
-        chassis.stopDriving();
+        chassis.leftShiftAutonomous(power, 40);
+        platformReverse();
     }
 
     @Override
@@ -114,12 +114,12 @@ public class distanceSensor implements Distance
         ElapsedTime runTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         runTime.reset();
 
-        while (!(stoneDistRight.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 4))
+        while (!(stoneDistRight.getDistance(DistanceUnit.INCH) < 5) && (runTime.seconds() < 2))
         {
-            chassis.shiftTeleop(-power);
+            chassis.shiftTeleop(power);
         }
-        chassis.rightShiftAutonomous(power, 50);
-        chassis.stopDriving();
+        chassis.rightShiftAutonomous(power, 40);
+        platformReverse();
     }
 
     @Override

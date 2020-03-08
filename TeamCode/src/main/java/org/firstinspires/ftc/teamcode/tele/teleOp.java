@@ -194,6 +194,8 @@ public class teleOp extends LinearOpMode
             else if (distanceSensor.intakeStone() && (!stacker.clearSensor()))
             {
                 stacker.grab();
+                intakeOn = false;
+                intake.stop();
             }
 
             if (gamepad2.dpad_left)
