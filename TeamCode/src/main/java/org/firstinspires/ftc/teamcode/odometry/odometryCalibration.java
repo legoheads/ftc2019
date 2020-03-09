@@ -29,7 +29,7 @@ public class odometryCalibration extends LinearOpMode
     DcMotor RF;
     DcMotor RB;
 
-    DcMotor backOdometer;
+    DcMotor intakeLeft;
 
     //IMU Sensor
     IIMU imu;
@@ -55,7 +55,7 @@ public class odometryCalibration extends LinearOpMode
         RF = hardwareMap.dcMotor.get("RF");
         RB = hardwareMap.dcMotor.get("RB");
 
-        backOdometer = hardwareMap.dcMotor.get("backOdometer");
+        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
 
         //Get references to the boschIMU Motors from the hardware map
         imu = new BoschIMU(hardwareMap);
@@ -145,7 +145,7 @@ public class odometryCalibration extends LinearOpMode
 
         double wheelBaseSeparation = (2*90*verticalEncoderTickOffsetPerDegree)/(Math.PI*COUNTS_PER_INCH);
 
-        horizontalTickOffset = backOdometer.getCurrentPosition()/Math.toRadians(imu.getZAngle());
+        horizontalTickOffset = intakeLeft.getCurrentPosition()/Math.toRadians(imu.getZAngle());
 
         //Write the constants to text files
         ReadWriteFile.writeFile(wheelBaseSeparationFile, String.valueOf(wheelBaseSeparation));
@@ -161,7 +161,7 @@ public class odometryCalibration extends LinearOpMode
             telemetry.addData("IMU Angle", imu.getZAngle());
             telemetry.addData("Vertical Left Position", LF.getCurrentPosition());
             telemetry.addData("Vertical Right Position", RB.getCurrentPosition());
-            telemetry.addData("Horizontal Position", backOdometer.getCurrentPosition());
+            telemetry.addData("Horizontal Position", intakeLeft.getCurrentPosition());
             telemetry.addData("Vertical Encoder Offset", verticalEncoderTickOffsetPerDegree);
 
             //Update values

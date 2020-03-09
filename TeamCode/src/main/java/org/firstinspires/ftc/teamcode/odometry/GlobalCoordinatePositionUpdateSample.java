@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.odometry.purePursuit.src.treamcode.
 public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
 
     //Odometry encoder wheels
-    DcMotor LF, LB, RF, RB, backOdometer;
+    DcMotor LF, LB, RF, RB, intakeLeft;
 
     double ms = 0.8;
     double ts = 0.8;
@@ -43,7 +43,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
     OdometryGlobalCoordinatePosition globalPositionUpdate;
 
     //Hardware map names for the encoder wheels. Again, these will change for each robot and need to be updated below
-    String verticalLeftEncoderName = "LF", verticalRightEncoderName = "RB", horizontalEncoderName = "backOdometer";
+    String verticalLeftEncoderName = "LF", verticalRightEncoderName = "RB", horizontalEncoderName = "intakeLeft";
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,14 +53,14 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
         LB = hardwareMap.dcMotor.get("LB");
         RF = hardwareMap.dcMotor.get("RF");
         RB = hardwareMap.dcMotor.get(verticalRightEncoderName);
-        backOdometer = hardwareMap.dcMotor.get(horizontalEncoderName);
+        intakeLeft = hardwareMap.dcMotor.get(horizontalEncoderName);
 
         imu = new BoschIMU(hardwareMap);
 
         //Reset the encoders
         RB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         /*
         Reverse the direction of the odometry wheels. THIS WILL CHANGE FOR EACH ROBOT. Adjust the direction (as needed) of each encoder wheel
@@ -73,7 +73,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
         LB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Reverse left side motors
         LF.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -93,7 +93,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
          */
 
         //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions\
-         globalPositionUpdate = new OdometryGlobalCoordinatePosition(LF, RB, backOdometer, COUNTS_PER_INCH, 75);
+         globalPositionUpdate = new OdometryGlobalCoordinatePosition(LF, RB, intakeLeft, COUNTS_PER_INCH, 75);
         Thread positionThread = new Thread(globalPositionUpdate);
         positionThread.start();
 
@@ -117,7 +117,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
 
             telemetry.addData("Vertical Left Encoder Position", LF.getCurrentPosition());
             telemetry.addData("Vertical Right Encoder Position", RB.getCurrentPosition());
-            telemetry.addData("Horizontal Encoder Position", backOdometer.getCurrentPosition());
+            telemetry.addData("Horizontal Encoder Position", intakeLeft.getCurrentPosition());
 
             telemetry.addData("Thread Active", positionThread.isAlive());
             telemetry.update();
